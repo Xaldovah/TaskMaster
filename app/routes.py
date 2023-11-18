@@ -1,11 +1,12 @@
 from flask import jsonify, request, redirect, url_for, abort
 from flask_bcrypt import Bcrypt
-from flask_restful import Resource
+from flask_restful import Api, Resource
 from flask_jwt_extended import create_access_token, jwt_required
 from app import app, db
 from app.models import *
 
 
+api = Api(app)
 bcrypt = Bcrypt()
 
 
