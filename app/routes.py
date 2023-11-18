@@ -1,9 +1,31 @@
 from flask import jsonify, request, redirect, url_for, abort
 from app import app, db
-from app.models import Task
+from app.models import *
+
+@app.route('/api/users', methods=['GET'])
+def get_users():
+    users = User.query.all()
+    user_list = []
+    for user in users:
+        user_list.append({
+            'user_id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'created_at': user.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        })
+    return jsonify({'users': user_list})
 
 
-@app.route('/api/tasks', methods=['GET'])
+@app.route('/api/users', methods=['POST'])
+def create_user():
+    data = request.get_json()
+    new_user = User(username=data['username'], email=data.get('email'), password=data.get('password'))
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify({'user_id': new_user.id, 'username': new_user.username}), 201
+
+
+@app.route('/api/tasks/', methods=['GET'])
 def get_tasks():
     tasks = Task.query.all()
     task_list = []
@@ -22,7 +44,7 @@ def get_tasks():
     return jsonify({'tasks': task_list})
 
 
-@app.route('/api/tasks', methods=['POST'])
+@app.route('/tasks/', methods=['POST'])
 def create_task():
     data = request.get_json()
 
