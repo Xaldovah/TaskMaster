@@ -37,7 +37,7 @@ def update_user(user_id):
         return jsonify({'error': 'User not found'}), 404
 
     data = request.get_json()
-    
+
     if 'username' in data:
         user.username = data['username']
     if 'email' in data:
