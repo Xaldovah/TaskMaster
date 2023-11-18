@@ -8,7 +8,6 @@ from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 
 api = Api(app)
-bcrypt = Bcrypt()
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -39,7 +38,7 @@ def create_user():
     db.session.commit()
     return jsonify({'user_id': new_user.id, 'username': new_user.username}), 201
 
-@app.route('/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
     username = data.get('username')

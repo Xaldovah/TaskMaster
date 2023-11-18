@@ -1,6 +1,7 @@
-from datetime import datetime
-from app import *
+from app import db
 from flask_login import UserMixin
+from datetime import datetime
+
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -11,12 +12,14 @@ class User(db.Model, UserMixin):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __init__(self, username, email, password):
+        from app import bcrypt
         self.username = username
         self.email = email
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     def __repr__(self):
-        return '<User {}>'.format(self.username)
+        return f"User('{self.username}', '{self.email}')"
+
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
