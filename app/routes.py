@@ -21,6 +21,7 @@ def get_tasks():
         })
     return jsonify({'tasks': task_list})
 
+
 @app.route('/api/tasks', methods=['POST'])
 def create_task():
     data = request.get_json()
