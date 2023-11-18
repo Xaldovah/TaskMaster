@@ -9,6 +9,9 @@ class User(db.Model):
     password = db.Column(db.String(60), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    def __repr__(self):
+        return '<User {}>'.format(self.username)
+
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
