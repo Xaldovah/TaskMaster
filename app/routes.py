@@ -1,6 +1,10 @@
 from flask import jsonify, request, redirect, url_for, abort
+from flask_bcrypt import Bcrypt
 from app import app, db
 from app.models import *
+
+
+bcrypt = Bcrypt()
 
 
 @app.route('/api/users', methods=['GET'])
@@ -23,7 +27,8 @@ def get_users():
 @app.route('/api/users', methods=['POST'])
 def create_user():
     data = request.get_json()
-    new_user = User(username=data['username'], email=data.get('email'), password=data.get('password'))
+    hashed_password = bcrypt.generate_password_hash(data.get('password')).decode('utf-8')
+    new_user = User(username=data['username'], email=data.get('email'), password=hashed_password)
     db.session.add(new_user)
     db.session.commit()
     return jsonify({'user_id': new_user.id, 'username': new_user.username}), 201
