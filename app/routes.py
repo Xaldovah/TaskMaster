@@ -1,9 +1,8 @@
 from flask import jsonify, request, redirect, url_for, abort
-from flask_bcrypt import Bcrypt
 from flask_restful import Api, Resource
 from flask_jwt_extended import create_access_token, jwt_required
 from flask_login import login_user, login_required, current_user
-from app import app, db, login_manager
+from app import *
 from app.models import User, Task
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
