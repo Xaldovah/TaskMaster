@@ -16,10 +16,14 @@ class Task(db.Model):
     due_date = db.Column(db.DateTime, nullable=True)
     priority = db.Column(db.String(20), nullable=True)
     status = db.Column(db.String(20), default='Incomplete')
+completed = db.Column(db.Boolean, default=False)
     category_id = db.Column(
         db.Integer, db.ForeignKey('category.id'), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+def __repr__(self):
+return f'<Task {self.title}>'
 
 
 class Category(db.Model):
