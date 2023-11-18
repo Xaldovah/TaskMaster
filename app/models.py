@@ -22,7 +22,7 @@ class Task(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
-        return f'<Task {self.title}>'
+        return '<Task {}>'.format(self.title)
 
 
 class Category(db.Model):
