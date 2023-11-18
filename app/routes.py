@@ -90,7 +90,7 @@ def create_task():
             description=data.get('description'),
             due_date=data.get('due_date'),
             priority=data.get('priority'),
-status=data.get('status', 'Incomplete'),
+            status=data.get('status', 'Incomplete'),
             category_id=data.get('category_id'),
             user_id=data['user_id']
         )
