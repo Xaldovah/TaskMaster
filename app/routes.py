@@ -2,13 +2,18 @@ from flask import jsonify, request, redirect, url_for, abort
 from flask_bcrypt import Bcrypt
 from flask_restful import Api, Resource
 from flask_jwt_extended import create_access_token, jwt_required
-from app import app, db
-from app.models import *
-
+from flask_login import login_user, login_required, current_user
+from app import app, db, login_manager
+from app.models import User, Task
+from sqlalchemy.exc import SQLAlchemyError
+from datetime import datetime
 
 api = Api(app)
 bcrypt = Bcrypt()
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 @app.route('/api/users', methods=['GET'])
 def get_users():
@@ -20,12 +25,11 @@ def get_users():
             'username': user.username,
             'email': user.email,
             'password': user.password,
-            'created_at': user.created_at.strftime('%Y-%m-%d %H:%M:%S') if user.created_at else None,
-            'updated_at': user.updated_at.strftime('%Y-%m-%d %H:%M:%S') if user.updated_at else None
+            'created_at': user.created_at.isoformat() if user.created_at else None,
+            'updated_at': user.updated_at.isoformat() if user.updated_at else None
         }
         user_list.append(user_data)
     return jsonify({'users': user_list})
-
 
 @app.route('/api/users', methods=['POST'])
 def create_user():
@@ -36,23 +40,24 @@ def create_user():
     db.session.commit()
     return jsonify({'user_id': new_user.id, 'username': new_user.username}), 201
 
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
 
-class LoginResource(Resource):
-    def post(self):
-        data = request.get_json()
-        username_email = data.get('username_email')
-        password = data.get('password')
+    user = User.query.filter_by(username=username).first()
 
-        user = verify_user_credentials(username_email, password)
+    if user and bcrypt.check_password_hash(user.password, password):
+        login_user(user)
+        return jsonify({'message': 'Login successful'}), 200
+    else:
+        return jsonify({'error': 'Invalid credentials'}), 401
 
-        if user:
-            access_token = create_access_token(identity=user.id)
-            return jsonify(access_token=access_token), 200
-        else:
-            return jsonify({'error': 'Invalid credentials'}), 401
-
-api.add_resource(LoginResource, '/api/login')
-
+@app.route('/protected', methods=['GET'])
+@login_required
+def protected():
+    return jsonify({'message': 'This is a protected route', 'username': current_user.username}), 200
 
 @app.route('/api/users/<int:user_id>', methods=['PUT'])
 def update_user(user_id):
@@ -68,7 +73,7 @@ def update_user(user_id):
     if 'email' in data:
         user.email = data['email']
     if 'password' in data:
-        user.password = data['password']
+        user.password = bcrypt.generate_password_hash(data['password']).decode('utf-8')
 
     user.updated_at = datetime.utcnow()
 
@@ -78,9 +83,8 @@ def update_user(user_id):
         'user_id': user.id,
         'username': user.username,
         'email': user.email,
-        'updated_at': user.updated_at.strftime('%Y-%m-%d %H:%M:%S')
+        'updated_at': user.updated_at.isoformat()
     })
-
 
 @app.route('/api/tasks/', methods=['GET'])
 def get_tasks():
@@ -96,11 +100,10 @@ def get_tasks():
             'status': task.status,
             'category_id': task.category_id,
             'user_id': task.user_id,
-            'created_at': task.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-            'updated_at': task.updated_at.strftime('%Y-%m-%d %H:%M:%S') if task.updated_at else None
+            'created_at': task.created_at.isoformat(),
+            'updated_at': task.updated_at.isoformat() if task.updated_at else None
         })
     return jsonify({'tasks': task_list})
-
 
 @app.route('/api/tasks/', methods=['POST'])
 def create_task():
@@ -124,10 +127,9 @@ def create_task():
         db.session.commit()
         return redirect(url_for('get_tasks'))
 
-    except Exception as e:
+    except SQLAlchemyError as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
-
 
 @app.route('/api/tasks/<int:task_id>', methods=['PUT'])
 def update_task(task_id):
@@ -161,6 +163,6 @@ def update_task(task_id):
         'priority': task.priority,
         'status': task.status,
         'user_id': task.user_id,
-        'created_at': task.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-        'updated_at': task.updated_at.strftime('%Y-%m-%d %H:%M:%S')
+        'created_at': task.created_at.isoformat(),
+        'updated_at': task.updated_at.isoformat()
     })

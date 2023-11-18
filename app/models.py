@@ -1,8 +1,8 @@
 from datetime import datetime
-from app import db
+from app import db, bcrypt
+from flask_login import UserMixin
 
-
-class User(db.Model):
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -10,9 +10,13 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    def __init__(self, username, email, password):
+        self.username = username
+        self.email = email
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+
     def __repr__(self):
         return '<User {}>'.format(self.username)
-
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -30,8 +34,8 @@ class Task(db.Model):
     def __repr__(self):
         return '<Task {}>'.format(self.title)
 
-
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     tasks = db.relationship('Task', backref='category', lazy=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
