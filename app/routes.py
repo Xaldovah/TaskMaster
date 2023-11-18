@@ -45,7 +45,7 @@ def update_user(user_id):
     if 'password' in data:
         user.password = data['password']
 
-user.updated_at = datetime.utcnow()
+    user.updated_at = datetime.utcnow()
 
     db.session.commit()
 
