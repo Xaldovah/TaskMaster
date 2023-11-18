@@ -76,7 +76,7 @@ def get_tasks():
     return jsonify({'tasks': task_list})
 
 
-@app.route('/tasks/', methods=['POST'])
+@app.route('/api/tasks/', methods=['POST'])
 def create_task():
     data = request.get_json()
 
@@ -90,6 +90,7 @@ def create_task():
             description=data.get('description'),
             due_date=data.get('due_date'),
             priority=data.get('priority'),
+status=data.get('status', 'Incomplete'),
             category_id=data.get('category_id'),
             user_id=data['user_id']
         )
