@@ -14,7 +14,7 @@ def get_users():
             'email': user.email,
             'password': user.password,
             'created_at': user.created_at.strftime('%Y-%m-%d %H:%M:%S') if user.created_at else None
-'created_at': user.created_at.strftime('%Y-%m-%d %H:%M:%S') if user.created_at else None
+            'updated_at': user.updated_at.strftime('%Y-%m-%d %H:%M:%S') if user.updated_at else None
         }
         user_list.append(user_data)
     return jsonify({'users': user_list})
