@@ -2,17 +2,21 @@ from flask import jsonify, request, redirect, url_for, abort
 from app import app, db
 from app.models import *
 
+
 @app.route('/api/users', methods=['GET'])
 def get_users():
     users = User.query.all()
     user_list = []
     for user in users:
-        user_list.append({
+        user_data = {
             'user_id': user.id,
             'username': user.username,
             'email': user.email,
-            'created_at': user.created_at.strftime('%Y-%m-%d %H:%M:%S')
-        })
+            'password': user.password,
+            'created_at': user.created_at.strftime('%Y-%m-%d %H:%M:%S') if user.created_at else None
+'created_at': user.created_at.strftime('%Y-%m-%d %H:%M:%S') if user.created_at else None
+        }
+        user_list.append(user_data)
     return jsonify({'users': user_list})
 
 
@@ -23,6 +27,32 @@ def create_user():
     db.session.add(new_user)
     db.session.commit()
     return jsonify({'user_id': new_user.id, 'username': new_user.username}), 201
+
+
+@app.route('/api/users/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    user = User.query.get(user_id)
+
+    if user is None:
+        return jsonify({'error': 'User not found'}), 404
+
+    data = request.get_json()
+    
+    if 'username' in data:
+        user.username = data['username']
+    if 'email' in data:
+        user.email = data['email']
+    if 'password' in data:
+        user.password = data['password']
+
+    db.session.commit()
+
+    return jsonify({
+        'user_id': user.id,
+        'username': user.username,
+        'email': user.email,
+        'updated_at': user.updated_at.strftime('%Y-%m-%d %H:%M:%S')
+    })
 
 
 @app.route('/api/tasks/', methods=['GET'])
