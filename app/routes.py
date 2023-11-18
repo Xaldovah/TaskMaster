@@ -13,7 +13,7 @@ def get_users():
             'username': user.username,
             'email': user.email,
             'password': user.password,
-            'created_at': user.created_at.strftime('%Y-%m-%d %H:%M:%S') if user.created_at else None
+            'created_at': user.created_at.strftime('%Y-%m-%d %H:%M:%S') if user.created_at else None,
             'updated_at': user.updated_at.strftime('%Y-%m-%d %H:%M:%S') if user.updated_at else None
         }
         user_list.append(user_data)
@@ -44,6 +44,8 @@ def update_user(user_id):
         user.email = data['email']
     if 'password' in data:
         user.password = data['password']
+
+user.updated_at = datetime.utcnow()
 
     db.session.commit()
 
