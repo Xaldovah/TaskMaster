@@ -1,5 +1,7 @@
 from flask import jsonify, request, redirect, url_for, abort
 from flask_bcrypt import Bcrypt
+from flask_restful import Resource
+from flask_jwt_extended import create_access_token, jwt_required
 from app import app, db
 from app.models import *
 
@@ -32,6 +34,23 @@ def create_user():
     db.session.add(new_user)
     db.session.commit()
     return jsonify({'user_id': new_user.id, 'username': new_user.username}), 201
+
+
+class LoginResource(Resource):
+    def post(self):
+        data = request.get_json()
+        username_email = data.get('username_email')
+        password = data.get('password')
+
+        user = verify_user_credentials(username_email, password)
+
+        if user:
+            access_token = create_access_token(identity=user.id)
+            return jsonify(access_token=access_token), 200
+        else:
+            return jsonify({'error': 'Invalid credentials'}), 401
+
+api.add_resource(LoginResource, '/api/login')
 
 
 @app.route('/api/users/<int:user_id>', methods=['PUT'])
