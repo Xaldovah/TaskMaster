@@ -71,7 +71,7 @@ def get_tasks():
             'status': task.status,
             'category_id': task.category_id,
             'user_id': task.user_id,
-            'created_at': task.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            'created_at': task.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'updated_at': task.updated_at.strftime('%Y-%m-%d %H:%M:%S')
         })
     return jsonify({'tasks': task_list})
