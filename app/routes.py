@@ -101,3 +101,40 @@ def create_task():
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/tasks/<int:task_id>', methods=['PUT'])
+def update_task(task_id):
+    task = Task.query.get(task_id)
+
+    if task is None:
+        return jsonify({'error': 'Task not found'}), 404
+
+    data = request.get_json()
+
+    if 'title' in data:
+        task.title = data['title']
+    if 'description' in data:
+        task.description = data['description']
+    if 'due_date' in data:
+        task.due_date = data['due_date']
+    if 'priority' in data:
+        task.priority = data['priority']
+    if 'status' in data:
+        task.status = data['status']
+
+    task.updated_at = datetime.utcnow()
+
+    db.session.commit()
+
+    return jsonify({
+        'task_id': task.id,
+        'title': task.title,
+        'description': task.description,
+        'due_date': task.due_date.strftime('%Y-%m-%d') if task.due_date else None,
+        'priority': task.priority,
+        'status': task.status,
+        'user_id': task.user_id,
+        'created_at': task.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+        'updated_at': task.updated_at.strftime('%Y-%m-%d %H:%M:%S')
+    })

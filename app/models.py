@@ -25,6 +25,7 @@ class Task(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __repr__(self):
         return '<Task {}>'.format(self.title)
