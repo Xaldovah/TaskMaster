@@ -47,15 +47,10 @@ def login():
     user = User.query.filter_by(username=username).first()
 
     if user and bcrypt.check_password_hash(user.password, password):
-        login_user(user)
         return jsonify({'message': 'Login successful'}), 200
     else:
         return jsonify({'error': 'Invalid credentials'}), 401
 
-@app.route('/protected', methods=['GET'])
-@login_required
-def protected():
-    return jsonify({'message': 'This is a protected route', 'username': current_user.username}), 200
 
 @app.route('/api/users/<int:user_id>', methods=['PUT'])
 def update_user(user_id):

@@ -1,4 +1,4 @@
-from app import db
+from app import *
 from flask_login import UserMixin
 from datetime import datetime
 
@@ -19,6 +19,9 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password, password)
 
 
 class Task(db.Model):
