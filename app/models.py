@@ -10,6 +10,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(60), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+    logged_out_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __init__(self, username, email, password):
         from app import bcrypt

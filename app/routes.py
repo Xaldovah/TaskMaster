@@ -1,6 +1,6 @@
 from flask import jsonify, request, redirect, url_for, abort
 from flask_restful import Api, Resource
-from flask_jwt_extended import create_access_token, jwt_required
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, unset_jwt_cookies, JWTManager, get_jwt_identity
 from flask_login import login_user, login_required, current_user
 from app import *
 from app.models import User, Task
@@ -8,6 +8,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 
 api = Api(app)
+jwt = JWTManager(app)
+jwt_blocklist = set()
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -38,19 +40,24 @@ def create_user():
     db.session.commit()
     return jsonify({'user_id': new_user.id, 'username': new_user.username}), 201
 
+
 @app.route('/api/login', methods=['POST'])
 def login():
-    data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
+    # Prompt the user for username
+    username = input("Enter username: ")
 
+    # Prompt the user for password
+    password = input("Enter password: ")
+
+    # Check if the entered credentials are valid
     user = User.query.filter_by(username=username).first()
-
     if user and bcrypt.check_password_hash(user.password, password):
-        return jsonify({'message': 'Login successful'}), 200
+        user.logged_out_at = None  # 
+        db.session.commit()
+        access_token = create_access_token(identity=user.id)
+        return jsonify({'message': 'Login successful', 'access_token': access_token}), 200
     else:
         return jsonify({'error': 'Invalid credentials'}), 401
-
 
 @app.route('/api/users/<int:user_id>', methods=['PUT'])
 def update_user(user_id):
@@ -78,6 +85,15 @@ def update_user(user_id):
         'email': user.email,
         'updated_at': user.updated_at.isoformat()
     })
+
+
+@app.route('/api/logout', methods=['POST'])
+@jwt_required()
+def logout():
+    current_user.logged_out_at = datetime.utcnow()
+    db.session.commit()
+    return jsonify({'message': 'Logout successful'}), 200
+
 
 @app.route('/api/tasks', methods=['GET'])
 def get_tasks():
