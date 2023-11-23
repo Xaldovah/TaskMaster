@@ -79,7 +79,7 @@ def update_user(user_id):
         'updated_at': user.updated_at.isoformat()
     })
 
-@app.route('/api/tasks/', methods=['GET'])
+@app.route('/api/tasks', methods=['GET'])
 def get_tasks():
     tasks = Task.query.all()
     task_list = []
@@ -98,7 +98,7 @@ def get_tasks():
         })
     return jsonify({'tasks': task_list})
 
-@app.route('/api/tasks/', methods=['POST'])
+@app.route('/api/tasks', methods=['POST'])
 def create_task():
     data = request.get_json()
 
