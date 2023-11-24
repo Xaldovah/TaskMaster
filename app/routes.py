@@ -5,6 +5,7 @@ from flask_login import login_user, login_required, current_user
 from app import *
 from app.models import User, Task
 from app.notifications import *
+from app.preferences import *
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 
@@ -52,16 +53,22 @@ def create_user():
 
     return jsonify({'user_id': new_user.id, 'username': new_user.username}), 201
 
-
 @app.route('/api/login', methods=['POST'])
 def login():
-    username = input("Enter username: ")
-    password = input("Enter password: ")
+    data = request.get_json()
+
+    if not data or 'username' not in data or 'password' not in data:
+        return jsonify({'error': 'Invalid request'}), 400
+
+    username = data['username']
+    password = data['password']
 
     user = User.query.filter_by(username=username).first()
+
     if user and bcrypt.check_password_hash(user.password, password):
-        user.logged_out_at = None  # 
+        user.logged_out_at = None
         db.session.commit()
+
         access_token = create_access_token(identity=user.id)
         return jsonify({'message': 'Login successful', 'access_token': access_token}), 200
     else:
