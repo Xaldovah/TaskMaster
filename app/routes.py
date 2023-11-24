@@ -7,7 +7,7 @@ from app.models import User, Task
 from app.notifications import *
 from app.preferences import *
 from sqlalchemy.exc import SQLAlchemyError
-from datetime import datetime
+from datetime import datetime, timedelta
 
 api = Api(app)
 jwt = JWTManager(app)
@@ -108,7 +108,6 @@ def update_user(user_id):
     })
 
 @app.route('/api/logout', methods=['POST'])
-@jwt_required()
 def logout():
     current_user.logged_out_at = datetime.utcnow()
     db.session.commit()
@@ -116,6 +115,7 @@ def logout():
 
 
 @app.route('/api/users/<int:user_id>', methods=['DELETE'])
+@jwt_required()
 def delete_user(user_id):
     user = User.query.get(user_id)
 
@@ -129,23 +129,32 @@ def delete_user(user_id):
 
 
 @app.route('/api/tasks', methods=['GET'])
+@jwt_required()
 def get_tasks():
-    tasks = Task.query.all()
-    task_list = []
-    for task in tasks:
-        task_list.append({
-            'id': task.id,
-            'title': task.title,
-            'description': task.description,
-            'due_date': task.due_date.strftime('%Y-%m-%d') if task.due_date else None,
-            'priority': task.priority,
-            'status': task.status,
-            'category_id': task.category_id,
-            'user_id': task.user_id,
-            'created_at': task.created_at.isoformat(),
-            'updated_at': task.updated_at.isoformat() if task.updated_at else None
-        })
-    return jsonify({'tasks': task_list})
+    try:
+        user_id = get_jwt_identity()
+
+        tasks = Task.query.filter_by(user_id=user_id).all()
+
+        tasks_list = []
+        for task in tasks:
+            tasks_list.append({
+                'id': task.id,
+                'title': task.title,
+                'description': task.description,
+                'due_date': task.due_date,
+                'priority': task.priority,
+                'status': task.status,
+                'user_id': task.user_id,
+                'created_at': task.created_at,
+                'updated_at': task.updated_at,
+                'category_id': task.category_id
+            })
+
+        return jsonify({'tasks': tasks_list})
+
+    except SQLAlchemyError as e:
+        return jsonify({'error': str(e)}), 500
 
 
 @app.route('/api/tasks', methods=['POST'])
