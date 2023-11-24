@@ -13,6 +13,9 @@ class User(db.Model, UserMixin):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow)
     logged_out_at = db.Column(db.DateTime, default=datetime.utcnow)
     receive_notifications = db.Column(db.Boolean, default=True)
+    default_task_view = db.Column(db.String(20), default='all')  # Example: 'all', 'completed', 'incomplete'
+    enable_notifications = db.Column(db.Boolean, default=True)
+    theme_preference = db.Column(db.String(20), default='dark') # Example: 'light', 'dark'
     tasks = relationship('Task', back_populates='user')
 
     def __init__(self, username, email, password):

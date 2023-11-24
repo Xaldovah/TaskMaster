@@ -32,25 +32,32 @@ def get_users():
         user_list.append(user_data)
     return jsonify({'users': user_list})
 
+
 @app.route('/api/users', methods=['POST'])
 def create_user():
     data = request.get_json()
     hashed_password = bcrypt.generate_password_hash(data.get('password')).decode('utf-8')
-    new_user = User(username=data['username'], email=data.get('email'), password=hashed_password)
+
+    new_user = User(
+        username=data['username'],
+        email=data.get('email'),
+        password=hashed_password,
+        default_task_view=data.get('default_task_view', 'all'),
+        enable_notifications=data.get('enable_notifications', True),
+        theme_preference=data.get('theme_preference', 'light')
+    )
+
     db.session.add(new_user)
     db.session.commit()
+
     return jsonify({'user_id': new_user.id, 'username': new_user.username}), 201
 
 
 @app.route('/api/login', methods=['POST'])
 def login():
-    # Prompt the user for username
     username = input("Enter username: ")
-
-    # Prompt the user for password
     password = input("Enter password: ")
 
-    # Check if the entered credentials are valid
     user = User.query.filter_by(username=username).first()
     if user and bcrypt.check_password_hash(user.password, password):
         user.logged_out_at = None  # 
@@ -61,7 +68,13 @@ def login():
         return jsonify({'error': 'Invalid credentials'}), 401
 
 @app.route('/api/users/<int:user_id>', methods=['PUT'])
+@jwt_required()
 def update_user(user_id):
+    current_user_id = get_jwt_identity()
+
+    if user_id != current_user_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+
     user = User.query.get(user_id)
 
     if user is None:
@@ -69,24 +82,23 @@ def update_user(user_id):
 
     data = request.get_json()
 
-    if 'username' in data:
-        user.username = data['username']
-    if 'email' in data:
-        user.email = data['email']
-    if 'password' in data:
-        user.password = bcrypt.generate_password_hash(data['password']).decode('utf-8')
-
-    user.updated_at = datetime.utcnow()
+    # Update preferences if provided in the request
+    if 'default_task_view' in data:
+        user.default_task_view = data['default_task_view']
+    if 'enable_notifications' in data:
+        user.enable_notifications = data['enable_notifications']
+    if 'theme_preference' in data:
+        user.theme_preference = data['theme_preference']
 
     db.session.commit()
 
     return jsonify({
         'user_id': user.id,
         'username': user.username,
-        'email': user.email,
-        'updated_at': user.updated_at.isoformat()
+        'default_task_view': user.default_task_view,
+        'enable_notifications': user.enable_notifications,
+        'theme_preference': user.theme_preference
     })
-
 
 @app.route('/api/logout', methods=['POST'])
 @jwt_required()

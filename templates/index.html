@@ -34,6 +34,26 @@
                 <option value="high">High</option>
             </select>
         </div>
+        <div class="mb-3">
+            <label for="defaultTaskView" class="form-label">Default Task View:</label>
+            <select class="form-select" id="defaultTaskView" name="defaultTaskView">
+                <option value="all">All</option>
+                <option value="completed">Completed</option>
+                <option value="incomplete">Incomplete</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="enableNotifications" class="form-label">Enable Notifications:</label>
+            <input type="checkbox" id="enableNotifications" name="enableNotifications" checked>
+        </div>
+        <div class="mb-3">
+            <label for="themePreference" class="form-label">Theme Preference:</label>
+            <select class="form-select" id="themePreference" name="themePreference">
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+            </select>
+        </div>
+
         <button type="submit" class="btn btn-primary">Add Task</button>
     </form>
 
