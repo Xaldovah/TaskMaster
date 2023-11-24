@@ -152,7 +152,7 @@ def create_task():
 
         current_app.logger.info(f'New task created: {new_task.title}')
         create_notification(user=new_task.user, message=f'New task created: {new_task.title}')
-
+        socketio.emit('new_task', {'message': f'New task created: {new_task.title}'})
 
         return redirect(url_for('get_tasks'))
 
