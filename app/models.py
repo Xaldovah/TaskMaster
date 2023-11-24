@@ -1,5 +1,6 @@
 from app import *
 from flask_login import UserMixin
+from sqlalchemy.orm import relationship
 from datetime import datetime
 
 
@@ -11,6 +12,8 @@ class User(db.Model, UserMixin):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow)
     logged_out_at = db.Column(db.DateTime, default=datetime.utcnow)
+    receive_notifications = db.Column(db.Boolean, default=True)
+    tasks = relationship('Task', back_populates='user')
 
     def __init__(self, username, email, password):
         from app import bcrypt
@@ -37,12 +40,24 @@ class Task(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    user = relationship('User', back_populates='tasks')
 
     def __repr__(self):
         return '<Task {}>'.format(self.title)
+
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     tasks = db.relationship('Task', backref='category', lazy=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    message = db.Column(db.String(255), nullable=False)
+    is_read = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref=db.backref('notifications', lazy=True))

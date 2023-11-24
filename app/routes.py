@@ -1,9 +1,10 @@
-from flask import jsonify, request, redirect, url_for, abort
+from flask import jsonify, request, redirect, url_for, abort, current_app
 from flask_restful import Api, Resource
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, unset_jwt_cookies, JWTManager, get_jwt_identity
 from flask_login import login_user, login_required, current_user
 from app import *
 from app.models import User, Task
+from app.notifications import *
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 
@@ -127,6 +128,7 @@ def get_tasks():
         })
     return jsonify({'tasks': task_list})
 
+
 @app.route('/api/tasks', methods=['POST'])
 def create_task():
     data = request.get_json()
@@ -147,11 +149,17 @@ def create_task():
         )
         db.session.add(new_task)
         db.session.commit()
+
+        current_app.logger.info(f'New task created: {new_task.title}')
+        create_notification(user=new_task.user, message=f'New task created: {new_task.title}')
+
+
         return redirect(url_for('get_tasks'))
 
     except SQLAlchemyError as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
+
 
 @app.route('/api/tasks/<int:task_id>', methods=['PUT'])
 def update_task(task_id):
@@ -202,3 +210,44 @@ def delete_task(task_id):
 
     return jsonify({'message': 'Task deleted successfully'}), 200
 
+
+@app.route('/api/notifications', methods=['GET'])
+@jwt_required()
+def get_notifications():
+    current_user_id = get_jwt_identity()
+    notifications = Notification.query.filter_by(user_id=current_user_id).all()
+
+    notification_list = []
+    for notification in notifications:
+        notification_data = {
+            'id': notification.id,
+            'message': notification.message,
+            'created_at': notification.created_at.isoformat()
+        }
+        notification_list.append(notification_data)
+
+    return jsonify({'notifications': notification_list})
+
+
+@app.route('/api/notifications', methods=['POST'])
+@jwt_required()
+def create_notification(user, message):
+    data = request.get_json()
+    current_user_id = get_jwt_identity()
+
+    if 'message' not in data:
+        return jsonify({'error': 'Missing message field in request payload'}), 400
+
+    user = User.query.get(current_user_id)
+
+    new_notification = Notification(
+        user=user,
+        message=data['message']
+    )
+
+    db.session.add(new_notification)
+    db.session.commit()
+
+    current_app.logger.info(f'New notification created: {new_notification.message}')
+
+    return jsonify({'message': 'Notification created successfully'}), 201
