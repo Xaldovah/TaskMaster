@@ -23,4 +23,4 @@ jwt = JWTManager(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-from . import routes, preferences
+from . import auth, extensions, notis, preferences, tasks, users
