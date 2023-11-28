@@ -1,9 +1,10 @@
 from flask import jsonify, request, redirect, url_for, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app import app, db
-from app.models import Task
+from app import app, db, celery
+from app.models import User, Task, Notification, Category
+from . import socketio
 from sqlalchemy.exc import SQLAlchemyError
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 @app.route('/api/tasks', methods=['GET'])
@@ -34,8 +35,8 @@ def get_tasks():
     except SQLAlchemyError as e:
         return jsonify({'error': str(e)}), 500
 
-
 @app.route('/api/tasks', methods=['POST'])
+@jwt_required()
 def create_task():
     data = request.get_json()
 
@@ -49,7 +50,7 @@ def create_task():
             description=data.get('description'),
             due_date=data.get('due_date'),
             priority=data.get('priority'),
-            status=data.get('status', 'Incomplete'),
+            status=data.get('status', 'incomplete'),
             category_id=data.get('category_id'),
             user_id=data['user_id']
         )
@@ -57,7 +58,12 @@ def create_task():
         db.session.commit()
 
         current_app.logger.info(f'New task created: {new_task.title}')
-        create_notification(user=new_task.user, message=f'New task created: {new_task.title}')
+
+        days_until_due = (new_task.due_date - datetime.utcnow()).days
+        notification_message = f'Task "{new_task.title}" is due in {days_until_due} days'
+        notification_date = new_task.due_date - timedelta(minutes=3)
+        send_notification.apply_async((new_task.user_id, notification_message), eta=notification_date)
+
         socketio.emit('new_task', {'message': f'New task created: {new_task.title}'})
 
         return redirect(url_for('get_tasks'))
@@ -68,6 +74,7 @@ def create_task():
 
 
 @app.route('/api/tasks/<int:task_id>', methods=['PUT'])
+@jwt_required()
 def update_task(task_id):
     task = Task.query.get(task_id)
 
@@ -105,6 +112,7 @@ def update_task(task_id):
 
 
 @app.route('/api/tasks/<int:task_id>', methods=['DELETE'])
+@jwt_required()
 def delete_task(task_id):
     task = Task.query.get(task_id)
 
@@ -115,3 +123,31 @@ def delete_task(task_id):
     db.session.commit()
 
     return jsonify({'message': 'Task deleted successfully'}), 200
+
+
+@celery.task
+def send_notification(user, message):
+    with app.app_context():
+        new_notis = Notification(
+            user=user,
+            message=message
+        )
+
+        db.session.add(new_notification)
+        db.session.commit()
+
+        current_app.logger.info(f'New notification created: {new_notis.message}')
+
+
+@app.route('/api/tasks/<int:task_id>/disable-notifications', methods=['POST'])
+@jwt_required()
+def disable_notifications(task_id):
+    task = Task.query.get(task_id)
+
+    if task is None:
+        return jsonify({'error': 'Task not found'}), 404
+
+    task.notifications_enabled = False
+    db.session.commit()
+
+    return jsonify({'message': 'Notifications disabled for the task'}), 200
