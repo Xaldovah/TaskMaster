@@ -133,7 +133,7 @@ def send_notification(user, message):
             message=message
         )
 
-        db.session.add(new_notification)
+        db.session.add(new_notis)
         db.session.commit()
 
         current_app.logger.info(f'New notification created: {new_notis.message}')
