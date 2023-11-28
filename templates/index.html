@@ -1,35 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TaskMaster</title>
-  <link rel="stylesheet" href="style.css">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>TaskMaster - Your Task Management System</title>
+	<link rel="stylesheet" href="static/css/style.css">
+	<!-- <link rel="icon" href="favicon.ico" type="image/x-icon"> Uncomment if favicon.ico exists -->
+	<meta name="description" content="TaskMaster - Your Task Management System">
 </head>
 <body>
-  <div class="container">
-    <header class="header">
-      <div class="logo">
-        <h1>TaskMaster</h1>
-      </div>
-      <nav class="nav">
-        <ul>
-          <li><a href="/tasks">Tasks</a></li>
-          <li><a href="/notifications">Notifications</a></li>
-          <li><a href="/preferences">Preferences</a></li>
-          <li><a href="/logout">Logout</a></li>
-        </ul>
-      </nav>
-    </header>
-
-    <main class="main">
-      </main>
-
-    <footer class="footer">
-      <p>&copy; 2023 TaskMaster</p>
-    </footer>
-  </div>
-
-  <script src="script.js"></script>
+	<div class="container">
+		<header>
+			<div class="logo">
+				<img src="static/images/logo.png" alt="TaskMaster Logo">
+			</div>
+			<nav>
+				<ul>
+					<li><a href="/api/tasks">Tasks</a></li>
+					<li><a href="/api/notifications">Notifications</a></li>
+					<li><a href="/api/preferences">Preferences</a></li>
+					<li><a href="/api/logout">Logout</a></li>
+				</ul>
+			</nav>
+		</header>
+		<main>
+			<section id="tasks-section">
+				<h2>Your Tasks</h2>
+				<div id="task-list" class="task-list"></div>
+			</section>
+			<section id="notifications-section">
+				<h2>Notifications</h2>
+				<div id="notification-list" class="notification-list"></div>
+			</section>
+			<section id="preferences-section">
+				<h2>Preferences</h2>
+				<!-- Add preferences content here -->
+			</section>
+		</main>
+		<footer>
+			<p>&copy; 2023 TaskMaster</p>
+		</footer>
+	</div>
+	<!-- Replace 'favicon.ico' with your actual favicon -->
+	<link rel="icon" href="static/images/favicon.ico" type="image/x-icon">
+	<script src="static/js/main.js"></script>
+	<script src="static/js/main.js"></script>
 </body>
 </html>
