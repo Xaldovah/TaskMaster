@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -18,6 +19,7 @@ app.config['JWT_SECRET_KEY'] = secret_key
 app.config['CELERY_BROKER_URL'] = 'pyamqp://guest:guest@localhost:5672//'
 app.config['result_backend'] = 'rpc://'
 
+CORS(app)
 socketio = SocketIO(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
