@@ -1,8 +1,9 @@
 from flask import jsonify, request
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from flask_login import login_user
+from flask_login import login_user, current_user
 from app import app, bcrypt, db
 from app.models import User
+from datetime import datetime
 
 
 @app.route('/api/login', methods=['POST'])
