@@ -1,0 +1,75 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+body {
+    background-color: rgb(35, 16, 70);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    margin: 20px auto;
+}
+
+.heading {
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+    margin: 100px auto;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(https://www.impactplus.com/hs-fs/hubfs/blog-image-uploads/best-about-us-pages.jpg?length=1200&name=best-about-us-pages.jpg);
+    background-position: center;
+    background-size: cover;
+    border-radius: 10px;
+    text-align: center;
+    padding: 100px 0;
+}
+
+.heading {
+    font-size: 50px;
+    margin-bottom: 25px;
+    color: #000;
+    position: relative;
+}
+
+.heading p {
+    font-size: 20px;
+    color: #f2f2f2;
+    margin-bottom: 35px;
+}
+
+.read-more {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: #fff;
+    font-size: 19px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: 0.5s ease;
+}
+
+.read-more:hover {
+    background-color: #3e8e41;
+}
+
+@media screen and (max-width: 768px) {
+    .heading {
+        padding: 0 20px;
+    }
+
+    .heading h1 {
+        font-size: 40px;
+    }
+
+    .heading p {
+        font-size: 18px;
+        margin-bottom: 0px;
+    }
+    .read-more {
+        font-size: 16px;
+    }
+}
