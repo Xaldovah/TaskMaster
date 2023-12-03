@@ -1,7 +1,11 @@
+"""
+Module Description: This module contains API endpoints related to tasks.
+"""
+
 from flask import jsonify, request, redirect, url_for, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import app, db, celery
-from app.models import User, Task, Notification, Category
+from app.models import User, Task, Notification
 from . import socketio
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime, timedelta
@@ -10,6 +14,11 @@ from datetime import datetime, timedelta
 @app.route('/api/tasks', methods=['GET'])
 @jwt_required()
 def get_tasks():
+    """
+    Retrieve tasks for the current user.
+
+    :return: JSON response with the list of tasks.
+    """
     try:
         user_id = get_jwt_identity()
 
@@ -35,9 +44,15 @@ def get_tasks():
     except SQLAlchemyError as e:
         return jsonify({'error': str(e)}), 500
 
+
 @app.route('/api/tasks', methods=['POST'])
 @jwt_required()
 def create_task():
+    """
+    Create a new task for the current user.
+
+    :return: Redirect to the route for retrieving tasks.
+    """
     data = request.get_json()
 
     required_fields = ['title', 'user_id']
@@ -76,6 +91,12 @@ def create_task():
 @app.route('/api/tasks/<int:task_id>', methods=['PUT'])
 @jwt_required()
 def update_task(task_id):
+    """
+    Update an existing task.
+
+    :param task_id: ID of the task to be updated.
+    :return: JSON response with the updated task details.
+    """
     task = Task.query.get(task_id)
 
     if task is None:
@@ -114,6 +135,12 @@ def update_task(task_id):
 @app.route('/api/tasks/<int:task_id>', methods=['DELETE'])
 @jwt_required()
 def delete_task(task_id):
+    """
+    Delete a task.
+
+    :param task_id: ID of the task to be deleted.
+    :return: JSON response indicating the success of the operation.
+    """
     task = Task.query.get(task_id)
 
     if task is None:
@@ -127,6 +154,12 @@ def delete_task(task_id):
 
 @celery.task
 def send_notification(user, message):
+    """
+    Send a notification to a user asynchronously.
+
+    :param user: ID of the user to receive the notification.
+    :param message: Notification message.
+    """
     with app.app_context():
         new_notis = Notification(
             user=user,
@@ -142,6 +175,12 @@ def send_notification(user, message):
 @app.route('/api/tasks/<int:task_id>/disable-notifications', methods=['POST'])
 @jwt_required()
 def disable_notifications(task_id):
+    """
+    Disable notifications for a specific task.
+
+    :param task_id: ID of the task to disable notifications.
+    :return: JSON response indicating the success of the operation.
+    """
     task = Task.query.get(task_id)
 
     if task is None:

@@ -1,13 +1,22 @@
+"""
+Module Description: This module contains API endpoints related to notifications.
+"""
+
 from flask import jsonify, request, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import app, db
 from app.models import Notification
-from app.users import *
+from app.users import User
 
 
 @app.route('/api/notifications', methods=['GET'])
 @jwt_required()
 def get_notifications():
+    """
+    Retrieve notifications for the current user.
+
+    :return: JSON response with the list of notifications.
+    """
     current_user_id = get_jwt_identity()
     notifications = Notification.query.filter_by(user_id=current_user_id).all()
 
@@ -26,6 +35,11 @@ def get_notifications():
 @app.route('/api/notifications', methods=['POST'])
 @jwt_required()
 def create_notification():
+    """
+    Create a new notification for the current user.
+
+    :return: JSON response indicating the success of the operation.
+    """
     data = request.get_json()
     current_user_id = get_jwt_identity()
 

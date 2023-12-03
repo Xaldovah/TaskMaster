@@ -1,3 +1,8 @@
+"""
+Module Description: This module contains API endpoints related to
+user management.
+"""
+
 from flask import jsonify, request, redirect, url_for, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import app, bcrypt, db
@@ -9,6 +14,11 @@ from datetime import datetime
 
 @app.route('/api/users', methods=['GET'])
 def get_users():
+    """
+    Retrieve a list of all users.
+
+    :return: JSON response with the list of users.
+    """
     users = User.query.all()
     user_list = []
     for user in users:
@@ -24,8 +34,13 @@ def get_users():
     return jsonify({'users': user_list})
 
 
-@app.route('/api/users', methods=['POST'])
+@app.route('/api/register', methods=['POST'])
 def create_user():
+    """
+    Create a new user.
+
+    :return: JSON response with the user ID and username.
+    """
     data = request.get_json()
     hashed_password = bcrypt.generate_password_hash(data.get('password')).decode('utf-8')
 
@@ -47,6 +62,12 @@ def create_user():
 @app.route('/api/users/<int:user_id>', methods=['PUT'])
 @jwt_required()
 def update_user(user_id):
+    """
+    Update user preferences.
+
+    :param user_id: ID of the user to be updated.
+    :return: JSON response with the updated user preferences.
+    """
     current_user_id = get_jwt_identity()
 
     if user_id != current_user_id:
@@ -81,6 +102,12 @@ def update_user(user_id):
 @app.route('/api/users/<int:user_id>', methods=['DELETE'])
 @jwt_required()
 def delete_user(user_id):
+    """
+    Delete a user.
+
+    :param user_id: ID of the user to be deleted.
+    :return: JSON response indicating the success of the operation.
+    """
     user = User.query.get(user_id)
 
     if user is None:
