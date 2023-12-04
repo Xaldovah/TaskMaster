@@ -44,7 +44,7 @@ flask run
 - Flask-RESTful, Flask-JWT-Extended, Flask-Login configurations.
 ##### 4. Initialization Module:
 ###### Configurations:
--Flask, Flask-SocketIO, Flask-SQLAlchemy, Flask-Migrate, Flask-Bcrypt, Flask-JWT-Extended, Flask-Login.
+- Flask, Flask-SocketIO, Flask-SQLAlchemy, Flask-Migrate, Flask-Bcrypt, Flask-JWT-Extended, Flask-Login.
 ##### 5. Models Module:
 ###### SQLAlchemy Models:
 1. User: Represents application users.
