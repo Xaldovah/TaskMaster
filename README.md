@@ -11,14 +11,13 @@ Task Master is a task management application with a Flask backend that provides 
 ##### Clone the repository:
 ```git clone https://github.com/your-username/task-master.git```
 
-####Install dependencies:
-
+#### Install dependencies:
 ```
 pip install -r requirements.txt
 ```
-Set up your MySQL database and update the SQLALCHEMY_DATABASE_URI in app/__init__.py with your database connection details.
+- Set up your MySQL database and update the SQLALCHEMY_DATABASE_URI in app/__init__.py with your database connection details.
 
-(Optional) Set up RabbitMQ for Celery and update the CELERY_BROKER_URL in app/__init__.py if using Celery.
+- (Optional) Set up RabbitMQ for Celery and update the CELERY_BROKER_URL in app/__init__.py if using Celery.
 
 ##### Run migrations to create the database tables:
 
@@ -39,14 +38,13 @@ flask run
 2. POST /api/logout: Log out the current user.
 ##### 2. Celery Module:
 ###### Function:
-make_celery(app): Create a Celery instance for background task processing.
+- make_celery(app): Create a Celery instance for background task processing.
 ##### 3. Extensions Module:
 ###### Configurations:
-Flask-RESTful, Flask-JWT-Extended, Flask-Login configurations.
+- Flask-RESTful, Flask-JWT-Extended, Flask-Login configurations.
 ##### 4. Initialization Module:
 ###### Configurations:
-Flask, Flask-SocketIO, Flask-SQLAlchemy, Flask-Migrate, Flask-Bcrypt, Flask-JWT-Extended, Flask-Login.
-
+-Flask, Flask-SocketIO, Flask-SQLAlchemy, Flask-Migrate, Flask-Bcrypt, Flask-JWT-Extended, Flask-Login.
 ##### 5. Models Module:
 ###### SQLAlchemy Models:
 1. User: Represents application users.
@@ -95,11 +93,11 @@ Flask, Flask-SocketIO, Flask-SQLAlchemy, Flask-Migrate, Flask-Bcrypt, Flask-JWT-
 1. Retrieve user preferences with the /api/user/preferences endpoint.
 2. Update user preferences with the /api/users/{user_id} endpoint.
 ##### Background Task Processing:
-The application uses Celery for background task processing.
-Background tasks are triggered in the create_task endpoint to send notifications asynchronously.
+- The application uses Celery for background task processing.
+- Background tasks are triggered in the create_task endpoint to send notifications asynchronously.
 
 ### Frontend
-The frontend for Task Master is currently under development. It will provide a user-friendly interface to interact with the task management application.
+- The frontend for Task Master is currently under development. It will provide a user-friendly interface to interact with the task management application.
 
 #### Technologies Used:
 1. HTML
@@ -107,7 +105,7 @@ The frontend for Task Master is currently under development. It will provide a u
 3. JavaScript
 
 ##### Development Setup
-Navigate to the frontend directory.
+- Navigate to the frontend directory.
 ###### Install frontend dependencies:
 ```
 npm install
