@@ -1,54 +1,83 @@
 """
-Module Description: This module contains API endpoints for user authentication.
+app.auth
+
+This module provides authentication routes for user registration, login, and logout.
 """
 
-from datetime import datetime
 from flask import jsonify, request
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from flask_login import login_user, current_user
-from app import app, bcrypt, db
+from flask_login import logout_user, login_required
+from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required
+from flask_login import current_user
+from app import app, db, bcrypt
 from app.models import User
+from datetime import datetime
+
+
+@app.route('/api/register', methods=['POST'])
+def create_user():
+    """
+    Register a new user.
+
+    Returns:
+        jsonify: JSON response with user information.
+    """
+    try:
+        data = request.get_json()
+        password = data.get('password')
+
+        # Hash password before saving
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+        new_user = User(
+            username=data['username'],
+            email=data.get('email'),
+            password=hashed_password
+        )
+        db.session.add(new_user)
+        db.session.commit()
+
+        return jsonify({'user_id': new_user.id, 'username': new_user.username}), 201
+
+    except Exception as e:
+        app.logger.error(f'Error during registration: {e}')
+        return jsonify({'error': 'Internal server error'}), 500
 
 
 @app.route('/api/login', methods=['POST'])
 def login():
     """
-    Endpoint for user login.
+    User login.
 
-    Expects JSON payload with 'username' and 'password'.
-    Returns access token on successful login.
-
-    :return: JSON response with login status and access token.
+    Returns:
+        jsonify: JSON response with login information.
     """
-    data = request.get_json()
+    try:
+        data = request.get_json()
+        username = data.get('username')
+        password = data.get('password')
 
-    if not data or 'username' not in data or 'password' not in data:
-        return jsonify({'error': 'Invalid request'}), 400
+        user = User.query.filter_by(username=username).first()
 
-    username = data['username']
-    password = data['password']
+        if user and bcrypt.check_password_hash(user.password, password):
+            access_token = create_access_token(identity=user.id)
 
-    user = User.query.filter_by(username=username).first()
+            return jsonify({'message': 'Login successful', 'access_token': access_token}), 200
+        else:
+            return jsonify({'error': 'Invalid credentials'}), 401
 
-    if user and bcrypt.check_password_hash(user.password, password):
-        user.logged_out_at = None
-        db.session.commit()
-
-        access_token = create_access_token(identity=user.id)
-        return jsonify({'message': 'Login successful', 'access_token': access_token}), 200
-    else:
-        return jsonify({'error': 'Invalid credentials'}), 401
+    except Exception as e:
+        app.logger.error(f'Error during login: {e}')
+        return jsonify({'error': 'Internal server error'}), 500
 
 
 @app.route('/api/logout', methods=['POST'])
-@jwt_required()  # Requires a valid JWT to access this endpoint
+@jwt_required()
 def logout():
     """
-    Endpoint for user logout.
+    User logout.
 
-    Logs out the current user by updating the 'logged_out_at' field.
-
-    :return: JSON response with logout status.
+    Returns:
+        jsonify: JSON response with logout information.
     """
     current_user.logged_out_at = datetime.utcnow()
     db.session.commit()

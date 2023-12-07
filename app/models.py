@@ -2,8 +2,11 @@
 Module Description: This module contains SQLAlchemy models for the application.
 """
 
-from app import db, bcrypt
+from app import db
 from flask_login import UserMixin
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField
+from wtforms.validators import DataRequired, Email, EqualTo
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
@@ -20,12 +23,13 @@ class User(db.Model, UserMixin):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow)
     logged_out_at = db.Column(db.DateTime, default=datetime.utcnow)
     receive_notifications = db.Column(db.Boolean, default=True)
-    default_task_view = db.Column(db.String(20), default='all')  # Example: 'all', 'completed', 'incomplete'
-    enable_notifications = db.Column(db.Boolean, default=True)
-    theme_preference = db.Column(db.String(20), default='dark')  # Example: 'light', 'dark'
+    # default_task_view = db.Column(db.String(20), default='all')  # Example: 'all', 'completed', 'incomplete'
+    # enable_notifications = db.Column(db.Boolean, default=True)
+    # theme_preference = db.Column(db.String(20), default='dark')  # Example: 'light', 'dark'
+    # is_confirmed = db.Column(db.Boolean, default=False)
     tasks = relationship('Task', back_populates='user')
 
-    def __init__(self, username, email, password, default_task_view, enable_notifications, theme_preference):
+    def __init__(self, username, email, password):
         """
         Initialize a new User.
 
@@ -38,10 +42,11 @@ class User(db.Model, UserMixin):
         """
         self.username = username
         self.email = email
-        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
-        self.default_task_view = default_task_view
-        self.enable_notifications = enable_notifications
-        self.theme_preference = theme_preference
+        self.password = password
+        # self.default_task_view = default_task_view
+        # self.enable_notifications = enable_notifications
+        # self.theme_preference = theme_preference
+        # self.is_confirmed = False
 
     def __repr__(self):
         """
@@ -50,15 +55,6 @@ class User(db.Model, UserMixin):
         :return: String representation.
         """
         return f"User('{self.username}', '{self.email}')"
-
-    def check_password(self, password):
-        """
-        Check if the provided password matches the stored hashed password.
-
-        :param password: Password to check.
-        :return: True if the password is correct, False otherwise.
-        """
-        return bcrypt.check_password_hash(self.password, password)
 
 
 class Task(db.Model):
@@ -85,6 +81,19 @@ class Task(db.Model):
         :return: String representation.
         """
         return '<Task {}>'.format(self.title)
+
+class RegistrationForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password', message='Passwords must match')])
+    submit = SubmitField('Register')
+
+
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Login')
 
 
 class Category(db.Model):

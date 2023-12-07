@@ -1,14 +1,24 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '/api'
+  baseURL: '/api',
+  withCredentials: true, // Ensure credentials (cookies) are sent with requests
 });
+
+function navigateTo(page) {
+    window.location.href = page;
+}
 
 function login(username, password) {
   api.post('/api/login', { username, password })
     .then(response => {
-      localStorage.setItem('token', response.data.access_token);
-      window.location.href = '/api/tasks';
+      // Check if the login was successful based on the HTTP status code
+      if (response.status === 200) {
+        // Redirect to the desired location (e.g., '/api/tasks')
+        window.location.href = '/api/tasks';
+      } else {
+        console.error('Login failed:', response.data.error);
+      }
     })
     .catch(error => {
       console.error('Login failed:', error);
@@ -17,9 +27,14 @@ function login(username, password) {
 
 function logout() {
   api.post('/api/logout')
-    .then(() => {
-      localStorage.removeItem('token');
-      window.location.href = '/';
+    .then(response => {
+      // Check if the logout was successful based on the HTTP status code
+      if (response.status === 200) {
+        // Redirect to the desired location (e.g., '/')
+        window.location.href = '/';
+      } else {
+        console.error('Logout failed:', response.data.error);
+      }
     })
     .catch(error => {
       console.error('Logout failed:', error);

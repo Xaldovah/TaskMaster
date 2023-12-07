@@ -11,6 +11,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap" rel="stylesheet">
     <script src="static/js/main.js"></script>
     <script src="static/js/script.js"></script>
+    <script>
+        window.onload = function () {
+            getTasks();
+        };
+    </script>
 </head>
 <body>
     <section class="header">
@@ -18,13 +23,13 @@
             <a href="index.html"><img src="logo.png"></a>
             <div class="nav-links">
                 <i class="fa fa-times" onclick="hideMenu()"></i>
-                <ul>
-                    <li><a href="index.html">HOME</a></li>
-                    <li><a href="register.html">REGISTER</a></li>
-                    <li><a href="register.html">LOGIN</a></li>
-                    <li><a href="about.html">ABOUT</a></li>
-                    <li><a href="contact.html">CONTACT</a></li>
-                </ul>
+		<ul>
+			<li><a href="#" onclick="navigateTo('index.html')">HOME</a></li>
+			<li><a href="#" onclick="navigateTo('register.html')">REGISTER</a></li>
+			<li><a href="#" onclick="navigateTo('login.html')">LOGIN</a></li>
+			<li><a href="#" onclick="navigateTo('about.html')">ABOUT</a></li>
+			<li><a href="#" onclick="navigateTo('contact.html')">CONTACT</a></li>
+		</ul>
             </div>
             <i class="fa fa-bars" onclick="showMenu()"></i>
         </nav>
@@ -33,6 +38,23 @@
             <p>Empower your productivity journey with TaskMaster. <br> Sign up now and revolutionize the way you manage your tasks.</p>
             <a href="register.html" class="hero-btn">Get Started</a>
         </div>
+    </section>
+    <!-- Task List Section -->
+    <section class="task-list" id="task-list">
+	    <!-- Example Task Card -->
+	    <div class="task-card">
+		    <div class="task-header">Task #1</div>
+		    <div class="task-details">
+			    <div class="task-title">Task Title</div>
+			    <div class="task-description">Task Description goes here...</div>
+			    <div class="task-meta">
+				    <div class="task-due-date">Due Date: 2023-12-31</div>
+				    <div class="task-priority">Priority: High</div>
+				    <div class="task-status">Status: incomplete</div>
+			    </div>
+		    </div>
+	    </div>
+	    <!-- More Task Cards... -->
     </section>
     <section class="services">
         <h1>Our Services</h1>
@@ -158,6 +180,22 @@
         function hideMenu(){
             navLinks.style.right = "-200px";
         }
+
+	function updateTaskList(tasks) {
+		var taskListSection = document.getElementById("task-list");
+
+		// Clear existing content in the task list
+		taskListSection.innerHTML = "";
+
+		// Loop through tasks and create HTML elements to display them
+		tasks.forEach(function (task) {
+			var taskElement = document.createElement("div");
+			taskElement.innerHTML = "<h3>" + task.title + "</h3><p>" + task.description + "</p>";
+
+			// Append the task element to the task list section
+			taskListSection.appendChild(taskElement);
+		});
+	}
     </script>
 </body>
 </html>

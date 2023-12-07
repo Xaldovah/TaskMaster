@@ -5,8 +5,8 @@ user management.
 
 from flask import jsonify, request, redirect, url_for, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app import app, bcrypt, db
-from app.auth import login, logout
+from app import app, db, bcrypt
+from app.auth import *
 from app.models import User
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
@@ -32,31 +32,6 @@ def get_users():
         }
         user_list.append(user_data)
     return jsonify({'users': user_list})
-
-
-@app.route('/api/register', methods=['POST'])
-def create_user():
-    """
-    Create a new user.
-
-    :return: JSON response with the user ID and username.
-    """
-    data = request.get_json()
-    hashed_password = bcrypt.generate_password_hash(data.get('password')).decode('utf-8')
-
-    new_user = User(
-        username=data['username'],
-        email=data.get('email'),
-        password=hashed_password,
-        default_task_view=data.get('default_task_view', 'all'),
-        enable_notifications=data.get('enable_notifications', True),
-        theme_preference=data.get('theme_preference', 'light')
-    )
-
-    db.session.add(new_user)
-    db.session.commit()
-
-    return jsonify({'user_id': new_user.id, 'username': new_user.username}), 201
 
 
 @app.route('/api/users/<int:user_id>', methods=['PUT'])

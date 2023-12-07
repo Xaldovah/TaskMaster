@@ -132,6 +132,61 @@ nav .fa {
   .nav-links ul {
     padding: 30px;
   }
+
+  #task-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .task-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 300px;
+  }
+  
+  .task-header {
+    background-color: #3498db;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .task-details {
+    padding: 20px;
+  }
+  
+  .task-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .task-description {
+    color: #555;
+    line-height: 1.4;
+  }
+  
+  .task-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .task-due-date {
+    color: #e74c3c;
+  }
+  
+  .task-priority {
+    color: #27ae60;
+  }
+  
+  .task-status {
+    color: #f39c12;
+  }
 }
 
 .services {
@@ -354,8 +409,6 @@ h3 {
 .fa-heart-o {
   color: #f44336;
 }
-
-
 
 @media(max-width: 700px) {
   .cta h1 {
