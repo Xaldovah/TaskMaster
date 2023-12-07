@@ -9,7 +9,7 @@ from app.models import Notification
 from app.users import User
 
 
-@app.route('/api/notifications', methods=['GET'])
+@app.route('/notifications', methods=['GET'])
 @jwt_required()
 def get_notifications():
     """
@@ -32,7 +32,7 @@ def get_notifications():
     return jsonify({'notifications': notification_list})
 
 
-@app.route('/api/notifications', methods=['POST'])
+@app.route('/notifications', methods=['POST'])
 @jwt_required()
 def create_notification():
     """

@@ -23,7 +23,7 @@ $(document).ready(function () {
 
 	function getTasksFromBackend() {
 		$.ajax({
-			url: '/api/tasks',
+			url: '/tasks',
 			method: 'GET',
 			success: function (data) {
 				displayTasks(data.tasks);
@@ -53,7 +53,7 @@ $(document).ready(function () {
 
 	function addTaskToBackend(taskData) {
 		$.ajax({
-			url: '/api/tasks',
+			url: '/tasks',
 			method: 'POST',
 			contentType: 'application/json',
 			data: JSON.stringify(taskData),

@@ -9,9 +9,17 @@ from app.models import User, Task, Notification
 from . import socketio
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime, timedelta
+from flask import render_template
 
 
-@app.route('/api/tasks', methods=['GET'])
+@app.route('/', methods=['GET'])
+def index():
+    """Retrieve the home page
+    """
+    return render_template('index.html')
+
+
+@app.route('/tasks', methods=['GET'])
 @jwt_required()
 def get_tasks():
     """
@@ -45,7 +53,7 @@ def get_tasks():
         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/api/tasks', methods=['POST'])
+@app.route('/tasks', methods=['POST'])
 @jwt_required()
 def create_task():
     """
@@ -88,7 +96,7 @@ def create_task():
         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/api/tasks/<int:task_id>', methods=['PUT'])
+@app.route('/tasks/<int:task_id>', methods=['PUT'])
 @jwt_required()
 def update_task(task_id):
     """
@@ -132,7 +140,7 @@ def update_task(task_id):
     })
 
 
-@app.route('/api/tasks/<int:task_id>', methods=['DELETE'])
+@app.route('/tasks/<int:task_id>', methods=['DELETE'])
 @jwt_required()
 def delete_task(task_id):
     """
@@ -172,7 +180,7 @@ def send_notification(user, message):
         current_app.logger.info(f'New notification created: {new_notis.message}')
 
 
-@app.route('/api/tasks/<int:task_id>/disable-notifications', methods=['POST'])
+@app.route('/tasks/<int:task_id>/disable-notifications', methods=['POST'])
 @jwt_required()
 def disable_notifications(task_id):
     """

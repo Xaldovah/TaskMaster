@@ -13,7 +13,7 @@ from app.models import User
 from datetime import datetime
 
 
-@app.route('/api/register', methods=['POST'])
+@app.route('/register', methods=['POST'])
 def create_user():
     """
     Register a new user.
@@ -43,7 +43,7 @@ def create_user():
         return jsonify({'error': 'Internal server error'}), 500
 
 
-@app.route('/api/login', methods=['POST'])
+@app.route('/login', methods=['POST'])
 def login():
     """
     User login.
@@ -70,7 +70,7 @@ def login():
         return jsonify({'error': 'Internal server error'}), 500
 
 
-@app.route('/api/logout', methods=['POST'])
+@app.route('/logout', methods=['POST'])
 @jwt_required()
 def logout():
     """

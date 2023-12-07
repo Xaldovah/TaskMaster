@@ -12,7 +12,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 
 
-@app.route('/api/users', methods=['GET'])
+@app.route('/users', methods=['GET'])
+@jwt_required()
 def get_users():
     """
     Retrieve a list of all users.
@@ -34,7 +35,7 @@ def get_users():
     return jsonify({'users': user_list})
 
 
-@app.route('/api/users/<int:user_id>', methods=['PUT'])
+@app.route('/users/<int:user_id>', methods=['PUT'])
 @jwt_required()
 def update_user(user_id):
     """
@@ -74,7 +75,7 @@ def update_user(user_id):
     })
 
 
-@app.route('/api/users/<int:user_id>', methods=['DELETE'])
+@app.route('/users/<int:user_id>', methods=['DELETE'])
 @jwt_required()
 def delete_user(user_id):
     """

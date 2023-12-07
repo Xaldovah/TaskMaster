@@ -12,7 +12,7 @@ ENABLE_NOTIFICATIONS = True
 THEME_PREFERENCE = 'dark'
 
 
-@app.route('/api/user/preferences', methods=['GET'])
+@app.route('/user/preferences', methods=['GET'])
 @jwt_required()
 def get_user_preferences():
     """

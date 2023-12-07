@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: '/',
   withCredentials: true, // Ensure credentials (cookies) are sent with requests
 });
 
@@ -10,12 +10,12 @@ function navigateTo(page) {
 }
 
 function login(username, password) {
-  api.post('/api/login', { username, password })
+  api.post('/login', { username, password })
     .then(response => {
       // Check if the login was successful based on the HTTP status code
       if (response.status === 200) {
         // Redirect to the desired location (e.g., '/api/tasks')
-        window.location.href = '/api/tasks';
+        window.location.href = '/tasks';
       } else {
         console.error('Login failed:', response.data.error);
       }
@@ -26,7 +26,7 @@ function login(username, password) {
 }
 
 function logout() {
-  api.post('/api/logout')
+  api.post('/logout')
     .then(response => {
       // Check if the logout was successful based on the HTTP status code
       if (response.status === 200) {
@@ -42,7 +42,7 @@ function logout() {
 }
 
 function getTasks() {
-  api.get('/api/tasks')
+  api.get('/tasks')
     .then(response => {
       const taskList = response.data.tasks;
       const taskListElement = document.getElementById('task-list');
@@ -81,7 +81,7 @@ function getTasks() {
 }
 
 function createTask(title, description, dueDate, priority, updateUICallback) {
-  api.post('/api/tasks', { title, description, dueDate, priority })
+  api.post('/tasks', { title, description, dueDate, priority })
     .then(response => {
       if (response.status === 201) {
         console.log('Task created successfully:', response.data);
@@ -99,7 +99,7 @@ function createTask(title, description, dueDate, priority, updateUICallback) {
 }
 
 function updateTask(taskId, title, description, dueDate, priority, status, updateUICallback) {
-  api.put(`/api/tasks/${taskId}`, { title, description, dueDate, priority, status })
+  api.put(`/tasks/${taskId}`, { title, description, dueDate, priority, status })
     .then(response => {
       if (response.status === 200) {
         console.log('Task updated successfully:', response.data);
@@ -115,7 +115,7 @@ function updateTask(taskId, title, description, dueDate, priority, status, updat
 }
 
 function deleteTask(taskId, updateUICallback) {
-  api.delete(`/api/tasks/${taskId}`)
+  api.delete(`/tasks/${taskId}`)
     .then(response => {
       if (response.status === 200) {
         console.log('Task deleted successfully');
@@ -133,7 +133,7 @@ function deleteTask(taskId, updateUICallback) {
 }
 
 function getUsers(updateUICallback) {
-  api.get('/api/users')
+  api.get('/users')
     .then(response => {
       const users = response.data.users;
       const userListElement = document.getElementById('user-list');
@@ -165,7 +165,7 @@ function getUsers(updateUICallback) {
 }
 
 function createUser(username, email, password, updateUICallback) {
-  api.post('/api/users', { username, email, password })
+  api.post('/register', { username, email, password })
     .then(response => {
       if (response.status === 201) {
         console.log('User created successfully');
@@ -183,7 +183,7 @@ function createUser(username, email, password, updateUICallback) {
 }
 
 function updateUser(userId, username, email, defaultTaskView, enableNotifications, themePreference, updateUICallback) {
-  api.put(`/api/users/${userId}`, {
+  api.put(`/users/${userId}`, {
     username,
     email,
     defaultTaskView,
@@ -207,7 +207,7 @@ function updateUser(userId, username, email, defaultTaskView, enableNotification
 }
 
 function deleteUser(userId, updateUICallback) {
-  api.delete(`/api/users/${userId}`)
+  api.delete(`/users/${userId}`)
     .then(response => {
       if (response.status === 200) {
         console.log('User deleted successfully');
@@ -225,7 +225,7 @@ function deleteUser(userId, updateUICallback) {
 }
 
 function createNotification(message) {
-  api.post('/api/notifications', { message })
+  api.post('/notifications', { message })
     .then(response => {
       const notification = response.data.notification;
 
@@ -240,7 +240,7 @@ function createNotification(message) {
 }
 
 function getNotifications() {
-  api.get('/api/notifications')
+  api.get('/notifications')
     .then(response => {
       const notifications = response.data.notifications;
       const notificationListElement = document.getElementById('notification-list');
