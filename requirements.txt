@@ -10,5 +10,4 @@ flask_login
 flask_restful
 datetime
 celery
-libssl-dev
 gunicorn

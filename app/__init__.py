@@ -16,13 +16,14 @@ from flask_login import LoginManager
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo
 from app.celery import make_celery
-import secrets
+# import secrets
+
 
 # Create Flask application instance
 app = Flask(__name__)
 
-# Generate a secure random key for Flask app
-secret_key = secrets.token_urlsafe(32)
+# Secure key (should use secrets to autogenerate)
+secret_key = '4d95d7d31e4e8d50e7e53d1fa8db928a8bc9abfe94bfc6e8c892c1b78e159b14a03887a49e9e4737ac9aa1ee9e4c6b62'
 
 # Configure Flask application
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://xaldovah:Denny23617@localhost/task_master'
