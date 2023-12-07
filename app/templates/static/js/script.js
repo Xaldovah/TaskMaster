@@ -2,19 +2,21 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: '/',
-  withCredentials: true, // Ensure credentials (cookies) are sent with requests
+  withCredentials: true // Ensure credentials (cookies) are sent with requests
 });
 
-function navigateTo(page) {
-    window.location.href = page;
+// Include the Authorization header
+const accessToken = localStorage.getItem('access_token');
+if (accessToken) {
+  api.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
 }
 
-function login(username, password) {
+// login function
+function login (username, password) {
   api.post('/login', { username, password })
     .then(response => {
-      // Check if the login was successful based on the HTTP status code
       if (response.status === 200) {
-        // Redirect to the desired location (e.g., '/api/tasks')
+        localStorage.setItem('access_token', response.data.access_token);
         window.location.href = '/tasks';
       } else {
         console.error('Login failed:', response.data.error);
@@ -25,12 +27,10 @@ function login(username, password) {
     });
 }
 
-function logout() {
+function logout () {
   api.post('/logout')
     .then(response => {
-      // Check if the logout was successful based on the HTTP status code
       if (response.status === 200) {
-        // Redirect to the desired location (e.g., '/')
         window.location.href = '/';
       } else {
         console.error('Logout failed:', response.data.error);
@@ -41,7 +41,7 @@ function logout() {
     });
 }
 
-function getTasks() {
+function getTasks () {
   api.get('/tasks')
     .then(response => {
       const taskList = response.data.tasks;
@@ -80,7 +80,7 @@ function getTasks() {
     });
 }
 
-function createTask(title, description, dueDate, priority, updateUICallback) {
+function createTask (title, description, dueDate, priority, updateUICallback) {
   api.post('/tasks', { title, description, dueDate, priority })
     .then(response => {
       if (response.status === 201) {
@@ -98,7 +98,7 @@ function createTask(title, description, dueDate, priority, updateUICallback) {
     });
 }
 
-function updateTask(taskId, title, description, dueDate, priority, status, updateUICallback) {
+function updateTask (taskId, title, description, dueDate, priority, status, updateUICallback) {
   api.put(`/tasks/${taskId}`, { title, description, dueDate, priority, status })
     .then(response => {
       if (response.status === 200) {
@@ -114,7 +114,7 @@ function updateTask(taskId, title, description, dueDate, priority, status, updat
     });
 }
 
-function deleteTask(taskId, updateUICallback) {
+function deleteTask (taskId, updateUICallback) {
   api.delete(`/tasks/${taskId}`)
     .then(response => {
       if (response.status === 200) {
@@ -132,7 +132,7 @@ function deleteTask(taskId, updateUICallback) {
     });
 }
 
-function getUsers(updateUICallback) {
+function getUsers (updateUICallback) {
   api.get('/users')
     .then(response => {
       const users = response.data.users;
@@ -164,7 +164,7 @@ function getUsers(updateUICallback) {
     });
 }
 
-function createUser(username, email, password, updateUICallback) {
+function createUser (username, email, password, updateUICallback) {
   api.post('/register', { username, email, password })
     .then(response => {
       if (response.status === 201) {
@@ -182,7 +182,7 @@ function createUser(username, email, password, updateUICallback) {
     });
 }
 
-function updateUser(userId, username, email, defaultTaskView, enableNotifications, themePreference, updateUICallback) {
+function updateUser (userId, username, email, defaultTaskView, enableNotifications, themePreference, updateUICallback) {
   api.put(`/users/${userId}`, {
     username,
     email,
@@ -206,7 +206,7 @@ function updateUser(userId, username, email, defaultTaskView, enableNotification
     });
 }
 
-function deleteUser(userId, updateUICallback) {
+function deleteUser (userId, updateUICallback) {
   api.delete(`/users/${userId}`)
     .then(response => {
       if (response.status === 200) {
@@ -224,7 +224,23 @@ function deleteUser(userId, updateUICallback) {
     });
 }
 
-function createNotification(message) {
+function createNotificationElement (notification) {
+  const notificationElement = document.createElement('div');
+  notificationElement.classList.add('notification');
+
+  const notificationMessage = document.createElement('p');
+  notificationMessage.textContent = notification.message;
+
+  const notificationTimestamp = document.createElement('span');
+  notificationTimestamp.textContent = 'Timestamp: ' + notification.created_at;
+
+  notificationElement.appendChild(notificationMessage);
+  notificationElement.appendChild(notificationTimestamp);
+
+  return notificationElement;
+}
+
+function createNotification (message) {
   api.post('/notifications', { message })
     .then(response => {
       const notification = response.data.notification;
@@ -239,7 +255,7 @@ function createNotification(message) {
     });
 }
 
-function getNotifications() {
+function getNotifications () {
   api.get('/notifications')
     .then(response => {
       const notifications = response.data.notifications;
