@@ -9,6 +9,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="/static/js/main.js"></script>
+    <script type="module" src="/static/js/script.js"></script>
+    <script>
+        window.onload = function () {
+            getTasks();
+        };
+    </script>
 </head>
 <body>
     <section class="header">
@@ -17,11 +25,11 @@
             <div class="nav-links">
                 <i class="fa fa-times" onclick="hideMenu()"></i>
 		<ul>
-			<li><a href="#" onclick="navigateTo('index.html')">HOME</a></li>
-			<li><a href="#" onclick="navigateTo('register.html')">REGISTER</a></li>
-			<li><a href="#" onclick="navigateTo('login.html')">LOGIN</a></li>
-			<li><a href="#" onclick="navigateTo('about.html')">ABOUT</a></li>
-			<li><a href="#" onclick="navigateTo('contact.html')">CONTACT</a></li>
+			<li><a href="https://www.arkwebs.tech/" onclick="navigateTo('home')">HOME</a></li>
+			<li><a href="https://www.arkwebs.tech/register" onclick="navigateTo('register')">REGISTER</a></li>
+			<li><a href="https://www.arkwebs.tech/login" onclick="navigateTo('register')">LOGIN</a></li>
+			<li><a href="https://www.arkwebs.tech/about" onclick="navigateTo('about')">ABOUT</a></li>
+			<li><a href="https://www.arkwebs.tech/contact" onclick="navigateTo('contact')">CONTACT</a></li>
 		</ul>
             </div>
             <i class="fa fa-bars" onclick="showMenu()"></i>
@@ -29,7 +37,7 @@
         <div class="text-box">
             <h1>The Best Way to Achieve Your Goals</h1>
             <p>Empower your productivity journey with TaskMaster. <br> Sign up now and revolutionize the way you manage your tasks.</p>
-            <a href="register.html" class="hero-btn">Get Started</a>
+            <a href="https://www.arkwebs.tech/register" class="hero-btn">Get Started</a>
         </div>
     </section>
     <!-- Task List Section -->
@@ -166,7 +174,7 @@
         <p>Made with <i class="fa fa-heart-o"></i> by Dennis</p>
     </section>
     <script>
-        var navLinks = document.getElementById("navLinks");
+        var navLinks = document.getElementById("nav-links");
         function showMenu(){
             navLinks.style.right = "0";
         }
@@ -189,13 +197,6 @@
 			taskListSection.appendChild(taskElement);
 		});
 	}
-    </script>
-    <script src="/static/js/main.js"></script>
-    <script src="/static/js/script.js"></script>
-    <script>
-        window.onload = function () {
-            getTasks();
-        };
     </script>
 </body>
 </html>

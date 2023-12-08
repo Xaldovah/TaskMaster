@@ -61,13 +61,27 @@ def login():
         if user and bcrypt.check_password_hash(user.password, password):
             access_token = create_access_token(identity=user.id)
             # return jsonify({'message': 'Login successful', 'access_token': access_token}), 200
-            return redirect(url_for('home'))
+            return redirect(url_for('dashboard'))
         else:
             return jsonify({'error': 'Invalid credentials'}), 401
 
     except Exception as e:
         app.logger.error(f'Error during login: {e}')
         return jsonify({'error': 'Internal server error'}), 500
+
+
+@app.route('/dashboard')
+def dashboard():
+    """
+    Render the dashboard page.
+
+    Returns:
+        render_template: Rendered HTML template.
+    """
+    if current_user.is_authenticated:
+        return render_template('dashboard.html')
+    else:
+        return redirect(url_for('login'))
 
 
 @app.route('/home')

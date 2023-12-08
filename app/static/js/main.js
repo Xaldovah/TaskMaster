@@ -6,6 +6,22 @@ $(document).ready(function () {
     addTask();
   });
 
+function navigateTo(page) {
+    fetch(page)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(html => {
+            document.getElementById('main-content').innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error fetching page:', error);
+        });
+}
+
   function addTask () {
     const title = $('#taskTitle').val();
     const description = $('#taskDescription').val();

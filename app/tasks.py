@@ -45,11 +45,10 @@ def get_tasks():
                 'created_at': task.created_at,
                 'updated_at': task.updated_at,
                 'category_id': task.category_id
-            })
-
-        return jsonify({'tasks': tasks_list})
-
-    except SQLAlchemyError as e:
+                })
+        # return jsonify({'tasks': tasks_list})
+        return render_template('dashboard.html', tasks=tasks_list)
+   except SQLAlchemyError as e:
         return jsonify({'error': str(e)}), 500
 
 

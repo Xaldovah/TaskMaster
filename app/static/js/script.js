@@ -41,6 +41,12 @@ function logout () {
     });
 }
 
+// Ensure that the DOM is fully loaded before executing any code
+document.addEventListener("DOMContentLoaded", function () {
+    // Call the getTasks function when the window has fully loaded
+    getTasks();
+});
+
 function getTasks () {
   api.get('/tasks')
     .then(response => {
