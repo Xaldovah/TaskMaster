@@ -48,7 +48,7 @@ def get_tasks():
                 })
         # return jsonify({'tasks': tasks_list})
         return render_template('dashboard.html', tasks=tasks_list)
-   except SQLAlchemyError as e:
+    except SQLAlchemyError as e:
         return jsonify({'error': str(e)}), 500
 
 
