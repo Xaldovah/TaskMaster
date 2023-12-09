@@ -1,20 +1,18 @@
-import axios from 'axios';
-
-const api = axios.create({
-  baseURL: '/',
-  withCredentials: true // Ensure credentials (cookies) are sent with requests
-});
+const apiBaseUrl = '/home';
 
 // Include the Authorization header
 const accessToken = localStorage.getItem('access_token');
 if (accessToken) {
-  api.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+  $.ajaxSetup({
+    headers: {
+      Authorization: `Bearer ${accessToken}`
+    }
+  });
 }
 
-// login function
-function login (username, password) {
-  api.post('/login', { username, password })
-    .then(response => {
+function login(username, password) {
+  $.post(`${apiBaseUrl}/login`, { username, password })
+    .done(response => {
       if (response.status === 200) {
         localStorage.setItem('access_token', response.data.access_token);
         window.location.href = '/tasks';
@@ -22,73 +20,58 @@ function login (username, password) {
         console.error('Login failed:', response.data.error);
       }
     })
-    .catch(error => {
+    .fail(error => {
       console.error('Login failed:', error);
     });
 }
 
-function logout () {
-  api.post('/logout')
-    .then(response => {
+function logout() {
+  $.post(`${apiBaseUrl}/logout`)
+    .done(response => {
       if (response.status === 200) {
         window.location.href = '/';
       } else {
         console.error('Logout failed:', response.data.error);
       }
     })
-    .catch(error => {
+    .fail(error => {
       console.error('Logout failed:', error);
     });
 }
 
-// Ensure that the DOM is fully loaded before executing any code
-document.addEventListener("DOMContentLoaded", function () {
-    // Call the getTasks function when the window has fully loaded
-    getTasks();
+$(document).ready(function () {
+  getTasks();
 });
 
-function getTasks () {
-  api.get('/tasks')
-    .then(response => {
+function getTasks() {
+  $.get(`${apiBaseUrl}/tasks`)
+    .done(response => {
       const taskList = response.data.tasks;
-      const taskListElement = document.getElementById('task-list');
+      const taskListElement = $('#task-list');
 
       taskList.forEach(task => {
-        const taskElement = document.createElement('div');
-        taskElement.classList.add('task');
+        const taskElement = $('<div class="task"></div>');
 
-        const taskTitle = document.createElement('h3');
-        taskTitle.textContent = task.title;
+        const taskTitle = $('<h3></h3>').text(task.title);
+        const taskDescription = $('<p></p>').text(task.description);
+        const taskDueDate = $('<span></span>').text(task.dueDate ? 'Due Date: ' + task.dueDate : 'No Due Date');
+        const taskPriority = $('<span></span>').text('Priority: ' + task.priority);
+        const taskStatus = $('<span></span>').text('Status: ' + task.status);
 
-        const taskDescription = document.createElement('p');
-        taskDescription.textContent = task.description;
-
-        const taskDueDate = document.createElement('span');
-        taskDueDate.textContent = task.dueDate ? 'Due Date: ' + task.dueDate : 'No Due Date';
-
-        const taskPriority = document.createElement('span');
-        taskPriority.textContent = 'Priority: ' + task.priority;
-
-        const taskStatus = document.createElement('span');
-        taskStatus.textContent = 'Status: ' + task.status;
-
-        taskElement.appendChild(taskTitle);
-        taskElement.appendChild(taskDescription);
-        taskElement.appendChild(taskDueDate);
-        taskElement.appendChild(taskPriority);
-        taskElement.appendChild(taskStatus);
-        taskListElement.appendChild(taskElement);
+        taskElement.append(taskTitle, taskDescription, taskDueDate, taskPriority, taskStatus);
+        taskListElement.append(taskElement);
       });
+
       console.log('Retrieved tasks:', taskList);
     })
-    .catch(error => {
+    .fail(error => {
       console.error('Error fetching tasks:', error);
     });
 }
 
-function createTask (title, description, dueDate, priority, updateUICallback) {
-  api.post('/tasks', { title, description, dueDate, priority })
-    .then(response => {
+function createTask(title, description, dueDate, priority, updateUICallback) {
+  $.post(`${apiBaseUrl}/tasks`, { title, description, dueDate, priority })
+    .done(response => {
       if (response.status === 201) {
         console.log('Task created successfully:', response.data);
 
@@ -99,14 +82,19 @@ function createTask (title, description, dueDate, priority, updateUICallback) {
         console.error('Error creating task. Status code:', response.status);
       }
     })
-    .catch(error => {
+    .fail(error => {
       console.error('Error creating task:', error);
     });
 }
 
-function updateTask (taskId, title, description, dueDate, priority, status, updateUICallback) {
-  api.put(`/tasks/${taskId}`, { title, description, dueDate, priority, status })
-    .then(response => {
+
+function updateTask(taskId, title, description, dueDate, priority, status, updateUICallback) {
+  $.ajax({
+    url: `${apiBaseUrl}/tasks/${taskId}`,
+    method: 'PUT',
+    data: { title, description, dueDate, priority, status }
+  })
+    .done(response => {
       if (response.status === 200) {
         console.log('Task updated successfully:', response.data);
 
@@ -115,14 +103,17 @@ function updateTask (taskId, title, description, dueDate, priority, status, upda
         }
       }
     })
-    .catch(error => {
+    .fail(error => {
       console.error('Error updating task:', error);
     });
 }
 
-function deleteTask (taskId, updateUICallback) {
-  api.delete(`/tasks/${taskId}`)
-    .then(response => {
+function deleteTask(taskId, updateUICallback) {
+  $.ajax({
+    url: `${apiBaseUrl}/tasks/${taskId}`,
+    method: 'DELETE'
+  })
+    .done(response => {
       if (response.status === 200) {
         console.log('Task deleted successfully');
 
@@ -133,46 +124,40 @@ function deleteTask (taskId, updateUICallback) {
         console.error('Error deleting task:', response.data.error);
       }
     })
-    .catch(error => {
+    .fail(error => {
       console.error('Error deleting task:', error);
     });
 }
 
-function getUsers (updateUICallback) {
-  api.get('/users')
-    .then(response => {
+function getUsers(updateUICallback) {
+  $.get(`${apiBaseUrl}/users`)
+    .done(response => {
       const users = response.data.users;
-      const userListElement = document.getElementById('user-list');
+      const userListElement = $('#user-list');
 
       users.forEach(user => {
-        const userElement = document.createElement('li');
-        userElement.classList.add('user');
+        const userElement = $('<li class="user"></li>');
+        const userName = $('<span></span>').text('Username: ' + user.username);
+        const userEmail = $('<span></span>').text('Email: ' + user.email);
 
-        const userName = document.createElement('span');
-        userName.textContent = 'Username: ' + user.username;
-
-        const userEmail = document.createElement('span');
-        userEmail.textContent = 'Email: ' + user.email;
-
-        userElement.appendChild(userName);
-        userElement.appendChild(userEmail);
-
-        userListElement.appendChild(userElement);
+        userElement.append(userName, userEmail);
+        userListElement.append(userElement);
       });
+
       console.log('Retrieved users:', users);
 
       if (typeof updateUICallback === 'function') {
         updateUICallback();
       }
     })
-    .catch(error => {
+    .fail(error => {
       console.error('Error fetching users:', error);
     });
 }
 
-function createUser (username, email, password, updateUICallback) {
-  api.post('/register', { username, email, password })
-    .then(response => {
+function createUser(username, email, password, updateUICallback) {
+  $.post(`${apiBaseUrl}/register`, { username, email, password })
+    .done(response => {
       if (response.status === 201) {
         console.log('User created successfully');
 
@@ -183,20 +168,24 @@ function createUser (username, email, password, updateUICallback) {
         console.error('Error creating user:', response.data.error);
       }
     })
-    .catch(error => {
+    .fail(error => {
       console.error('Error creating user:', error);
     });
 }
 
-function updateUser (userId, username, email, defaultTaskView, enableNotifications, themePreference, updateUICallback) {
-  api.put(`/users/${userId}`, {
-    username,
-    email,
-    defaultTaskView,
-    enableNotifications,
-    themePreference
+function updateUser(userId, username, email, defaultTaskView, enableNotifications, themePreference, updateUICallback) {
+  $.ajax({
+    url: `${apiBaseUrl}/users/${userId}`,
+    method: 'PUT',
+    data: {
+      username,
+      email,
+      defaultTaskView,
+      enableNotifications,
+      themePreference
+    }
   })
-    .then(response => {
+    .done(response => {
       if (response.status === 200) {
         console.log('User updated successfully:', response.data);
 
@@ -207,14 +196,17 @@ function updateUser (userId, username, email, defaultTaskView, enableNotificatio
         console.error('Error updating user:', response.data.error);
       }
     })
-    .catch(error => {
+    .fail(error => {
       console.error('Error updating user:', error);
     });
 }
 
-function deleteUser (userId, updateUICallback) {
-  api.delete(`/users/${userId}`)
-    .then(response => {
+function deleteUser(userId, updateUICallback) {
+  $.ajax({
+    url: `${apiBaseUrl}/users/${userId}`,
+    method: 'DELETE'
+  })
+    .done(response => {
       if (response.status === 200) {
         console.log('User deleted successfully');
 
@@ -225,81 +217,50 @@ function deleteUser (userId, updateUICallback) {
         console.error('Error deleting user:', response.data.error);
       }
     })
-    .catch(error => {
+    .fail(error => {
       console.error('Error deleting user:', error);
     });
 }
 
-function createNotificationElement (notification) {
-  const notificationElement = document.createElement('div');
-  notificationElement.classList.add('notification');
+function createNotificationElement(notification) {
+  const notificationElement = $('<div class="notification"></div>');
+  const notificationMessage = $('<p></p>').text(notification.message);
+  const notificationTimestamp = $('<span></span>').text('Timestamp: ' + notification.created_at);
 
-  const notificationMessage = document.createElement('p');
-  notificationMessage.textContent = notification.message;
-
-  const notificationTimestamp = document.createElement('span');
-  notificationTimestamp.textContent = 'Timestamp: ' + notification.created_at;
-
-  notificationElement.appendChild(notificationMessage);
-  notificationElement.appendChild(notificationTimestamp);
+  notificationElement.append(notificationMessage, notificationTimestamp);
 
   return notificationElement;
 }
 
-function createNotification (message) {
-  api.post('/notifications', { message })
-    .then(response => {
+function createNotification(message) {
+  $.post(`${apiBaseUrl}/notifications`, { message })
+    .done(response => {
       const notification = response.data.notification;
-
       const notificationElement = createNotificationElement(notification);
-      document.getElementById('notification-list').appendChild(notificationElement);
+
+      $('#notification-list').append(notificationElement);
 
       console.log('Notification created successfully:', response.data);
     })
-    .catch(error => {
+    .fail(error => {
       console.error('Error creating notification:', error);
     });
 }
 
-function getNotifications () {
-  api.get('/notifications')
-    .then(response => {
+function getNotifications() {
+  $.get(`${apiBaseUrl}/notifications`)
+    .done(response => {
       const notifications = response.data.notifications;
-      const notificationListElement = document.getElementById('notification-list');
+      const notificationListElement = $('#notification-list');
 
       notifications.forEach(notification => {
-        const notificationElement = document.createElement('div');
-        notificationElement.classList.add('notification');
-
-        const notificationMessage = document.createElement('p');
-        notificationMessage.textContent = notification.message;
-
-        const notificationTimestamp = document.createElement('span');
-        notificationTimestamp.textContent = 'Timestamp: ' + notification.created_at;
-
-        notificationElement.appendChild(notificationMessage);
-        notificationElement.appendChild(notificationTimestamp);
-
-        notificationListElement.appendChild(notificationElement);
+        const notificationElement = createNotificationElement(notification);
+        notificationListElement.append(notificationElement);
       });
+
       console.log('Retrieved notifications:', notifications);
     })
-    .catch(error => {
+    .fail(error => {
       console.error('Error fetching notifications:', error);
     });
 }
-
-export {
-  login,
-  logout,
-  getTasks,
-  createTask,
-  updateTask,
-  deleteTask,
-  getUsers,
-  createUser,
-  updateUser,
-  deleteUser,
-  createNotification,
-  getNotifications
-};
