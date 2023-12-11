@@ -24,36 +24,38 @@ def index():
 
 Session = sessionmaker(bind=engine)
 
-def load_tasks_from_db(user_id):
-    """
-    Load tasks from the database for a specific user.
-
-    :param user_id: ID of the user.
-    :return: List of tasks.
-    """
-    try:
-        session = Session()
-        tasks = session.query(Task).filter(Task.user_id == user_id).all()
-        return tasks
-    except SQLAlchemyError as e:
-        raise e
-    finally:
-        session.close()
-
 @app.route('/tasks', methods=['GET'])
 @jwt_required()
 def get_tasks():
     """
     Retrieve tasks for the current user.
 
-    :return: Render the 'dashboard.html' template with the list of tasks.
+    :return: JSON response with the list of tasks.
     """
     try:
         user_id = get_jwt_identity()
-        tasks_list = load_tasks_from_db(user_id)
-        return render_template('dashboard.html', tasks=tasks_list)
+        tasks_list = load_tasks(user_id)
+
+        return jsonify(tasks=tasks_list), 200
     except SQLAlchemyError as e:
-        return jsonify({'error': str(e)}), 500
+        if isinstance(e, DataError):
+            return jsonify({"error": "Invalid data format"}), 400
+        else:
+            return jsonify({"error": str(e)}), 500
+
+
+def load_tasks(user_id):
+    """
+    Load tasks from the database for a specific user.
+
+    :param user_id: The ID of the user.
+    :return: List of task dictionaries.
+    """
+    with engine.connect() as conn:
+        query = text("SELECT * FROM tasks WHERE user_id = :user_id")
+        res = conn.execute(query, user_id=user_id)
+        tasks = [dict(row) for row in res.fetchall()]
+    return tasks
 
 
 @app.route('/tasks', methods=['POST'])
@@ -62,15 +64,15 @@ def create_task():
     """
     Create a new task for the current user.
 
-    :return: Redirect to the route for retrieving tasks.
+    :return: JSON response with information about the created task.
     """
-    data = request.get_json()
-
-    required_fields = ['title', 'user_id']
-    if not all(field in data for field in required_fields):
-        return jsonify({'error': 'Missing required fields'}), 400
-
     try:
+        data = request.get_json()
+
+        required_fields = ['title', 'user_id']
+        if not all(field in data for field in required_fields):
+            return jsonify({"error": "Missing required fields"}), 400
+
         new_task = Task(
             title=data['title'],
             description=data.get('description'),
@@ -80,22 +82,26 @@ def create_task():
             category_id=data.get('category_id'),
             user_id=data['user_id']
         )
-        session = Session()
         session.add(new_task)
         session.commit()
 
+        # Log the created task information
         current_app.logger.info(f'New task created: {new_task.title}')
-
         days_until_due = (new_task.due_date - datetime.utcnow()).days
         notification_message = f'Task "{new_task.title}" is due in {days_until_due} days'
-        notification_date = new_task.due_date - timedelta(minutes=3)
+        notification_date = new_task.due_date - timedelta(days=3)
         send_notification.apply_async((new_task.user_id, notification_message), eta=notification_date)
-
         socketio.emit('new_task', {'message': f'New task created: {new_task.title}'})
-        return redirect(url_for('get_tasks'))
+
+        return jsonify(
+            {
+                "message": "Task created successfully",
+                "task": dict(new_task)
+            }
+        ), 201
     except SQLAlchemyError as e:
         session.rollback()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({"error": str(e)}), 500
     finally:
         session.close()
 
