@@ -9,6 +9,7 @@ from app.models import User, Task, Notification
 from database import engine, session
 from . import socketio
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy import text
 from datetime import datetime, timedelta
 from flask import render_template
