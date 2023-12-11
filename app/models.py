@@ -25,10 +25,6 @@ class User(Base, UserMixin):
     username = Column(String(50), unique=True, nullable=False)
     email = Column(String(120), unique=True, nullable=False)
     password = Column(String(60), nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow)
-    logged_out_at = Column(DateTime, default=datetime.utcnow)
-    receive_notifications = Column(Boolean, default=True)
     # default_task_view = Column(String(20), default='all')  # Example: 'all', 'completed', 'incomplete'
     # enable_notifications = Column(Boolean, default=True)
     # theme_preference = Column(String(20), default='dark')  # Example: 'light', 'dark'

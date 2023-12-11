@@ -38,8 +38,7 @@ def create_user():
         session.add(new_user)
         session.commit()
 
-        return render_template('register.html', user_id=new_user.id, username=new_user.username), 201
-        # return jsonify({'user_id': new_user.id, 'username': new_user.username}), 201
+        return jsonify({'user_id': new_user.id, 'username': new_user.username}), 201
     except Exception as e:
         app.logger.error(f'Error during registration: {e}')
         return jsonify({'error': 'Internal server error'}), 500
@@ -62,8 +61,7 @@ def login():
 
         if user and bcrypt.check_password_hash(user.password, password):
             access_token = create_access_token(identity=user.id)
-            # return jsonify({'message': 'Login successful', 'access_token': access_token}), 200
-            return redirect(url_for('dashboard'))
+            return jsonify({'message': 'Login successful', 'access_token': access_token}), 200
         else:
             return jsonify({'error': 'Invalid credentials'}), 401
 
