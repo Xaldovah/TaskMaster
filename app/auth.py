@@ -98,7 +98,7 @@ def home():
     current_user_id = get_jwt_identity()
 
     if current_user_id:
-        return render_template('index.html')
+        return render_template('dashboard.html')
     else:
         # If user is not authenticated, redirect to the login page
         return redirect(url_for('login'))

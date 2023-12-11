@@ -15,7 +15,7 @@ function login(username, password) {
     .done(response => {
       if (response.status === 200) {
         localStorage.setItem('access_token', response.data.access_token);
-        window.location.href = '/tasks';
+        window.location.href = '/dashboard';
       } else {
         console.error('Login failed:', response.data.error);
       }

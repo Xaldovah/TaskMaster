@@ -38,6 +38,22 @@ def load_tasks(user_id):
     return tasks
 
 
+@app.route('/tasks', methods=['GET'])
+@jwt_required()
+def get_tasks():
+    """
+    Retrieve tasks for the current user.
+
+    :return: JSON response with the list of tasks.
+    """
+    try:
+        user_id = get_jwt_identity()
+        tasks_list = load_tasks_from_db(user_id)
+        return jsonify({'tasks': tasks_list})
+    except SQLAlchemyError as e:
+        return jsonify({'error': str(e)}), 500
+
+
 @app.route('/tasks', methods=['POST'])
 @jwt_required()
 def create_task():
