@@ -33,7 +33,7 @@ def get_users():
         user_list = load_users_from_db()
         return render_template('users.html', users=user_list)
     except SQLAlchemyError as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': f'Database error: {str(e)}'}), 500
 
 
 @app.route('/users/<int:user_id>', methods=['PUT'])
@@ -57,23 +57,28 @@ def update_user(user_id):
 
     data = request.get_json()
 
-    # Update preferences if provided in the request
-    if 'default_task_view' in data:
-        user.default_task_view = data['default_task_view']
-    if 'enable_notifications' in data:
-        user.enable_notifications = data['enable_notifications']
-    if 'theme_preference' in data:
-        user.theme_preference = data['theme_preference']
+    try:
+        # Update preferences if provided in the request
+        if 'default_task_view' in data:
+            user.default_task_view = data['default_task_view']
+        if 'enable_notifications' in data:
+            user.enable_notifications = data['enable_notifications']
+        if 'theme_preference' in data:
+            user.theme_preference = data['theme_preference']
 
-    session.commit()
+        session.commit()
 
-    return jsonify({
-        'user_id': user.id,
-        'username': user.username,
-        'default_task_view': user.default_task_view,
-        'enable_notifications': user.enable_notifications,
-        'theme_preference': user.theme_preference
-    })
+        return jsonify({
+            'user_id': user.id,
+            'username': user.username,
+            'default_task_view': user.default_task_view,
+            'enable_notifications': user.enable_notifications,
+            'theme_preference': user.theme_preference
+        })
+
+    except SQLAlchemyError as e:
+        session.rollback()
+        return jsonify({'error': f'Database error: {str(e)}'}), 500
 
 
 @app.route('/users/<int:user_id>', methods=['DELETE'])

@@ -21,13 +21,23 @@ def index():
     return render_template('index.html')
 
 
-def load_tasks_from_db(user_id):
-    with engine.connect() as conn:
-        query = text("SELECT * FROM tasks WHERE user_id = :user_id")
-        res = conn.execute(query, user_id=user_id)
-        tasks = [dict(row) for row in res.fetchall()]
-        return tasks
+Session = sessionmaker(bind=engine)
 
+def load_tasks_from_db(user_id):
+    """
+    Load tasks from the database for a specific user.
+
+    :param user_id: ID of the user.
+    :return: List of tasks.
+    """
+    try:
+        session = Session()
+        tasks = session.query(Task).filter(Task.user_id == user_id).all()
+        return tasks
+    except SQLAlchemyError as e:
+        raise e
+    finally:
+        session.close()
 
 @app.route('/tasks', methods=['GET'])
 @jwt_required()
@@ -35,12 +45,11 @@ def get_tasks():
     """
     Retrieve tasks for the current user.
 
-    :return: JSON response with the list of tasks.
+    :return: Render the 'dashboard.html' template with the list of tasks.
     """
     try:
         user_id = get_jwt_identity()
         tasks_list = load_tasks_from_db(user_id)
-        
         return render_template('dashboard.html', tasks=tasks_list)
     except SQLAlchemyError as e:
         return jsonify({'error': str(e)}), 500
@@ -70,6 +79,7 @@ def create_task():
             category_id=data.get('category_id'),
             user_id=data['user_id']
         )
+        session = Session()
         session.add(new_task)
         session.commit()
 
@@ -81,12 +91,12 @@ def create_task():
         send_notification.apply_async((new_task.user_id, notification_message), eta=notification_date)
 
         socketio.emit('new_task', {'message': f'New task created: {new_task.title}'})
-
         return redirect(url_for('get_tasks'))
-
     except SQLAlchemyError as e:
         session.rollback()
         return jsonify({'error': str(e)}), 500
+    finally:
+        session.close()
 
 
 @app.route('/tasks/<int:task_id>', methods=['PUT'])
@@ -98,9 +108,9 @@ def update_task(task_id):
     :param task_id: ID of the task to be updated.
     :return: JSON response with the updated task details.
     """
-    task = Task.query.get(task_id)
-
-    if task is None:
+    try:
+        task = Task.query.filter_by(id=task_id, user_id=get_jwt_identity()).one()
+    except NoResultFound:
         return jsonify({'error': 'Task not found'}), 404
 
     data = request.get_json()
@@ -142,9 +152,9 @@ def delete_task(task_id):
     :param task_id: ID of the task to be deleted.
     :return: JSON response indicating the success of the operation.
     """
-    task = Task.query.get(task_id)
-
-    if task is None:
+    try:
+        task = Task.query.filter_by(id=task_id, user_id=get_jwt_identity()).one()
+    except NoResultFound:
         return jsonify({'error': 'Task not found'}), 404
 
     session.delete(task)
