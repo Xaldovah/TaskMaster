@@ -24,26 +24,6 @@ def index():
 
 Session = sessionmaker(bind=engine)
 
-@app.route('/tasks', methods=['GET'])
-@jwt_required()
-def get_tasks():
-    """
-    Retrieve tasks for the current user.
-
-    :return: JSON response with the list of tasks.
-    """
-    try:
-        user_id = get_jwt_identity()
-        tasks_list = load_tasks(user_id)
-
-        return jsonify(tasks=tasks_list), 200
-    except SQLAlchemyError as e:
-        if isinstance(e, DataError):
-            return jsonify({"error": "Invalid data format"}), 400
-        else:
-            return jsonify({"error": str(e)}), 500
-
-
 def load_tasks(user_id):
     """
     Load tasks from the database for a specific user.
