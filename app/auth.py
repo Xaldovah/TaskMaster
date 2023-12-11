@@ -8,7 +8,9 @@ from flask import jsonify, request, render_template, redirect, url_for
 from flask_login import logout_user, login_required
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required
 from flask_login import current_user
-from app import app, db, bcrypt
+from app import app, bcrypt
+from database import session
+from sqlalchemy.orm import sessionmaker
 from app.models import User
 from datetime import datetime
 
@@ -33,8 +35,8 @@ def create_user():
             email=data.get('email'),
             password=hashed_password
         )
-        db.session.add(new_user)
-        db.session.commit()
+        session.add(new_user)
+        session.commit()
 
         return render_template('register.html', user_id=new_user.id, username=new_user.username), 201
         # return jsonify({'user_id': new_user.id, 'username': new_user.username}), 201
@@ -112,5 +114,5 @@ def logout():
         jsonify: JSON response with logout information.
     """
     current_user.logged_out_at = datetime.utcnow()
-    db.session.commit()
+    session.commit()
     return jsonify({'message': 'Logout successful'}), 200

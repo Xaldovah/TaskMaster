@@ -4,10 +4,12 @@ Module Description: This module contains API endpoints related to tasks.
 
 from flask import jsonify, request, redirect, url_for, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app import app, db, celery
+from app import app, celery
 from app.models import User, Task, Notification
+from database import engine, session
 from . import socketio
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import text
 from datetime import datetime, timedelta
 from flask import render_template
 
@@ -17,6 +19,14 @@ def index():
     """Retrieve the home page
     """
     return render_template('index.html')
+
+
+def load_tasks_from_db(user_id):
+    with engine.connect() as conn:
+        query = text("SELECT * FROM tasks WHERE user_id = :user_id")
+        res = conn.execute(query, user_id=user_id)
+        tasks = [dict(row) for row in res.fetchall()]
+        return tasks
 
 
 @app.route('/tasks', methods=['GET'])
@@ -29,24 +39,8 @@ def get_tasks():
     """
     try:
         user_id = get_jwt_identity()
-
-        tasks = Task.query.filter_by(user_id=user_id).all()
-
-        tasks_list = []
-        for task in tasks:
-            tasks_list.append({
-                'id': task.id,
-                'title': task.title,
-                'description': task.description,
-                'due_date': task.due_date,
-                'priority': task.priority,
-                'status': task.status,
-                'user_id': task.user_id,
-                'created_at': task.created_at,
-                'updated_at': task.updated_at,
-                'category_id': task.category_id
-                })
-        # return jsonify({'tasks': tasks_list})
+        tasks_list = load_tasks_from_db(user_id)
+        
         return render_template('dashboard.html', tasks=tasks_list)
     except SQLAlchemyError as e:
         return jsonify({'error': str(e)}), 500
@@ -76,8 +70,8 @@ def create_task():
             category_id=data.get('category_id'),
             user_id=data['user_id']
         )
-        db.session.add(new_task)
-        db.session.commit()
+        session.add(new_task)
+        session.commit()
 
         current_app.logger.info(f'New task created: {new_task.title}')
 
@@ -91,7 +85,7 @@ def create_task():
         return redirect(url_for('get_tasks'))
 
     except SQLAlchemyError as e:
-        db.session.rollback()
+        session.rollback()
         return jsonify({'error': str(e)}), 500
 
 
@@ -124,7 +118,7 @@ def update_task(task_id):
 
     task.updated_at = datetime.utcnow()
 
-    db.session.commit()
+    session.commit()
 
     return jsonify({
         'task_id': task.id,
@@ -153,8 +147,8 @@ def delete_task(task_id):
     if task is None:
         return jsonify({'error': 'Task not found'}), 404
 
-    db.session.delete(task)
-    db.session.commit()
+    session.delete(task)
+    session.commit()
 
     return jsonify({'message': 'Task deleted successfully'}), 200
 
@@ -173,8 +167,8 @@ def send_notification(user, message):
             message=message
         )
 
-        db.session.add(new_notis)
-        db.session.commit()
+        session.add(new_notis)
+        session.commit()
 
         current_app.logger.info(f'New notification created: {new_notis.message}')
 
@@ -194,6 +188,6 @@ def disable_notifications(task_id):
         return jsonify({'error': 'Task not found'}), 404
 
     task.notifications_enabled = False
-    db.session.commit()
+    session.commit()
 
     return jsonify({'message': 'Notifications disabled for the task'}), 200

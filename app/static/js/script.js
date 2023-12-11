@@ -1,4 +1,4 @@
-const apiBaseUrl = '/home';
+const apiBaseUrl = '/';
 
 // Include the Authorization header
 const accessToken = localStorage.getItem('access_token');

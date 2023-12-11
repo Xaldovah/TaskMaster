@@ -4,7 +4,8 @@ Module Description: This module contains API endpoints related to notifications.
 
 from flask import jsonify, request, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app import app, db
+from app import app
+from database import session
 from app.models import Notification
 from app.users import User
 
@@ -53,8 +54,8 @@ def create_notification():
         message=data['message']
     )
 
-    db.session.add(new_notification)
-    db.session.commit()
+    session.add(new_notification)
+    session.commit()
 
     current_app.logger.info(f'New notification created: {new_notification.message}')
 

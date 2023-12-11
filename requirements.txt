@@ -2,13 +2,15 @@ flask
 flask_wtf
 flask_cors
 flask_socketio
-flask_sqlalchemy
 flask_migrate
 flask_bcrypt
 flask_jwt_extended
 flask_login
 flask_restful
 mysqlclient
+sqlalchemy
+python-dotenv
+pymysql
 datetime
 celery
 gunicorn

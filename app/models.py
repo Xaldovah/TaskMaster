@@ -2,31 +2,37 @@
 Module Description: This module contains SQLAlchemy models for the application.
 """
 
-from app import db
+from app import app
 from flask_login import UserMixin
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey
+from sqlalchemy.orm import relationship, backref
+from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 
+Base = declarative_base()
 
-class User(db.Model, UserMixin):
+
+class User(Base, UserMixin):
     """
     User model representing the application users.
     """
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(60), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
-    logged_out_at = db.Column(db.DateTime, default=datetime.utcnow)
-    receive_notifications = db.Column(db.Boolean, default=True)
-    # default_task_view = db.Column(db.String(20), default='all')  # Example: 'all', 'completed', 'incomplete'
-    # enable_notifications = db.Column(db.Boolean, default=True)
-    # theme_preference = db.Column(db.String(20), default='dark')  # Example: 'light', 'dark'
-    # is_confirmed = db.Column(db.Boolean, default=False)
+    __tablename__ = 'user'
+
+    id = Column(Integer, primary_key=True)
+    username = Column(String(50), unique=True, nullable=False)
+    email = Column(String(120), unique=True, nullable=False)
+    password = Column(String(60), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow)
+    logged_out_at = Column(DateTime, default=datetime.utcnow)
+    receive_notifications = Column(Boolean, default=True)
+    # default_task_view = Column(String(20), default='all')  # Example: 'all', 'completed', 'incomplete'
+    # enable_notifications = Column(Boolean, default=True)
+    # theme_preference = Column(String(20), default='dark')  # Example: 'light', 'dark'
+    # is_confirmed = Column(Boolean, default=False)
     tasks = relationship('Task', back_populates='user')
 
     def __init__(self, username, email, password):
@@ -57,21 +63,23 @@ class User(db.Model, UserMixin):
         return f"User('{self.username}', '{self.email}')"
 
 
-class Task(db.Model):
+class Task(Base):
     """
     Task model representing tasks created by users.
     """
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text, nullable=True)
-    due_date = db.Column(db.DateTime, nullable=True)
-    priority = db.Column(db.String(20), nullable=True)
-    status = db.Column(db.String(20), default='incomplete')
-    completed = db.Column(db.Boolean, default=False)
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    __tablename__ = 'task'
+
+    id = Column(Integer, primary_key=True)
+    title = Column(String(100), nullable=False)
+    description = Column(Text, nullable=True)
+    due_date = Column(DateTime, nullable=True)
+    priority = Column(String(20), nullable=True)
+    status = Column(String(20), default='incomplete')
+    completed = Column(Boolean, default=False)
+    category_id = Column(Integer, ForeignKey('category.id'), nullable=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     user = relationship('User', back_populates='tasks')
 
     def __repr__(self):
@@ -96,24 +104,28 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 
-class Category(db.Model):
+class Category(Base):
     """
     Category model representing task categories.
     """
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
-    tasks = db.relationship('Task', backref='category', lazy=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    __tablename__ = 'category'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), nullable=False)
+    tasks = relationship('Task', backref='category', lazy=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 
-class Notification(db.Model):
+class Notification(Base):
     """
     Notification model representing notifications for users.
     """
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    message = db.Column(db.String(255), nullable=False)
-    is_read = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    __tablename__ = 'notification'
 
-    user = db.relationship('User', backref=db.backref('notifications', lazy=True))
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    message = Column(String(255), nullable=False)
+    is_read = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship('User', backref=backref('notifications', lazy=True))
