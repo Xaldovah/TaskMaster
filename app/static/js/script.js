@@ -1,143 +1,140 @@
-const accessToken = localStorage.getItem('access_token');
+(function () {
+  const accessToken = localStorage.getItem('access_token');
 
-if (accessToken) {
-	$.ajaxSetup({
-		headers: {
-			Authorization: `Bearer ${accessToken}`
-		}
+  if (accessToken) {
+    $.ajaxSetup({
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  }
+	function login(username, password) {
+		$.post(`/login`, { username, password })
+			.done(response => {
+				if (response.status === 200) {
+					localStorage.setItem('access_token', response.data.access_token);
+					window.location.href = '/dashboard';
+				} else {
+					console.error('Login failed:', response.data.error);
+				}
+			})
+			.fail(error => {
+				console.error('Login failed:', error);
+			});
+	}
+
+	function logout() {
+  		$.post(`/logout`)
+    			.done(response => {
+      				if (response.status === 200) {
+        				window.location.href = '/';
+      				} else {
+        				console.error('Logout failed:', response.data.error);
+      				}
+    			})
+    			.fail(error => {
+      				console.error('Logout failed:', error);
+    			});
+	}
+
+	$(document).ready(function () {
+		getTasks();
 	});
-}
 
-function login(username, password) {
-  $.post(`/login`, { username, password })
-    .done(response => {
-      if (response.status === 200) {
-        localStorage.setItem('access_token', response.data.access_token);
-        window.location.href = '/dashboard';
-      } else {
-        console.error('Login failed:', response.data.error);
-      }
-    })
-    .fail(error => {
-      console.error('Login failed:', error);
-    });
-}
+	function getTasks() {
+  		const authToken = accessToken();
 
-function logout() {
-  $.post(`/logout`)
-    .done(response => {
-      if (response.status === 200) {
-        window.location.href = '/';
-      } else {
-        console.error('Logout failed:', response.data.error);
-      }
-    })
-    .fail(error => {
-      console.error('Logout failed:', error);
-    });
-}
+		$.ajax({
+			url: `/tasks`,
+			type: 'GET',
+    			headers: {
+				'Authorization': `Bearer ${authToken}`
+			},
+			success: response => {
+				const taskList = response.data.tasks;
+				const taskListElement = $('#task-list');
 
-$(document).ready(function () {
-  getTasks();
-});
+				taskList.forEach(task => {
+					const taskElement = $('<div class="task"></div>');
 
-function getTasks() {
-  const authToken = accessToken();
+        				const taskTitle = $('<h3></h3>').text(task.title);
+        				const taskDescription = $('<p></p>').text(task.description);
+        				const taskDueDate = $('<span></span>').text(task.dueDate ? 'Due Date: ' + task.dueDate : 'No Due Date');
+        				const taskPriority = $('<span></span>').text('Priority: ' + task.priority);
+        				const taskStatus = $('<span></span>').text('Status: ' + task.status);
 
-  $.ajax({
-    url: `/tasks`,
-    type: 'GET',
-    headers: {
-      'Authorization': `Bearer ${authToken}`
-    },
-    success: response => {
-      const taskList = response.data.tasks;
-      const taskListElement = $('#task-list');
+        				taskElement.append(taskTitle, taskDescription, taskDueDate, taskPriority, taskStatus);
+        				taskListElement.append(taskElement);
+				});
 
-      taskList.forEach(task => {
-        const taskElement = $('<div class="task"></div>');
+      				console.log('Retrieved tasks:', taskList);
+			},
+			error: (xhr, textStatus, errorThrown) => {
+				console.error('Error fetching tasks:', errorThrown);
+      				console.log('XHR status:', xhr.status);
+      				console.log('Text status:', textStatus);
+			}
+		});
+	}
 
-        const taskTitle = $('<h3></h3>').text(task.title);
-        const taskDescription = $('<p></p>').text(task.description);
-        const taskDueDate = $('<span></span>').text(task.dueDate ? 'Due Date: ' + task.dueDate : 'No Due Date');
-        const taskPriority = $('<span></span>').text('Priority: ' + task.priority);
-        const taskStatus = $('<span></span>').text('Status: ' + task.status);
+	function createTask(title, description, dueDate, priority, updateUICallback) {
+		$.post(`/tasks`, { title, description, dueDate, priority })
+			.done(response => {
+				if (response.status === 201) {
+					console.log('Task created successfully:', response.data);
 
-        taskElement.append(taskTitle, taskDescription, taskDueDate, taskPriority, taskStatus);
-        taskListElement.append(taskElement);
-      });
+					if (typeof updateUICallback === 'function') {
+						updateUICallback();
+					}
+				} else {
+					console.error('Error creating task. Status code:', response.status);
+				}
+			})
+			.fail(error => {
+				console.error('Error creating task:', error);
+			});
+	}
 
-      console.log('Retrieved tasks:', taskList);
-    },
-    error: (xhr, textStatus, errorThrown) => {
-      console.error('Error fetching tasks:', errorThrown);
+	function updateTask(taskId, title, description, dueDate, priority, status, updateUICallback) {
+		$.ajax({
+			url: `/tasks/${taskId}`,
+			method: 'PUT',
+			data: { title, description, dueDate, priority, status }
+		})
+			.done(response => {
+				if (response.status === 200) {
+					console.log('Task updated successfully:', response.data);
 
-      console.log('XHR status:', xhr.status);
-      console.log('Text status:', textStatus);
-    }
-  });
-}
+					if (typeof updateUICallback === 'function') {
+						updateUICallback();
+					}
+				}
+			})
+			.fail(error => {
+				console.error('Error updating task:', error);
+			});
+	}
 
-
-function createTask(title, description, dueDate, priority, updateUICallback) {
-  $.post(`/tasks`, { title, description, dueDate, priority })
-    .done(response => {
-      if (response.status === 201) {
-        console.log('Task created successfully:', response.data);
-
-        if (typeof updateUICallback === 'function') {
-          updateUICallback();
-        }
-      } else {
-        console.error('Error creating task. Status code:', response.status);
-      }
-    })
-    .fail(error => {
-      console.error('Error creating task:', error);
-    });
-}
-
-
-function updateTask(taskId, title, description, dueDate, priority, status, updateUICallback) {
-  $.ajax({
-    url: `/tasks/${taskId}`,
-    method: 'PUT',
-    data: { title, description, dueDate, priority, status }
-  })
-    .done(response => {
-      if (response.status === 200) {
-        console.log('Task updated successfully:', response.data);
-
-        if (typeof updateUICallback === 'function') {
-          updateUICallback();
-        }
-      }
-    })
-    .fail(error => {
-      console.error('Error updating task:', error);
-    });
-}
-
-function deleteTask(taskId, updateUICallback) {
-  $.ajax({
-    url: `/tasks/${taskId}`,
-    method: 'DELETE'
-  })
-    .done(response => {
-      if (response.status === 200) {
-        console.log('Task deleted successfully');
-
-        if (typeof updateUICallback === 'function') {
-          updateUICallback();
-        }
-      } else {
-        console.error('Error deleting task:', response.data.error);
-      }
-    })
-    .fail(error => {
-      console.error('Error deleting task:', error);
-    });
-}
+	function deleteTask(taskId, updateUICallback) {
+		$.ajax({
+			url: `/tasks/${taskId}`,
+			method: 'DELETE'
+		})
+			.done(response => {
+				if (response.status === 200) {
+					console.log('Task deleted successfully');
+		
+					if (typeof updateUICallback === 'function') {
+						updateUICallback();
+					}
+				} else {
+					console.error('Error deleting task:', response.data.error);
+				}
+			})
+			.fail(error => {
+				console.error('Error deleting task:', error);
+			});
+	}
 
 function getUsers(updateUICallback) {
   $.get(`/users`)
