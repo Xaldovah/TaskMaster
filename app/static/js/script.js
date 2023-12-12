@@ -1,271 +1,139 @@
-(function () {
-  const accessToken = localStorage.getItem('access_token');
+const fetchTasks = async () => {
+  try {
+    const response = await fetch('/tasks');
+    const data = await response.json();
+    if (data.tasks) {
+      const taskListElement = document.getElementById('task-list');
+      taskListElement.innerHTML = '';
 
-  if (accessToken) {
-    $.ajaxSetup({
+      data.tasks.forEach((task) => {
+        const taskItem = document.createElement('tr');
+        taskItem.innerHTML = `
+          <td>${task.title}</td>
+          <td>${task.description || ''}</td>
+          <td>${task.due_date || ''}</td>
+          <td>${task.priority || ''}</td>
+          <td>${task.status}</td>
+          <td>${task.created_at}</td>
+          <td>${task.updated_at}</td>
+          <td>
+            <a href="/tasks/${task.id}/edit" class="btn btn-primary">Edit</a>
+            <a href="/tasks/${task.id}" class="btn btn-danger" data-confirm="Are you sure you want to delete this task?">Delete</a>
+          </td>
+        `;
+        taskListElement.appendChild(taskItem);
+      });
+    } else {
+      alert('Error fetching tasks');
+    }
+  } catch (error) {
+    console.error(error);
+    alert('Internal server error. Please try again later.');
+  }
+};
+
+fetchTasks();
+
+const createTaskForm = document.getElementById('create-task-form');
+
+createTaskForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const formData = new FormData(event.target);
+  const data = {
+    title: formData.get('title'),
+    description: formData.get('description'),
+    due_date: formData.get('due_date'),
+    priority: formData.get('priority'),
+    status: formData.get('status'),
+  };
+
+  try {
+    const response = await fetch('/tasks', {
+      method: 'POST',
       headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
     });
-  }
+    const result = await response.json();
 
-  function login(username, password) {
-    $.post(`/login`, { username, password })
-      .done(response => {
-        if (response.status === 200) {
-          localStorage.setItem('access_token', response.data.access_token);
-          window.location.href = '/dashboard';
-        } else {
-          console.error('Login failed:', response.data.error);
-        }
+    if (result.message === 'Task created successfully') {
+      alert('Task created successfully!');
+      createTaskForm.reset();
+      fetchTasks();
+    } else {
+      alert(result.error);
+    }
+  } catch (error) {
+    console.error(error);
+    alert('Internal server error. Please try again later.');
+  }
+});
+
+const editTaskForm = document.getElementById('edit-task-form');
+
+editTaskForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const taskId = document.getElementById('task-id').value;
+  const formData = new FormData(event.target);
+  const data = {
+    title: formData.get('title'),
+    description: formData.get('description'),
+    due_date: formData.get('due_date'),
+    priority: formData.get('priority'),
+    status: formData.get('status'),
+  };
+
+  try {
+    const response = await fetch(`/tasks/${taskId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    const result = await response.json();
+
+    if (result.task_id) {
+      alert('Task updated successfully!');
+      editTaskForm.reset();
+      fetchTasks();
+    } else {
+      alert(result.error);
+    }
+  } catch (error) {
+    console.error(error);
+    alert('Internal server error. Please try again later.');
+  }
+});
+
+const confirmDeleteButtons = document.querySelectorAll('[data-confirm]');
+
+confirmDeleteButtons.forEach((button) => {
+  button.addEventListener('click', (event) => {
+    event.preventDefault();
+
+    if (confirm(button.dataset.confirm)) {
+      const taskId = button.dataset.taskId;
+
+      fetch(`/tasks/${taskId}`, {
+        method: 'DELETE',
       })
-      .fail(error => {
-        console.error('Login failed:', error);
-      });
-  }
-
-  function logout() {
-    $.post(`/logout`)
-      .done(response => {
-        if (response.status === 200) {
-          window.location.href = '/';
-        } else {
-          console.error('Logout failed:', response.data.error);
-        }
-      })
-      .fail(error => {
-        console.error('Logout failed:', error);
-      });
-  }
-
-  $(document).ready(function () {
-    getTasks();
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.message === 'Task deleted successfully') {
+            alert('Task deleted successfully!');
+            fetchTasks();
+          } else {
+            alert(data.error);
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          alert('Internal server error. Please try again later.');
+        });
+    }
   });
-
-  function getTasks() {
-    const authToken = accessToken;
-
-    $.ajax({
-      url: `/tasks`,
-      type: 'GET',
-      headers: {
-        'Authorization': `Bearer ${authToken}`
-      },
-      success: response => {
-        const taskList = response.data.tasks;
-        const taskListElement = $('#task-list');
-
-        taskList.forEach(task => {
-          const taskElement = $('<div class="task"></div>');
-
-          const taskTitle = $('<h3></h3>').text(task.title);
-          const taskDescription = $('<p></p>').text(task.description);
-          const taskDueDate = $('<span></span>').text(task.dueDate ? 'Due Date: ' + task.dueDate : 'No Due Date');
-          const taskPriority = $('<span></span>').text('Priority: ' + task.priority);
-          const taskStatus = $('<span></span>').text('Status: ' + task.status);
-
-          taskElement.append(taskTitle, taskDescription, taskDueDate, taskPriority, taskStatus);
-          taskListElement.append(taskElement);
-        });
-
-        console.log('Retrieved tasks:', taskList);
-      },
-      error: (xhr, textStatus, errorThrown) => {
-        console.error('Error fetching tasks:', errorThrown);
-        console.log('XHR status:', xhr.status);
-        console.log('Text status:', textStatus);
-	console.log('Response Text:', xhr.responseText);
-      }
-    });
-  }
-
-  function createTask(title, description, dueDate, priority, updateUICallback) {
-    $.post(`/tasks`, { title, description, dueDate, priority })
-      .done(response => {
-        if (response.status === 201) {
-          console.log('Task created successfully:', response.data);
-
-          if (typeof updateUICallback === 'function') {
-            updateUICallback();
-          }
-        } else {
-          console.error('Error creating task. Status code:', response.status);
-        }
-      })
-      .fail(error => {
-        console.error('Error creating task:', error);
-      });
-  }
-
-  function updateTask(taskId, title, description, dueDate, priority, status, updateUICallback) {
-    $.ajax({
-      url: `/tasks/${taskId}`,
-      method: 'PUT',
-      data: { title, description, dueDate, priority, status }
-    })
-      .done(response => {
-        if (response.status === 200) {
-          console.log('Task updated successfully:', response.data);
-
-          if (typeof updateUICallback === 'function') {
-            updateUICallback();
-          }
-        }
-      })
-      .fail(error => {
-        console.error('Error updating task:', error);
-      });
-  }
-
-  function deleteTask(taskId, updateUICallback) {
-    $.ajax({
-      url: `/tasks/${taskId}`,
-      method: 'DELETE'
-    })
-      .done(response => {
-        if (response.status === 200) {
-          console.log('Task deleted successfully');
-
-          if (typeof updateUICallback === 'function') {
-            updateUICallback();
-          }
-        } else {
-          console.error('Error deleting task:', response.data.error);
-        }
-      })
-      .fail(error => {
-        console.error('Error deleting task:', error);
-      });
-  }
-
-  function getUsers(updateUICallback) {
-    $.get(`/users`)
-      .done(response => {
-        const users = response.data.users;
-        const userListElement = $('#user-list');
-
-        users.forEach(user => {
-          const userElement = $('<li class="user"></li>');
-          const userName = $('<span></span>').text('Username: ' + user.username);
-          const userEmail = $('<span></span>').text('Email: ' + user.email);
-
-          userElement.append(userName, userEmail);
-          userListElement.append(userElement);
-        });
-        console.log('Retrieved users:', users);
-
-        if (typeof updateUICallback === 'function') {
-          updateUICallback();
-        }
-      })
-      .fail(error => {
-        console.error('Error fetching users:', error);
-      });
-  }
-
-  function createUser(username, email, password, updateUICallback) {
-    $.post(`/register`, { username, email, password })
-      .done(response => {
-        if (response.status === 201) {
-          console.log('User created successfully');
-
-          if (typeof updateUICallback === 'function') {
-            updateUICallback();
-          }
-        } else {
-          console.error('Error creating user:', response.data.error);
-        }
-      })
-      .fail(error => {
-        console.error('Error creating user:', error);
-      });
-  }
-
-  function updateUser(userId, username, email, updateUICallback) {
-    $.ajax({
-      url: `/users/${userId}`,
-      method: 'PUT',
-      data: {
-        username,
-        email,
-      }
-    })
-      .done(response => {
-        if (response.status === 200) {
-          console.log('User updated successfully:', response.data);
-
-          if (typeof updateUICallback === 'function') {
-            updateUICallback();
-          }
-        } else {
-          console.error('Error updating user:', response.data.error);
-        }
-      })
-      .fail(error => {
-        console.error('Error updating user:', error);
-      });
-  }
-
-  function deleteUser(userId, updateUICallback) {
-    $.ajax({
-      url: `/users/${userId}`,
-      method: 'DELETE'
-    })
-      .done(response => {
-        if (response.status === 200) {
-          console.log('User deleted successfully');
-
-          if (typeof updateUICallback === 'function') {
-            updateUICallback();
-          }
-        } else {
-          console.error('Error deleting user:', response.data.error);
-        }
-      })
-      .fail(error => {
-        console.error('Error deleting user:', error);
-      });
-  }
-
-  function createNotificationElement(notification) {
-    const notificationElement = $('<div class="notification"></div>');
-    const notificationMessage = $('<p></p>').text(notification.message);
-    const notificationTimestamp = $('<span></span>').text('Timestamp: ' + notification.created_at);
-
-    notificationElement.append(notificationMessage, notificationTimestamp);
-
-    return notificationElement;
-  }
-
-  function createNotification(message) {
-    $.post(`/notifications`, { message })
-      .done(response => {
-        const notification = response.data.notification;
-        const notificationElement = createNotificationElement(notification);
-
-        $('#notification-list').append(notificationElement);
-        console.log('Notification created successfully:', response.data);
-      })
-      .fail(error => {
-        console.error('Error creating notification:', error);
-      });
-  }
-
-  function getNotifications() {
-    $.get(`/notifications`)
-      .done(response => {
-        const notifications = response.data.notifications;
-        const notificationListElement = $('#notification-list');
-
-        notifications.forEach(notification => {
-          const notificationElement = createNotificationElement(notification);
-          notificationListElement.append(notificationElement);
-        });
-        console.log('Retrieved notifications:', notifications);
-      })
-      .fail(error => {
-        console.error('Error fetching notifications:', error);
-      });
-  }
-
-})();
+});

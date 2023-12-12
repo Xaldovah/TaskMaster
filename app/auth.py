@@ -61,7 +61,8 @@ def login():
 
         if user and bcrypt.check_password_hash(user.password, password):
             access_token = create_access_token(identity=user.id)
-            return jsonify({'message': 'Login successful', 'access_token': access_token}), 200
+            return redirect(url_for('dashboard'), 302)
+            #return jsonify({'message': 'Login successful', 'access_token': access_token}), 200
         else:
             return jsonify({'error': 'Invalid credentials'}), 401
 
@@ -113,4 +114,5 @@ def logout():
     """
     current_user.logged_out_at = datetime.utcnow()
     session.commit()
-    return jsonify({'message': 'Logout successful'}), 200
+    return redirect(url_for('login')
+    #return jsonify({'message': 'Logout successful'}), 200

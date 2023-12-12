@@ -49,7 +49,8 @@ def get_tasks():
     try:
         user_id = get_jwt_identity()
         tasks_list = load_tasks_from_db(user_id)
-        return jsonify({'tasks': tasks_list})
+        return redirect(url_for('dashboard'))
+        #return jsonify({'tasks': tasks_list})
     except SQLAlchemyError as e:
         return jsonify({'error': str(e)}), 500
 
