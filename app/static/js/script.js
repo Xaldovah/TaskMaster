@@ -74,6 +74,7 @@
         console.error('Error fetching tasks:', errorThrown);
         console.log('XHR status:', xhr.status);
         console.log('Text status:', textStatus);
+	console.log('Response Text:', xhr.responseText);
       }
     });
   }
