@@ -62,12 +62,90 @@ function registerFormSubmit(event) {
     });
 }
 
-// Add submit event listeners to forms
-const loginForm = document.getElementById('login-form');
-loginForm.addEventListener('submit', loginFormSubmit);
+const loginForm = document.querySelector('.login-form');
+loginForm.addEventListener('submit', function (event) {
+  event.preventDefault();
 
-const registerForm = document.getElementById('register-form');
-registerForm.addEventListener('submit', registerFormSubmit);
+  const username = document.querySelector('#username').value;
+  const password = document.querySelector('#password').value;
+
+  // Validate username and password
+  if (!username || !password) {
+    // Display error message
+    flash('Please enter both username and password.', 'danger');
+    return;
+  }
+
+  // Send POST request to login endpoint
+  fetch('/login', {
+    method: 'POST',
+    body: JSON.stringify({ username, password })
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Login successful
+        // ...
+      } else {
+        // Display error message
+        flash(data.error, 'danger');
+      }
+    });
+
+  if (data.success) {
+    // Store access token (if used)
+    localStorage.setItem('accessToken', data.accessToken);
+    // Redirect to desired page
+    window.location.href = url_for('dashboard');
+  }
+
+  if (!data.success) {
+    // Display error message
+    flash(data.error, 'danger');
+  }
+});
+
+const registerForm = document.querySelector('.register-form');
+registerForm.addEventListener('submit', function (event) {
+  event.preventDefault();
+
+  const username = document.querySelector('#username').value;
+  const email = document.querySelector('#email').value;
+  const password = document.querySelector('#password').value;
+
+  // Validate username, email, and password
+  if (!username || !email || !password) {
+    // Display error message
+    flash('Please fill in all required fields.', 'danger');
+    return;
+  }
+
+  // Send POST request to register endpoint
+  fetch('/register', {
+    method: 'POST',
+    body: JSON.stringify({ username, email, password })
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Registration successful
+        // ...
+      } else {
+        // Display error message
+        flash(data.error, 'danger');
+      }
+    });
+
+  if (data.success) {
+    // Redirect to login page
+    window.location.href = url_for('login');
+  }
+
+  if (!data.success) {
+    // Display error message
+    flash(data.error, 'danger');
+  }
+});
 
 // Check for access token in local storage
 const accessToken = localStorage.getItem('access_token');

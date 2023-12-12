@@ -4,71 +4,84 @@ app.auth
 This module provides authentication routes for user registration, login, and logout.
 """
 
-from flask import jsonify, request, render_template, redirect, url_for
+from flask import jsonify, request, render_template, redirect, url_for, flash
 from flask_login import logout_user, login_required
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required
 from flask_login import current_user
+from flask_mail import Message, Mail
 from app import app, bcrypt
 from database import session
 from sqlalchemy.orm import sessionmaker
-from app.models import User
+from app.models import User, RegisterForm, LoginForm, ContactForm
 from datetime import datetime
 
-
-@app.route('/register', methods=['POST'])
-def create_user():
-    """
-    Register a new user.
-
-    Returns:
-        jsonify: JSON response with user information.
-    """
-    try:
-        data = request.get_json()
-        password = data.get('password')
-
-        # Hash password before saving
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-
-        new_user = User(
-            username=data['username'],
-            email=data.get('email'),
-            password=hashed_password
-        )
-        session.add(new_user)
-        session.commit()
-
-        return jsonify({'user_id': new_user.id, 'username': new_user.username}), 201
-    except Exception as e:
-        app.logger.error(f'Error during registration: {e}')
-        return jsonify({'error': 'Internal server error'}), 500
+mail = Mail(app)
 
 
-@app.route('/login', methods=['POST'])
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+  # Get request for register page
+  if request.method == 'GET':
+    return render_template('register.html')
+
+  # Handle POST request for registration
+  elif request.method == 'POST':
+    form = RegisterForm(request.form)
+    if form.validate_on_submit():
+      # Extract user data from form
+      username = form.username.data
+      email = form.email.data
+      password = form.password.data
+
+      # Create user object and save to database
+      user = User(username=username, email=email, password=password)
+      session.add(user)
+      session.commit()
+
+      # Flash success message and redirect to login page
+      flash('Registration successful! Please login.', 'success')
+      return redirect(url_for('login'))
+
+    # Flash error message and re-render register page with errors
+    else:
+      flash_errors(form)
+      return render_template('register.html', form=form)
+
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    """
-    User login.
+  # Get request for login page
+  if request.method == 'GET':
+    return render_template('login.html')
 
-    Returns:
-        jsonify: JSON response with login information.
-    """
-    try:
-        data = request.get_json()
-        username = data.get('username')
-        password = data.get('password')
+  # Handle POST request for login
+  elif request.method == 'POST':
+    form = LoginForm(request.form)
+    if form.validate_on_submit():
+      # Extract user credentials from form
+      username = form.username.data
+      password = form.password.data
 
-        user = User.query.filter_by(username=username).first()
+      # Authenticate user and check password
+      user = User.query.filter_by(username=username).first()
+      if user and bcrypt.check_password_hash(user.password, password):
+        # Generate access token and set user session
+        access_token = create_access_token(identity=user.id)
+        session['user_id'] = user.id
 
-        if user and bcrypt.check_password_hash(user.password, password):
-            access_token = create_access_token(identity=user.id)
-            return redirect(url_for('dashboard'), 302)
-            #return jsonify({'message': 'Login successful', 'access_token': access_token}), 200
-        else:
-            return jsonify({'error': 'Invalid credentials'}), 401
+        # Flash success message and redirect to home page
+        flash('Login successful!', 'success')
+        return redirect(url_for('dashboard'))
 
-    except Exception as e:
-        app.logger.error(f'Error during login: {e}')
-        return jsonify({'error': 'Internal server error'}), 500
+      # Flash error message and re-render login page with error
+      else:
+        flash('Invalid credentials.', 'danger')
+        return render_template('register.html', form=form)
+
+    # Flash error message and re-render login page with errors
+    else:
+      flash_errors(form)
+      return render_template('register.html', form=form)
 
 
 @app.route('/dashboard')
@@ -116,3 +129,29 @@ def logout():
     session.commit()
     return redirect(url_for('login'))
     #return jsonify({'message': 'Logout successful'}), 200
+
+
+@app.route('/about')
+def about():
+  # Render the about.html template with additional information
+  return render_template('about.html')
+
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    form = ContactForm(request.form)
+    if form.validate_on_submit():
+        # Get data from the form
+        name = form.name.data
+        email = form.email.data
+        message = form.message.data
+
+        # Send email
+        msg = Message('New Contact Form Submission', sender=email, recipients=['your_email@example.com'])
+        msg.body = f"Name: {name}\nEmail: {email}\nMessage: {message}"
+        mail.send(msg)
+
+        # Flash success message and render the contact page
+        flash('Your message has been sent.', 'success')
+        return render_template('contact.html', form=form)
+
+    return render_template('contact.html', form=form)
