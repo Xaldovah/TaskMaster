@@ -1,13 +1,11 @@
-(function () {
-  const accessToken = localStorage.getItem('access_token');
+const accessToken = localStorage.getItem('access_token');
 
-  if (accessToken) {
-    $.ajaxSetup({
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
-    });
-  }
+if (accessToken) {
+	$.ajaxSetup({
+		headers: {
+			Authorization: `Bearer ${accessToken}`
+		}
+	});
 }
 
 function login(username, password) {
