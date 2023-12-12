@@ -1,17 +1,17 @@
-const apiBaseUrl = '/';
+(function () {
+  const accessToken = localStorage.getItem('access_token');
 
-// Include the Authorization header
-const accessToken = localStorage.getItem('access_token');
-if (accessToken) {
-  $.ajaxSetup({
-    headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
-  });
+  if (accessToken) {
+    $.ajaxSetup({
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+  }
 }
 
 function login(username, password) {
-  $.post(`${apiBaseUrl}/login`, { username, password })
+  $.post(`/login`, { username, password })
     .done(response => {
       if (response.status === 200) {
         localStorage.setItem('access_token', response.data.access_token);
@@ -26,7 +26,7 @@ function login(username, password) {
 }
 
 function logout() {
-  $.post(`${apiBaseUrl}/logout`)
+  $.post(`/logout`)
     .done(response => {
       if (response.status === 200) {
         window.location.href = '/';
@@ -44,8 +44,15 @@ $(document).ready(function () {
 });
 
 function getTasks() {
-  $.get(`${apiBaseUrl}/tasks`)
-    .done(response => {
+  const authToken = accessToken();
+
+  $.ajax({
+    url: `/tasks`,
+    type: 'GET',
+    headers: {
+      'Authorization': `Bearer ${authToken}`
+    },
+    success: response => {
       const taskList = response.data.tasks;
       const taskListElement = $('#task-list');
 
@@ -63,14 +70,19 @@ function getTasks() {
       });
 
       console.log('Retrieved tasks:', taskList);
-    })
-    .fail(error => {
-      console.error('Error fetching tasks:', error);
-    });
+    },
+    error: (xhr, textStatus, errorThrown) => {
+      console.error('Error fetching tasks:', errorThrown);
+
+      console.log('XHR status:', xhr.status);
+      console.log('Text status:', textStatus);
+    }
+  });
 }
 
+
 function createTask(title, description, dueDate, priority, updateUICallback) {
-  $.post(`${apiBaseUrl}/tasks`, { title, description, dueDate, priority })
+  $.post(`/tasks`, { title, description, dueDate, priority })
     .done(response => {
       if (response.status === 201) {
         console.log('Task created successfully:', response.data);
@@ -90,7 +102,7 @@ function createTask(title, description, dueDate, priority, updateUICallback) {
 
 function updateTask(taskId, title, description, dueDate, priority, status, updateUICallback) {
   $.ajax({
-    url: `${apiBaseUrl}/tasks/${taskId}`,
+    url: `/tasks/${taskId}`,
     method: 'PUT',
     data: { title, description, dueDate, priority, status }
   })
@@ -110,7 +122,7 @@ function updateTask(taskId, title, description, dueDate, priority, status, updat
 
 function deleteTask(taskId, updateUICallback) {
   $.ajax({
-    url: `${apiBaseUrl}/tasks/${taskId}`,
+    url: `/tasks/${taskId}`,
     method: 'DELETE'
   })
     .done(response => {
@@ -130,7 +142,7 @@ function deleteTask(taskId, updateUICallback) {
 }
 
 function getUsers(updateUICallback) {
-  $.get(`${apiBaseUrl}/users`)
+  $.get(`/users`)
     .done(response => {
       const users = response.data.users;
       const userListElement = $('#user-list');
@@ -156,7 +168,7 @@ function getUsers(updateUICallback) {
 }
 
 function createUser(username, email, password, updateUICallback) {
-  $.post(`${apiBaseUrl}/register`, { username, email, password })
+  $.post(`/register`, { username, email, password })
     .done(response => {
       if (response.status === 201) {
         console.log('User created successfully');
@@ -175,7 +187,7 @@ function createUser(username, email, password, updateUICallback) {
 
 function updateUser(userId, username, email, defaultTaskView, enableNotifications, themePreference, updateUICallback) {
   $.ajax({
-    url: `${apiBaseUrl}/users/${userId}`,
+    url: `/users/${userId}`,
     method: 'PUT',
     data: {
       username,
@@ -203,7 +215,7 @@ function updateUser(userId, username, email, defaultTaskView, enableNotification
 
 function deleteUser(userId, updateUICallback) {
   $.ajax({
-    url: `${apiBaseUrl}/users/${userId}`,
+    url: `/users/${userId}`,
     method: 'DELETE'
   })
     .done(response => {
@@ -233,7 +245,7 @@ function createNotificationElement(notification) {
 }
 
 function createNotification(message) {
-  $.post(`${apiBaseUrl}/notifications`, { message })
+  $.post(`/notifications`, { message })
     .done(response => {
       const notification = response.data.notification;
       const notificationElement = createNotificationElement(notification);
@@ -248,7 +260,7 @@ function createNotification(message) {
 }
 
 function getNotifications() {
-  $.get(`${apiBaseUrl}/notifications`)
+  $.get(`/notifications`)
     .done(response => {
       const notifications = response.data.notifications;
       const notificationListElement = $('#notification-list');
