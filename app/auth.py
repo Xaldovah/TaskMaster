@@ -114,5 +114,5 @@ def logout():
     """
     current_user.logged_out_at = datetime.utcnow()
     session.commit()
-    return redirect(url_for('login')
+    return redirect(url_for('login'))
     #return jsonify({'message': 'Logout successful'}), 200
