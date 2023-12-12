@@ -136,138 +136,133 @@
 			});
 	}
 
-function getUsers(updateUICallback) {
-  $.get(`/users`)
-    .done(response => {
-      const users = response.data.users;
-      const userListElement = $('#user-list');
+	function getUsers(updateUICallback) {
+		$.get(`/users`)
+			.done(response => {
+				const users = response.data.users;
+				const userListElement = $('#user-list');
 
-      users.forEach(user => {
-        const userElement = $('<li class="user"></li>');
-        const userName = $('<span></span>').text('Username: ' + user.username);
-        const userEmail = $('<span></span>').text('Email: ' + user.email);
+				users.forEach(user => {
+					const userElement = $('<li class="user"></li>');
+					const userName = $('<span></span>').text('Username: ' + user.username);
+					const userEmail = $('<span></span>').text('Email: ' + user.email);
 
-        userElement.append(userName, userEmail);
-        userListElement.append(userElement);
-      });
+					userElement.append(userName, userEmail);
+					userListElement.append(userElement);
+				});
+				console.log('Retrieved users:', users);
 
-      console.log('Retrieved users:', users);
+				if (typeof updateUICallback === 'function') {
+					updateUICallback();
+				}
+			})
+			.fail(error => {
+				console.error('Error fetching users:', error);
+			});
+	}
 
-      if (typeof updateUICallback === 'function') {
-        updateUICallback();
-      }
-    })
-    .fail(error => {
-      console.error('Error fetching users:', error);
-    });
-}
+	function createUser(username, email, password, updateUICallback) {
+		$.post(`/register`, { username, email, password })
+			.done(response => {
+				if (response.status === 201) {
+					console.log('User created successfully');
 
-function createUser(username, email, password, updateUICallback) {
-  $.post(`/register`, { username, email, password })
-    .done(response => {
-      if (response.status === 201) {
-        console.log('User created successfully');
+					if (typeof updateUICallback === 'function') {
+						updateUICallback();
+					}
+				} else {
+					console.error('Error creating user:', response.data.error);
+				}
+			})
+			.fail(error => {
+				console.error('Error creating user:', error);
+			});
+	}
 
-        if (typeof updateUICallback === 'function') {
-          updateUICallback();
-        }
-      } else {
-        console.error('Error creating user:', response.data.error);
-      }
-    })
-    .fail(error => {
-      console.error('Error creating user:', error);
-    });
-}
+	function updateUser(userId, username, email, updateUICallback) {
+		$.ajax({
+			url: `/users/${userId}`,
+			method: 'PUT',
+			data: {
+				username,
+				email,
+			}
+		})
+			.done(response => {
+				if (response.status === 200) {
+					console.log('User updated successfully:', response.data);
 
-function updateUser(userId, username, email, defaultTaskView, enableNotifications, themePreference, updateUICallback) {
-  $.ajax({
-    url: `/users/${userId}`,
-    method: 'PUT',
-    data: {
-      username,
-      email,
-      defaultTaskView,
-      enableNotifications,
-      themePreference
-    }
-  })
-    .done(response => {
-      if (response.status === 200) {
-        console.log('User updated successfully:', response.data);
+					if (typeof updateUICallback === 'function') {
+						updateUICallback();
+					}
+				} else {
+					console.error('Error updating user:', response.data.error);
+				}
+			})
+			.fail(error => {
+				console.error('Error updating user:', error);
+			});
+	}
 
-        if (typeof updateUICallback === 'function') {
-          updateUICallback();
-        }
-      } else {
-        console.error('Error updating user:', response.data.error);
-      }
-    })
-    .fail(error => {
-      console.error('Error updating user:', error);
-    });
-}
+	function deleteUser(userId, updateUICallback) {
+		$.ajax({
+			url: `/users/${userId}`,
+			method: 'DELETE'
+		})
+			.done(response => {
+				if (response.status === 200) {
+					console.log('User deleted successfully');
 
-function deleteUser(userId, updateUICallback) {
-  $.ajax({
-    url: `/users/${userId}`,
-    method: 'DELETE'
-  })
-    .done(response => {
-      if (response.status === 200) {
-        console.log('User deleted successfully');
+					if (typeof updateUICallback === 'function') {
+						updateUICallback();
+					}
+				} else {
+					console.error('Error deleting user:', response.data.error);
+				}
+			})
+			.fail(error => {
+				console.error('Error deleting user:', error);
+			});
+	}
 
-        if (typeof updateUICallback === 'function') {
-          updateUICallback();
-        }
-      } else {
-        console.error('Error deleting user:', response.data.error);
-      }
-    })
-    .fail(error => {
-      console.error('Error deleting user:', error);
-    });
-}
+	function createNotificationElement(notification) {
+		const notificationElement = $('<div class="notification"></div>');
+		const notificationMessage = $('<p></p>').text(notification.message);
+		const notificationTimestamp = $('<span></span>').text('Timestamp: ' + notification.created_at);
 
-function createNotificationElement(notification) {
-  const notificationElement = $('<div class="notification"></div>');
-  const notificationMessage = $('<p></p>').text(notification.message);
-  const notificationTimestamp = $('<span></span>').text('Timestamp: ' + notification.created_at);
+		notificationElement.append(notificationMessage, notificationTimestamp);
 
-  notificationElement.append(notificationMessage, notificationTimestamp);
+		return notificationElement;
+	}
 
-  return notificationElement;
-}
+	function createNotification(message) {
+		$.post(`/notifications`, { message })
+			.done(response => {
+				const notification = response.data.notification;
+				const notificationElement = createNotificationElement(notification);
 
-function createNotification(message) {
-  $.post(`/notifications`, { message })
-    .done(response => {
-      const notification = response.data.notification;
-      const notificationElement = createNotificationElement(notification);
+				$('#notification-list').append(notificationElement);
+				console.log('Notification created successfully:', response.data);
+			})
+			.fail(error => {
+				console.error('Error creating notification:', error);
+			});
+	}
 
-      $('#notification-list').append(notificationElement);
+	function getNotifications() {
+		$.get(`/notifications`)
+			.done(response => {
+				const notifications = response.data.notifications;
+				const notificationListElement = $('#notification-list');
 
-      console.log('Notification created successfully:', response.data);
-    })
-    .fail(error => {
-      console.error('Error creating notification:', error);
-    });
-}
-
-function getNotifications() {
-  $.get(`/notifications`)
-    .done(response => {
-      const notifications = response.data.notifications;
-      const notificationListElement = $('#notification-list');
-
-      notifications.forEach(notification => {
-        const notificationElement = createNotificationElement(notification);
-        notificationListElement.append(notificationElement);
-      });
-
-      console.log('Retrieved notifications:', notifications);
-    })
-    .fail(error => {
-      console.error('Error fetching notifications:', error);
-    });
+				notifications.forEach(notification => {
+					const notificationElement = createNotificationElement(notification);
+					notificationListElement.append(notificationElement);
+				});
+				console.log('Retrieved notifications:', notifications);
+			})
+			.fail(error => {
+				console.error('Error fetching notifications:', error);
+			});
+	}
 }
