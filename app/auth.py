@@ -42,34 +42,6 @@ def register():
             return render_template('register.html', form=form)
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'GET':
-        return render_template('register.html', form=LoginForm())
-
-    elif request.method == 'POST':
-        form = LoginForm(request.form)
-        if form.validate_on_submit():
-            username = form.username.data
-            password = form.password.data
-
-            user = User.query.filter_by(username=username).first()
-            if user and bcrypt.check_password_hash(user.password, password):
-                access_token = create_access_token(identity=user.id)
-                flash('Login successful!', 'success')
-                return redirect(url_for('dashboard'))
-
-            else:
-                flash('Invalid credentials.', 'danger')
-                return render_template('register.html', form=form)
-
-        else:
-            for field, errors in form.errors.items():
-                for error in errors:
-                    flash(f'{field.capitalize()}: {error}', 'danger')
-            return render_template('register.html', form=form)
-
-
 @app.route('/dashboard')
 def dashboard():
     """
