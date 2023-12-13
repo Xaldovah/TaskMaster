@@ -112,33 +112,3 @@ function getAllUsers() {
 
 // Call the function on page load
 document.addEventListener('DOMContentLoaded', getAllUsers);
-
-// Function to handle delete user confirmation
-function deleteUserConfirmation() {
-  const confirmation = confirm('Are you sure you want to delete your account?');
-
-  if (confirmation) {
-    fetch('/users/' + currentUserId, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
-    }).then(response => response.json())
-      .then(data => {
-        if (data.message === 'User deleted successfully') {
-          localStorage.removeItem('access_token');
-          window.location.href = '/';
-        } else {
-          alert('Error deleting user.');
-        }
-      })
-      .catch(error => {
-        console.error(error);
-        alert('Internal server error. Please try again later.');
-      });
-  }
-}
-
-// Bind click event listener to delete button
-const deleteButton = document.getElementById('delete-user-button');
-deleteButton.addEventListener('click', deleteUserConfirmation);
