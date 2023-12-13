@@ -134,10 +134,11 @@ def about():
   # Render the about.html template with additional information
   return render_template('about.html')
 
+
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
-    return render_template('contact.html', form=form)
-    form = ContactForm(request.form)
+    form = ContactForm()
+
     if form.validate_on_submit():
         # Get data from the form
         name = form.name.data
@@ -149,8 +150,8 @@ def contact():
         msg.body = f"Name: {name}\nEmail: {email}\nMessage: {message}"
         mail.send(msg)
 
-        # Flash success message and render the contact page
+        # Flash success message and redirect to the contact page
         flash('Your message has been sent.', 'success')
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('contact'))
 
     return render_template('contact.html', form=form)
