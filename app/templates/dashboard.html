@@ -9,8 +9,6 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="/static/js/main.js"></script>
-    <script src="/static/js/script.js"></script>
     <title>Dashboard</title>
 </head>
 <body>
@@ -18,6 +16,7 @@
     <header>
         <h1>Welcome to Your Dashboard, {{ current_user.username }}!</h1>
         <p>Last Login: {{ current_user.last_login }}</p>
+	<button id="logout-button">Logout</button>
     </header>
 
     <section>
@@ -73,5 +72,7 @@
     <footer>
         <p>© 2023 TaskMaster</p>
     </footer>
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/script.js"></script>
 </body>
 </html>
