@@ -40,7 +40,7 @@ def get_tasks():
             'user_id': task.user_id,
             'created_at': task.created_at.strftime('%Y-%m-%d %H:%M:%S')
         })
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('/'))
     # return jsonify({'tasks': task_list})
 
 

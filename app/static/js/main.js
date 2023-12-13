@@ -1,3 +1,64 @@
+function loginFormSubmit(event) {
+  event.preventDefault();
+
+  const username = document.getElementById('login-username').value;
+  const password = document.getElementById('login-password').value;
+
+  fetch('/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      username: username,
+      password: password
+    })
+  }).then(response => response.json())
+    .then(data => {
+      if (data.message === 'Login successful') {
+        localStorage.setItem('access_token', data.access_token);
+        window.location.href = '/dashboard';
+      } else {
+        alert(data.error);
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      alert('Internal server error. Please try again later.');
+    });
+}
+
+function registerFormSubmit(event) {
+  event.preventDefault();
+
+  const username = document.getElementById('register-username').value;
+  const email = document.getElementById('register-email').value;
+  const password = document.getElementById('register-password').value;
+
+  fetch('/register', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      username: username,
+      email: email,
+      password: password
+    })
+  }).then(response => response.json())
+    .then(data => {
+      if (data.user_id) {
+        alert('Registration successful. Please login to continue.');
+      } else {
+        alert(data.error);
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      alert('Internal server error. Please try again later.');
+    });
+}
+
 // Check for access token in local storage
 const accessToken = localStorage.getItem('access_token');
 
