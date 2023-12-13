@@ -19,7 +19,7 @@
                     <form class="login-form">
                         <input type="email" class="input-box" id="login-email" name="email" placeholder="Enter Email" required>
                         <input type="password" class="input-box" id="login-password" name="password" placeholder="Password" required>
-                        <button type="submit" class="submit-btn">Submit</button>
+                        <button type="submit" onsubmit="retrieveData(event)" class="submit-btn">Submit</button>
                         <input type="checkbox"><span>Remember Me</span>
                     </form>
                     <button type="button" class="btn" onclick="openRegister()">New User?</button>

@@ -1,31 +1,27 @@
-function loginFormSubmit(event) {
-  event.preventDefault();
+function retrieveData(event) {
+    event.preventDefault(); // Prevent form submission
 
-  const username = document.getElementById('login-username').value;
-  const password = document.getElementById('login-password').value;
+    let email, password;
+    email = document.getElementById("login-email").value;
+    password = document.getElementById("login-password").value;
 
-  fetch('/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      username: username,
-      password: password
-    })
-  }).then(response => response.json())
-    .then(data => {
-      if (data.message === 'Login successful') {
-        localStorage.setItem('access_token', data.access_token);
-        window.location.href = '/dashboard';
-      } else {
-        alert(data.error);
-      }
-    })
-    .catch(error => {
-      console.error(error);
-      alert('Internal server error. Please try again later.');
-    });
+    let user_records = JSON.parse(localStorage.getItem("users")) || [];
+
+    if (user_records.some((v) => v.email === email && v.password === password)) {
+        alert("Login Successful");
+
+        // Get the current user
+        let current_user = user_records.filter((v) => v.email === email && v.password === password)[0];
+
+        // Save user details in localStorage
+        localStorage.setItem("name", current_user.name);
+        localStorage.setItem("email", current_user.email);
+
+        // Redirect to the dashboard
+        window.location.href = "dashboard.html";
+    } else {
+        alert("Login Failed. Please check your email and password.");
+    }
 }
 
 var card = document.getElementById("card");
