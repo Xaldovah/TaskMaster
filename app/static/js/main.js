@@ -28,35 +28,25 @@ function loginFormSubmit(event) {
     });
 }
 
-function registerFormSubmit(event) {
-  event.preventDefault();
+var card = document.getElementById("card");
 
-  const username = document.getElementById('register-username').value;
-  const email = document.getElementById('register-email').value;
-  const password = document.getElementById('register-password').value;
+function openRegister() {
+	card.style.transform = "rotateY(-180deg)";
+}
 
-  fetch('/register', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      username: username,
-      email: email,
-      password: password
-    })
-  }).then(response => response.json())
-    .then(data => {
-      if (data.user_id) {
-        alert('Registration successful. Please login to continue.');
-      } else {
-        alert(data.error);
-      }
-    })
-    .catch(error => {
-      console.error(error);
-      alert('Internal server error. Please try again later.');
-    });
+function openLogin(){
+	card.style.transform = "rotateY(0deg)";
+}
+
+function saveData() {
+	let name, email, password;
+        name = document.getElementById("name").value;
+        email = document.getElementById("email").value;
+        password = document.getElementById("password").value;
+
+        localStorage.setItem("name", name);
+        localStorage.setItem("email", email);
+        localStorage.setItem("password", password);
 }
 
 // Function to handle logout
