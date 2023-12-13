@@ -84,31 +84,3 @@ function logout() {
 // Add click event listener to logout button
 // const logoutButton = document.getElementById('logout-button');
 // logoutButton.addEventListener('click', logout);
-
-// Function to fetch and display all users
-function getAllUsers() {
-  fetch('/users')
-    .then(response => response.json())
-    .then(data => {
-      if (Array.isArray(data)) {
-        // Update the user list in the UI
-        const userListElement = document.getElementById('users-list');
-        userListElement.innerHTML = '';
-
-        for (const user of data) {
-          const userItem = document.createElement('li');
-          userItem.textContent = user.username;
-          userListElement.appendChild(userItem);
-        }
-      } else {
-        alert('Error fetching users');
-      }
-    })
-    .catch(error => {
-      console.error(error);
-      alert('Internal server error. Please try again later.');
-    });
-}
-
-// Call the function on page load
-document.addEventListener('DOMContentLoaded', getAllUsers);
