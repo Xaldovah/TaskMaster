@@ -82,8 +82,8 @@ function logout() {
 }
 
 // Add click event listener to logout button
-const logoutButton = document.getElementById('logout-button');
-logoutButton.addEventListener('click', logout);
+// const logoutButton = document.getElementById('logout-button');
+// logoutButton.addEventListener('click', logout);
 
 // Function to fetch and display all users
 function getAllUsers() {

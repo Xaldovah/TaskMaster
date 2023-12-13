@@ -1,6 +1,6 @@
 const fetchTasks = async () => {
   try {
-    const response = await fetch('/tasks');
+    const response = await fetch('/');
     const data = await response.json();
     if (data.tasks) {
       const taskListElement = document.getElementById('task-list');
@@ -31,43 +31,6 @@ const fetchTasks = async () => {
 };
 
 fetchTasks();
-
-const createTaskForm = document.getElementById('create-task-form');
-
-createTaskForm.addEventListener('submit', async (event) => {
-  event.preventDefault();
-
-  const formData = new FormData(event.target);
-  const data = {
-    title: formData.get('title'),
-    description: formData.get('description'),
-    due_date: formData.get('due_date'),
-    priority: formData.get('priority'),
-    status: formData.get('status'),
-  };
-
-  try {
-    const response = await fetch('/tasks', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    const result = await response.json();
-
-    if (result.message === 'Task created successfully') {
-      alert('Task created successfully!');
-      createTaskForm.reset();
-      fetchTasks();
-    } else {
-      alert(result.error);
-    }
-  } catch (error) {
-    console.error(error);
-    alert('Internal server error. Please try again later.');
-  }
-});
 
 const editTaskForm = document.getElementById('edit-task-form');
 
