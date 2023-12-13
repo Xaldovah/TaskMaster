@@ -137,4 +137,21 @@ def about():
 
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
-    return render_template('contact.html', form=form)
+    form = ContactForm()
+
+    if form.validate_on_submit():
+        # Get data from the form
+        name = form.name.data
+        email = form.email.data
+        message = form.message.data
+
+        # Send email
+        msg = Message('New Contact Form Submission', sender=email, recipients=['your_email@example.com'])
+        msg.body = f"Name: {name}\nEmail: {email}\nMessage: {message}"
+        mail.send(msg)
+
+        # Flash success message and redirect to the contact page
+        flash('Your message has been sent.', 'success')
+        return redirect(url_for('contact'))
+
+    return render_template('contact.html')
