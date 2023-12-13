@@ -23,12 +23,10 @@ const fetchTasks = async () => {
         `;
         taskListElement.appendChild(taskItem);
       });
-    } else {
-      alert('Error fetching tasks');
     }
   } catch (error) {
-    console.error(error);
-    alert('Internal server error. Please try again later.');
+	  console.error(error);
+	  alert('Internal server error. Please try again later.');
   }
 };
 
