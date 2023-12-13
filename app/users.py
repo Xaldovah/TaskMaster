@@ -5,24 +5,15 @@ user management.
 
 from flask import jsonify, request, redirect, url_for, current_app, render_template
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app import app, bcrypt
+from app import app, bcrypt, db
 from app.auth import *
 from app.models import User
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
-from database import engine, session
-from sqlalchemy import text
-
-
-def load_users_from_db():
-    with engine.connect() as conn:
-        query = text("SELECT * FROM user")
-        res = conn.execute(query)
-        users = [dict(row) for row in res.fetchall()]
-        return users
 
 
 @app.route('/users', methods=['GET'])
+@jwt_required()
 def get_users():
     """
     Retrieve a list of all users.
@@ -30,10 +21,22 @@ def get_users():
     :return: JSON response with the list of users.
     """
     try:
-        user_list = load_users_from_db()
-        return render_template('users.html', users=user_list)
+         users = User.query.all()
+         user_list = []
+         
+         for user in users:
+             user_data = {
+                     'user_id': user.id,
+                     'username': user.username,
+                     'email': user.email,
+                     'password': user.password,
+                     'created_at': user.created_at.strftime('%Y-%m-%d %H:%M:%S') if user.created_at else None
+             }
+             user_list.append(user_data)
+         # return jsonify({'users': user_list})
+         return render_template('users.html', users=user_list)
     except SQLAlchemyError as e:
-        return jsonify({'error': f'Database error: {str(e)}'}), 500
+         return jsonify({'error': f'Database error: {str(e)}'}), 500
 
 
 @app.route('/users/<int:user_id>', methods=['PUT'])
@@ -66,7 +69,7 @@ def update_user(user_id):
         if 'theme_preference' in data:
             user.theme_preference = data['theme_preference']
 
-        session.commit()
+        db.session.commit()
 
         return jsonify({
             'user_id': user.id,
@@ -77,7 +80,7 @@ def update_user(user_id):
         })
 
     except SQLAlchemyError as e:
-        session.rollback()
+        db.session.rollback()
         return jsonify({'error': f'Database error: {str(e)}'}), 500
 
 
@@ -95,7 +98,7 @@ def delete_user(user_id):
     if user is None:
         return jsonify({'error': 'User not found'}), 404
 
-    session.delete(user)
-    session.commit()
+    db.session.delete(user)
+    db.session.commit()
 
     return jsonify({'message': 'User deleted successfully'}), 200

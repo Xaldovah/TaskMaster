@@ -9,9 +9,7 @@ from flask_login import logout_user, login_required
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required
 from flask_login import current_user
 from flask_mail import Message, Mail
-from app import app, bcrypt
-from database import session
-from sqlalchemy.orm import sessionmaker
+from app import app, bcrypt, db
 from app.models import User, RegisterForm, LoginForm, ContactForm
 from datetime import datetime
 
@@ -35,8 +33,8 @@ def register():
 
       # Create user object and save to database
       user = User(username=username, email=email, password=password)
-      session.add(user)
-      session.commit()
+      db.session.add(user)
+      db.session.commit()
 
       # Flash success message and redirect to login page
       flash('Registration successful! Please login.', 'success')
@@ -52,7 +50,7 @@ def register():
 def login():
   # Get request for login page
   if request.method == 'GET':
-    return render_template('login.html')
+    return render_template('register.html')
 
   # Handle POST request for login
   elif request.method == 'POST':
@@ -67,7 +65,7 @@ def login():
       if user and bcrypt.check_password_hash(user.password, password):
         # Generate access token and set user session
         access_token = create_access_token(identity=user.id)
-        session['user_id'] = user.id
+        db.session['user_id'] = user.id
 
         # Flash success message and redirect to home page
         flash('Login successful!', 'success')
@@ -126,7 +124,7 @@ def logout():
         jsonify: JSON response with logout information.
     """
     current_user.logged_out_at = datetime.utcnow()
-    session.commit()
+    db.session.commit()
     return redirect(url_for('login'))
     #return jsonify({'message': 'Logout successful'}), 200
 
@@ -138,6 +136,7 @@ def about():
 
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
+    return render_template('contact.html', form=form)
     form = ContactForm(request.form)
     if form.validate_on_submit():
         # Get data from the form
@@ -152,6 +151,6 @@ def contact():
 
         # Flash success message and render the contact page
         flash('Your message has been sent.', 'success')
-        return render_template('contact.html', form=form)
+        return redirect(url_for('dashboard'))
 
     return render_template('contact.html', form=form)

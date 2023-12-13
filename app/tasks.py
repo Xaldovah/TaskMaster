@@ -4,13 +4,10 @@ Module Description: This module contains API endpoints related to tasks.
 
 from flask import jsonify, request, redirect, url_for, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app import app, celery
+from app import app, celery, db
 from app.models import User, Task, Notification
-from database import engine, session
 from . import socketio
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import text
 from datetime import datetime, timedelta
 from flask import render_template
 
@@ -22,37 +19,29 @@ def index():
     return render_template('index.html')
 
 
-Session = sessionmaker(bind=engine)
-
-def load_tasks(user_id):
-    """
-    Load tasks from the database for a specific user.
-
-    :param user_id: The ID of the user.
-    :return: List of task dictionaries.
-    """
-    with engine.connect() as conn:
-        query = text("SELECT * FROM tasks WHERE user_id = :user_id")
-        res = conn.execute(query, user_id=user_id)
-        tasks = [dict(row) for row in res.fetchall()]
-    return tasks
-
-
 @app.route('/tasks', methods=['GET'])
 @jwt_required()
 def get_tasks():
     """
     Retrieve tasks for the current user.
-
-    :return: JSON response with the list of tasks.
+    return: JSON response with the list of tasks.
     """
-    try:
-        user_id = get_jwt_identity()
-        tasks_list = load_tasks_from_db(user_id)
-        return redirect(url_for('dashboard'))
-        #return jsonify({'tasks': tasks_list})
-    except SQLAlchemyError as e:
-        return jsonify({'error': str(e)}), 500
+    tasks = Task.query.all()
+    task_list = []
+    for task in tasks:
+        task_list.append({
+            'id': task.id,
+            'title': task.title,
+            'description': task.description,
+            'due_date': task.due_date.strftime('%Y-%m-%d') if task.due_date else None,
+            'priority': task.priority,
+            'status': task.status,
+            'category_id': task.category_id,
+            'user_id': task.user_id,
+            'created_at': task.created_at.strftime('%Y-%m-%d %H:%M:%S')
+        })
+    return redirect(url_for('dashboard'))
+    # return jsonify({'tasks': task_list})
 
 
 @app.route('/tasks', methods=['POST'])
@@ -79,8 +68,8 @@ def create_task():
             category_id=data.get('category_id'),
             user_id=data['user_id']
         )
-        session.add(new_task)
-        session.commit()
+        db.session.add(new_task)
+        db.session.commit()
 
         # Log the created task information
         current_app.logger.info(f'New task created: {new_task.title}')
@@ -90,17 +79,13 @@ def create_task():
         send_notification.apply_async((new_task.user_id, notification_message), eta=notification_date)
         socketio.emit('new_task', {'message': f'New task created: {new_task.title}'})
 
-        return jsonify(
-            {
-                "message": "Task created successfully",
-                "task": dict(new_task)
-            }
-        ), 201
+        return redirect(url_for('dashboard'))
+        #return jsonify({"message": "Task created successfully", "task": dict(new_task}), 201
     except SQLAlchemyError as e:
-        session.rollback()
+        db.session.rollback()
         return jsonify({"error": str(e)}), 500
     finally:
-        session.close()
+        db.session.close()
 
 
 @app.route('/tasks/<int:task_id>', methods=['PUT'])
@@ -132,7 +117,7 @@ def update_task(task_id):
 
     task.updated_at = datetime.utcnow()
 
-    session.commit()
+    db.session.commit()
 
     return jsonify({
         'task_id': task.id,
@@ -161,8 +146,8 @@ def delete_task(task_id):
     except NoResultFound:
         return jsonify({'error': 'Task not found'}), 404
 
-    session.delete(task)
-    session.commit()
+    db.session.delete(task)
+    db.session.commit()
 
     return jsonify({'message': 'Task deleted successfully'}), 200
 
@@ -181,8 +166,8 @@ def send_notification(user, message):
             message=message
         )
 
-        session.add(new_notis)
-        session.commit()
+        db.session.add(new_notis)
+        db.session.commit()
 
         current_app.logger.info(f'New notification created: {new_notis.message}')
 
@@ -202,6 +187,6 @@ def disable_notifications(task_id):
         return jsonify({'error': 'Task not found'}), 404
 
     task.notifications_enabled = False
-    session.commit()
+    db.session.commit()
 
     return jsonify({'message': 'Notifications disabled for the task'}), 200
