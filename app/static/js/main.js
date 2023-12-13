@@ -1,27 +1,3 @@
-function retrieveData() {
-	let email, password;
-	email = document.getElementById("email").value;
-	password = document.getElementById("password").value;
-
-	let user_record = new Array();
-	user_record = JSON.parse(localStorage.getItem("users")) ? JSON.parse(localStorage.getItem("users")) : [];
-	if(user_record.some((v)=> {
-		return v.email===email && v.password===password
-	})){
-		alert("Login Successful")
-		let current_user = user_record.filter((v)=> {
-			return v.email===email && v.password===password
-		})[0]
-
-		localStorage.setItem("name", current_user.name);
-		localStorage.setItem("email", current_user.email);
-		window.location.href="dashboard.html";
-	}
-	else {
-		alert("Login Fail");
-	}
-}
-
 var card = document.getElementById("card");
 
 function openRegister() {
@@ -33,51 +9,49 @@ function openLogin(){
 }
 
 function saveData() {
-    // Get user input
-    let name = document.getElementById("name").value;
-    let email = document.getElementById("email").value;
-    let password = document.getElementById("password").value;
+        let name, email, password;
+        name = document.getElementById("name").value;
+        email = document.getElementById("email").value;
+        password = document.getElementById("password").value;
 
-    // Basic validation
-    if (!name || !email || !password) {
-        alert("Please fill in all fields.");
-        return;
-    }
-
-    // Check for duplicate email
-    if (isDuplicateEmail(email)) {
-        alert("Duplicate email. Please use a different email address.");
-        return;
-    }
-
-    // Hash the password
-    bcrypt.hash(password, 10, function(err, hash) {
-        if (err) {
-            console.error("Error hashing password:", err);
-            alert("Internal server error. Please try again later.");
-            return;
+        let user_records=new Array();
+        user_records=JSON.parse(localStorage.getItem("users"))?JSON.parse(localStorage.getItem("users")):[]
+        if(user_records.some((v)=>{
+                return v.email==email
+        })){
+                alert("Duplicate Data");
         }
-
-        // Save user data with hashed password
-        let user_records = getUserRecords();
-        user_records.push({
-            "name": name,
-            "email": email,
-            "password": hash  // Store the hashed password
-        });
-        localStorage.setItem("users", JSON.stringify(user_records));
-
-        alert("User data saved successfully!");
-    });
+        else {
+                user_records.push({
+                        "name": name,
+                        "email": email,
+                        "password": password
+                })
+                localStorage.setItem("users", JSON.stringify(user_records));
 }
 
-function isDuplicateEmail(email) {
-    let user_records = getUserRecords();
-    return user_records.some((user) => user.email === email);
-}
+function retrieveData() {
+        let email, password;
+        email = document.getElementById("email").value;
+        password = document.getElementById("password").value;
 
-function getUserRecords() {
-    return JSON.parse(localStorage.getItem("users")) || [];
+        let user_record = new Array();
+	user_records=JSON.parse(localStorage.getItem("users"))?JSON.parse(localStorage.getItem("users")):[]
+        if(user_record.some((v)=> {
+                return v.email===email && v.password===password
+        })){
+                alert("Login Successful")
+                let current_user = user_record.filter((v)=> {
+                        return v.email===email && v.password===password
+                })[0]
+
+                localStorage.setItem("name", current_user.name);
+                localStorage.setItem("email", current_user.email);
+                window.location.href="dashboard.html";
+        }
+        else {
+                alert("Login Fail");
+        }
 }
 
 // Function to handle logout
