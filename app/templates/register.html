@@ -26,7 +26,7 @@
                 </div>
                 <div class="card-back">
                     <h2>REGISTER</h2>
-                    <form class="register-form">
+                    <form class="register-form" onsubmit="saveData(); return false;">
                         <input type="text" class="input-box" id="name" name="name" placeholder="Enter Name" required>
                         <input type="email" class="input-box" id="email" name="email" placeholder="Enter Email" required>
                         <input type="password" class="input-box" id="password" name="password" placeholder="Password" required>
@@ -49,15 +49,14 @@
         function openLogin(){
             card.style.transform = "rotateY(0deg)";
         }
-    </script>
-    <script>
-	    function saveData() {
-		    let name, email, password;
-		    name = document.getElementById("name").value;
-		    email = document.getElementById("email").value;
-		    password = document.getElementById("password").value;
-		    console.log(name+email+password);
-	    }
+
+        function saveData() {
+            let name, email, password;
+            name = document.getElementById("name").value;
+            email = document.getElementById("email").value;
+            password = document.getElementById("password").value;
+            console.log(name + email + password);
+        }
     </script>
 </body>
 </html>
