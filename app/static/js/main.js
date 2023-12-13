@@ -39,14 +39,51 @@ function openLogin(){
 }
 
 function saveData() {
-	let name, email, password;
-        name = document.getElementById("name").value;
-        email = document.getElementById("email").value;
-        password = document.getElementById("password").value;
+    // Get user input
+    let name = document.getElementById("name").value;
+    let email = document.getElementById("email").value;
+    let password = document.getElementById("password").value;
 
-        localStorage.setItem("name", name);
-        localStorage.setItem("email", email);
-        localStorage.setItem("password", password);
+    // Basic validation
+    if (!name || !email || !password) {
+        alert("Please fill in all fields.");
+        return;
+    }
+
+    // Check for duplicate email
+    if (isDuplicateEmail(email)) {
+        alert("Duplicate email. Please use a different email address.");
+        return;
+    }
+
+    // Hash the password
+    bcrypt.hash(password, 10, function(err, hash) {
+        if (err) {
+            console.error("Error hashing password:", err);
+            alert("Internal server error. Please try again later.");
+            return;
+        }
+
+        // Save user data with hashed password
+        let user_records = getUserRecords();
+        user_records.push({
+            "name": name,
+            "email": email,
+            "password": hash  // Store the hashed password
+        });
+        localStorage.setItem("users", JSON.stringify(user_records));
+
+        alert("User data saved successfully!");
+    });
+}
+
+function isDuplicateEmail(email) {
+    let user_records = getUserRecords();
+    return user_records.some((user) => user.email === email);
+}
+
+function getUserRecords() {
+    return JSON.parse(localStorage.getItem("users")) || [];
 }
 
 // Function to handle logout
