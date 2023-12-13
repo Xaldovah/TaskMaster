@@ -1,77 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>TaskMaster</title>
     <link rel="icon" href="https://media.istockphoto.com/id/519792694/vector/builder-in-hard-hat-and-glasses-foreman-icon.jpg?s=612x612&w=0&k=20&c=PHqO162V0-jtpZ5t51_LbXH7AGUPpg_Ge6HirE6vUrc=">
-    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link rel="stylesheet" href="/static/css/style.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="/static/js/main.js"></script>
     <script src="/static/js/script.js"></script>
-    <title>Dashboard</title>
 </head>
 <body>
-
-    <header>
-        <h1>Welcome to Your Dashboard, {{ current_user.username }}!</h1>
-        <p>Last Login: {{ current_user.last_login }}</p>
-    </header>
-
-    <section>
-        <h2>Your Tasks</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>Due Date</th>
-                    <th>Priority</th>
-                    <th>Status</th>
-                    <th>Created At</th>
-                    <th>Updated At</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="task-list">
-                <!-- The fetched tasks will be inserted here -->
-            </tbody>
-        </table>
+    <section class="header">
+        <nav>
+            <a href="https://www.arkwebs.tech/"><img src="https://media.istockphoto.com/id/519792694/vector/builder-in-hard-hat-and-glasses-foreman-icon.jpg?s=612x612&w=0&k=20&c=PHqO162V0-jtpZ5t51_LbXH7AGUPpg_Ge6HirE6vUrc="></a>
+            <div class="nav-links" id="navLinks">
+                <i class="fa fa-times" onclick="hideMenu()"></i>
+		<ul>
+			<li><a href="/">HOME</a></li>
+			<li><a href="/register">REGISTER</a></li>
+			<li><a href="/login">LOGIN</a></li>
+			<li><a href="/about">ABOUT</a></li>
+			<li><a href="/contact">CONTACT</a></li>
+		</ul>
+            </div>
+            <i class="fa fa-bars" onclick="showMenu()"></i>
+        </nav>
+        <div class="text-box">
+            <h1>The Best Way to Achieve Your Goals</h1>
+            <p>Empower your productivity journey with TaskMaster. <br> Sign up now and revolutionize the way you manage your tasks.</p>
+            <a href="https://www.arkwebs.tech/register" class="hero-btn">Get Started</a>
+        </div>
     </section>
-
-    <section>
-        <h2>Create a New Task</h2>
-        <form id="create-task-form">
-            <label for="title">Title:</label>
-            <input type="text" id="title" name="title" required>
-
-            <label for="description">Description:</label>
-            <textarea id="description" name="description"></textarea>
-
-            <label for="due_date">Due Date:</label>
-            <input type="date" id="due_date" name="due_date">
-
-            <label for="priority">Priority:</label>
-            <select id="priority" name="priority">
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
-            </select>
-
-            <label for="status">Status:</label>
-            <select id="status" name="status">
-                <option value="incomplete">Incomplete</option>
-                <option value="completed">Completed</option>
-            </select>
-
-            <button type="submit">Create Task</button>
-        </form>
+    <!-- Task List Section -->
+    <section class="task-list" id="task-list">
+	    <!-- Example Task Card -->
+	    <div class="task-card">
+		    <div class="task-header">Task #1</div>
+		    <div class="task-details">
+			    <div class="task-title">Task Title</div>
+			    <div class="task-description">Task Description goes here...</div>
+			    <div class="task-meta">
+				    <div class="task-due-date">Due Date: 2023-12-31</div>
+				    <div class="task-priority">Priority: High</div>
+				    <div class="task-status">Status: incomplete</div>
+			    </div>
+		    </div>
+	    </div>
+	    <!-- More Task Cards... -->
     </section>
+    <section class="services">
+        <h1>Our Services</h1>
+        <p>Unlock seamless task accomplishment with TaskMaster. <br> Register now to elevate your task management experience.</p>
+        <div class="row">
+            <div class="services-col">
+                <h3>Task Management</h3>
+                <p>Effortlessly conquer your to-do list with TaskMaster's intuitive task management system. <br> Register now to streamline your tasks and boost productivity.</p>
+            </div>
+            <div class="services-col">
+                <h3>Time Tracking</h3>
+                <p>Master your time with precision using TaskMaster's advanced time tracking features. <br> Register now to take control of your schedule and enhance your efficiency.</p>
+            </div>
+            <div class="services-col">
+                <h3>Reporting</h3>
+                <p>Gain valuable insights into your tasks and progress with TaskMaster's robust reporting tools. <br> Register now to access detailed reports and optimize your workflow.</p>
+            </div>
+        </div>
+    </section>
+    <section class="location">
+        <h1>Our Offices</h1>
+        <p>TaskMaster: Where efficiency meets global presence. <br> Join us now to start managing your tasks across the globe.</p>
 
-    <footer>
-        <p>© 2023 TaskMaster</p>
-    </footer>
+        <div class="row">
+            <div class="location-col">
+                <img src="https://t4.ftcdn.net/jpg/05/81/15/95/360_F_581159599_3NKWeoh2OapPZ6iUyTbgwgxbTZhTRJw9.jpg">
+                <div class="layer">
+                    <h3>NAIROBI</h3>
+                </div>
+            </div>
+            <div class="location-col">
+                <img src="https://www.westend61.de/images/0000750220j/france-paris-modern-office-building-la-defense-against-the-sun-FCF01094.jpg">
+                <div class="layer">
+                    <h3>PARIS</h3>
+                </div>
+            </div>
+            <div class="location-col">
+                <img src="https://as2.ftcdn.net/v2/jpg/01/31/88/49/1000_F_131884902_HqNrepe03iFxHxHyvlRrzqJv1PMIZy1g.jpg">
+                <div class="layer">
+                    <h3>TOKYO</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="team">
+        <h1>Meet Our Leadership</h1>
+        <p>Experience unparalleled leadership at TaskMaster. <br> Register today and meet the minds behind your task management success.</p>
+        <div class="row">
+            <div class="team-col">
+                <h3>CEO</h3>
+                <img src="https://i0.wp.com/www.steverrobbins.com/wp-content/uploads/ceo-midjourney-office.jpg?resize=1024%2C683&ssl=1">
+                <div>
+                    <p>Katie Morgan</p>
+                </div>
+            </div>
+            <div class="team-col">
+                <h3>CIO</h3>
+                <img src="https://akm-img-a-in.tosshub.com/businesstoday/images/story/202208/ezgif-sixteen_nine_148.jpg?size=948:533">
+                <div>
+                    <p>Anur Rajan</p>
+                </div>
+            </div>
+            <div class="team-col">
+                <h3>CFO</h3>
+                <img src="https://www.piranhaphotography.com/blog/wp-content/uploads/2015/05/BH-6486.jpg.webp">
+                <div>
+                    <p>John Minister</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="testimonials">
+        <h1>What Our Clients Say</h1>
+        <p>Join the ranks of satisfied users who conquered tasks with TaskMaster. <br> Sign up now and start your success story.</p>
+
+        <div class="row">
+            <div class="testimonials-col">
+                <img src="https://i0.wp.com/thatrandomagency.com/wp-content/uploads/2020/05/0.jpg?resize=500%2C500&ssl=1">
+                <div>
+                    <p>TaskMaster revolutionized the way I manage tasks. <br> Registering was the best decision for my productivity journey.</p>
+                    <h3>Paul Reed</h3>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star-o"></i>
+                </div>
+            </div>
+            <div class="testimonials-col">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUUzpyi3Hl2UdDKtdxchbn-UF-Y1BKBOd7hA&usqp=CAU">
+                <div>
+                    <p>TaskMaster made task management a breeze. <br> With their user-friendly interface, my workflow reached new heights of efficiency.</p>
+                    <h3>Samantha Haeun</h3>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star-half-o"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="cta">
+        <h1>Elevate your productivity with TaskMaster. <br> Register now and embark on a journey of efficient task management.</h1>
+        <a href="https://www.arkwebs.tech/contact" class="hero-btn">CONTACT US</a>
+    </section>
+    <section class="footer">
+        <h4>About Us</h4>
+        <p>TaskMaster - Your partner in conquering tasks effortlessly. <br> Register now and experience a new era of task management.</p>
+        <div class="icons">
+            <i class="fa fa-facebook"></i>
+            <i class="fa fa-twitter"></i>
+            <i class="fa fa-instagram"></i>
+            <i class="fa fa-linkedin"></i>
+        </div>
+        <p>Made with <i class="fa fa-heart-o"></i> by Dennis</p>
+    </section>
+    <script>
+        var navLinks = document.getElementById("navLinks");
+        function showMenu(){
+            navLinks.style.right = "0";
+        }
+        function hideMenu(){
+            navLinks.style.right = "-200px";
+        }
+    </script>
 </body>
 </html>
