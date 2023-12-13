@@ -17,7 +17,8 @@ function loginFormSubmit(event) {
     .then(data => {
       if (data.message === 'Login successful') {
         localStorage.setItem('access_token', data.access_token);
-        window.location.href = '/dashboard';
+	console.log(localStorage.getItem('access_token'));
+        window.location.href = '/';
       } else {
         alert(data.error);
       }
