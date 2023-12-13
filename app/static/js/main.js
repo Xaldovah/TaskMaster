@@ -59,32 +59,6 @@ function registerFormSubmit(event) {
     });
 }
 
-// Check for access token in local storage
-const accessToken = localStorage.getItem('access_token');
-
-if (accessToken) {
-  fetch('/dashboard', {
-    headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
-  }).then(response => response.json())
-    .then(data => {
-      if (data.message) {
-        // User is logged in, render dashboard content
-        // ...
-      } else {
-        // Invalid access token, redirect to login page
-        window.location.href = '/login';
-      }
-    })
-    .catch(error => {
-      console.error(error);
-      alert('Internal server error. Please try again later.');
-    });
-} else {
-  window.location.href = '/login';
-}
-
 // Function to handle logout
 function logout() {
   fetch('/logout', {
