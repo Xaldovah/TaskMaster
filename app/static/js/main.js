@@ -5,8 +5,7 @@ function retrieveData(event) {
     email = document.getElementById("login-email").value;
     password = document.getElementById("login-password").value;
 
-    let user_records = JSON.parse(localStorage.getItem("users")) || [];
-
+    let user_records = JSON.parse(localStorage.getItem("users"))?JSON.parse(localStorage.getItem("users")):[]
     if (user_records.some((v) => v.email === email && v.password === password)) {
         alert("Login Successful");
 
