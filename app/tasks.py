@@ -12,13 +12,6 @@ from datetime import datetime, timedelta
 from flask import render_template
 
 
-@app.route('/', methods=['GET'])
-def index():
-    """Retrieve the home page
-    """
-    return render_template('index.html')
-
-
 @app.route('/tasks', methods=['GET'])
 @jwt_required()
 def get_tasks():

@@ -70,6 +70,13 @@ def login():
             return render_template('register.html', form=form)
 
 
+@app.route('/', methods=['GET'])
+def index():
+    """Retrieve the home page
+    """
+    return render_template('index.html')
+
+
 @app.route('/dashboard')
 def dashboard():
     """
