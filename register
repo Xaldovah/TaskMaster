@@ -1,0 +1,2 @@
+csrf_token=$(curl -s http://127.0.0.1:5000/register | jq -r .csrf_token)
+curl -X POST -H "Content-Type: application/json" -H "X-CSRFToken: $csrf_token" -d '{"username": "Try", "email": "try@lookmail.com", "password": "try1234"}' http://127.0.0.1:5000/register

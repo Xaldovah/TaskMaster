@@ -5,6 +5,7 @@ and configuration of a Flask application.
 
 from flask import Flask, render_template, request, redirect, url_for
 from flask_cors import CORS
+from flask_wtf.csrf import CSRFProtect
 from flask_socketio import SocketIO
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -20,6 +21,8 @@ app = Flask(__name__, template_folder='templates')
 secret_key = '4d95d7d31e4e8d50e7e53d1fa8db928a8bc9abfe94bfc6e8c892c1b78e159b14a03887a49e9e4737ac9aa1ee9e4c6b62'
 
 # Configure Flask application
+app.config['SECRET_KEY'] = '4d95d7d31e4e8d50e7e53d1fa8db928a8bc9abfe94bfc6e8c892c1b78e159b14a03887a49e9e4737ac9aa1ee9e4c6b62'
+app.config['WTF_CSRF_ENABLED'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://xaldovah:Denny23617@localhost/task_master'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = secret_key
@@ -34,6 +37,9 @@ cors = CORS(app, supports_credentials=True, origins=["http://arkwebs.tech", "htt
 
 # Create SocketIO instance
 socketio = SocketIO(app)
+
+# Create a csrf protection
+csrf = CSRFProtect(app)
 
 # Create and configure Flask-Migrate instance
 db = SQLAlchemy(app)

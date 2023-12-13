@@ -10,7 +10,7 @@ from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity
 from flask_login import current_user
 from flask_mail import Message, Mail
 from app import app, bcrypt, db
-from app.models import User, RegisterForm, LoginForm, ContactForm
+from app.models import *
 from datetime import datetime
 
 mail = Mail(app)
@@ -18,68 +18,56 @@ mail = Mail(app)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-  # Get request for register page
-  if request.method == 'GET':
-    return render_template('register.html')
+    if request.method == 'GET':
+        return render_template('register.html', form=RegisterForm())
 
-  # Handle POST request for registration
-  elif request.method == 'POST':
-    form = RegisterForm(request.form)
-    if form.validate_on_submit():
-      # Extract user data from form
-      username = form.username.data
-      email = form.email.data
-      password = form.password.data
+    elif request.method == 'POST':
+        form = RegisterForm(request.form)
+        if form.validate_on_submit():
+            username = form.username.data
+            email = form.email.data
+            password = form.password.data
 
-      # Create user object and save to database
-      user = User(username=username, email=email, password=password)
-      db.session.add(user)
-      db.session.commit()
+            user = User(username=username, email=email, password=password)
+            db.session.add(user)
+            db.session.commit()
 
-      # Flash success message and redirect to login page
-      flash('Registration successful! Please login.', 'success')
-      return redirect(url_for('login'))
+            flash('Registration successful! Please login.', 'success')
+            return redirect(url_for('login'))
 
-    # Flash error message and re-render register page with errors
-    else:
-      flash_errors(form)
-      return render_template('register.html', form=form)
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    flash(f'{field.capitalize()}: {error}', 'danger')
+            return render_template('register.html', form=form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-  # Get request for login page
-  if request.method == 'GET':
-    return render_template('register.html')
+    if request.method == 'GET':
+        return render_template('register.html', form=LoginForm())
 
-  # Handle POST request for login
-  elif request.method == 'POST':
-    form = LoginForm(request.form)
-    if form.validate_on_submit():
-      # Extract user credentials from form
-      username = form.username.data
-      password = form.password.data
+    elif request.method == 'POST':
+        form = LoginForm(request.form)
+        if form.validate_on_submit():
+            username = form.username.data
+            password = form.password.data
 
-      # Authenticate user and check password
-      user = User.query.filter_by(username=username).first()
-      if user and bcrypt.check_password_hash(user.password, password):
-        # Generate access token and set user session
-        access_token = create_access_token(identity=user.id)
-        db.session['user_id'] = user.id
+            user = User.query.filter_by(username=username).first()
+            if user and bcrypt.check_password_hash(user.password, password):
+                access_token = create_access_token(identity=user.id)
+                flash('Login successful!', 'success')
+                return redirect(url_for('dashboard'))
 
-        # Flash success message and redirect to home page
-        flash('Login successful!', 'success')
-        return redirect(url_for('dashboard'))
+            else:
+                flash('Invalid credentials.', 'danger')
+                return render_template('register.html', form=form)
 
-      # Flash error message and re-render login page with error
-      else:
-        flash('Invalid credentials.', 'danger')
-        return render_template('register.html', form=form)
-
-    # Flash error message and re-render login page with errors
-    else:
-      flash_errors(form)
-      return render_template('register.html', form=form)
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    flash(f'{field.capitalize()}: {error}', 'danger')
+            return render_template('register.html', form=form)
 
 
 @app.route('/dashboard')

@@ -2,7 +2,7 @@
 Module Description: This module contains SQLAlchemy models for the application.
 """
 
-from app import app, db
+from app import app, csrf, db
 from flask_login import UserMixin
 from flask_wtf import FlaskForm
 from wtforms import Form, TextAreaField, validators

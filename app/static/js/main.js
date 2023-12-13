@@ -1,8 +1,7 @@
-// Function to handle login form submit
 function loginFormSubmit(event) {
   event.preventDefault();
 
-  const email = document.getElementById('login-email').value;
+  const username = document.getElementById('login-username').value;
   const password = document.getElementById('login-password').value;
 
   fetch('/login', {
@@ -11,13 +10,12 @@ function loginFormSubmit(event) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      username: email,
-      password
+      username: username,
+      password: password
     })
   }).then(response => response.json())
     .then(data => {
       if (data.message === 'Login successful') {
-        // Store access token in local storage
         localStorage.setItem('access_token', data.access_token);
         window.location.href = '/dashboard';
       } else {
@@ -30,11 +28,10 @@ function loginFormSubmit(event) {
     });
 }
 
-// Function to handle register form submit
 function registerFormSubmit(event) {
   event.preventDefault();
 
-  const name = document.getElementById('register-name').value;
+  const username = document.getElementById('register-username').value;
   const email = document.getElementById('register-email').value;
   const password = document.getElementById('register-password').value;
 
@@ -44,9 +41,9 @@ function registerFormSubmit(event) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      username: name,
-      email,
-      password
+      username: username,
+      email: email,
+      password: password
     })
   }).then(response => response.json())
     .then(data => {
@@ -61,91 +58,6 @@ function registerFormSubmit(event) {
       alert('Internal server error. Please try again later.');
     });
 }
-
-const loginForm = document.querySelector('.login-form');
-loginForm.addEventListener('submit', function (event) {
-  event.preventDefault();
-
-  const username = document.querySelector('#username').value;
-  const password = document.querySelector('#password').value;
-
-  // Validate username and password
-  if (!username || !password) {
-    // Display error message
-    flash('Please enter both username and password.', 'danger');
-    return;
-  }
-
-  // Send POST request to login endpoint
-  fetch('/login', {
-    method: 'POST',
-    body: JSON.stringify({ username, password })
-  })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        // Login successful
-        // ...
-      } else {
-        // Display error message
-        flash(data.error, 'danger');
-      }
-    });
-
-  if (data.success) {
-    // Store access token (if used)
-    localStorage.setItem('accessToken', data.accessToken);
-    // Redirect to desired page
-    window.location.href = url_for('dashboard');
-  }
-
-  if (!data.success) {
-    // Display error message
-    flash(data.error, 'danger');
-  }
-});
-
-const registerForm = document.querySelector('.register-form');
-registerForm.addEventListener('submit', function (event) {
-  event.preventDefault();
-
-  const username = document.querySelector('#username').value;
-  const email = document.querySelector('#email').value;
-  const password = document.querySelector('#password').value;
-
-  // Validate username, email, and password
-  if (!username || !email || !password) {
-    // Display error message
-    flash('Please fill in all required fields.', 'danger');
-    return;
-  }
-
-  // Send POST request to register endpoint
-  fetch('/register', {
-    method: 'POST',
-    body: JSON.stringify({ username, email, password })
-  })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        // Registration successful
-        // ...
-      } else {
-        // Display error message
-        flash(data.error, 'danger');
-      }
-    });
-
-  if (data.success) {
-    // Redirect to login page
-    window.location.href = url_for('login');
-  }
-
-  if (!data.success) {
-    // Display error message
-    flash(data.error, 'danger');
-  }
-});
 
 // Check for access token in local storage
 const accessToken = localStorage.getItem('access_token');
