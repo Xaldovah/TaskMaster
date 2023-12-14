@@ -10,6 +10,7 @@ from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity
 from flask_login import current_user
 from flask_mail import Message, Mail
 from app import app, bcrypt, db
+from flask_bcrypt import generate_password_hash, check_password_hash
 from app.models import *
 from datetime import datetime
 
@@ -44,10 +45,15 @@ def register():
         if len(password) < 6:
             return jsonify({'success': False, 'error': 'Password must be at least 6 characters long'}), 400
 
+        # Check if the email is already associated with a user
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            return jsonify({'success': False, 'error': 'Email address already in use'}), 400
+
         # Hash the password before storing it using Flask-Bcrypt
         hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
 
-        # Create user object and save to database
+        # Create user object and save to the database
         user = User(username=username, email=email, password=hashed_password)
         db.session.add(user)
         db.session.commit()
@@ -56,6 +62,43 @@ def register():
         return jsonify({'success': True, 'message': 'User registered successfully!'})
     except KeyError:
         return jsonify({'success': False, 'error': 'Missing required fields'}), 400
+
+
+@app.route('/logout', methods=['POST'])
+@jwt_required()
+def logout():
+    """
+    User logout.
+
+    Returns:
+        jsonify: JSON response with logout information.
+    """
+    current_user.logged_out_at = datetime.utcnow()
+    db.session.commit()
+    return jsonify({'message': 'Logout successful'}), 200
+
+
+@app.route('/hash_password', methods=['POST'])
+def hash_password():
+    try:
+        data = request.get_json()
+
+        # Ensure the request includes the 'password' field
+        if 'password' not in data:
+            return jsonify({'success': False, 'error': 'Missing password field'}), 400
+
+        # Extract the password from the request data
+        password = data['password']
+
+        # Hash the password using bcrypt
+        hashed_password = generate_password_hash(password)
+
+        # Return the hashed password
+        return jsonify({'success': True, 'hashedPassword': hashed_password})
+
+    except Exception as e:
+        print(f"Error during password hashing: {str(e)}")
+        return jsonify({'success': False, 'error': 'Internal server error'}), 500
 
 
 @app.route('/login', methods=['POST'])
@@ -68,7 +111,7 @@ def login():
         # Fetch user from database by email
         user = User.query.filter_by(email=email).first()
 
-        if not user or not bcrypt.check_password_hash(user.password, password):
+        if not user or not verify_password(password, user.password):
             return jsonify({'success': False, 'error': 'Invalid credentials'}), 401
 
         # Generate access token
@@ -94,62 +137,20 @@ def login():
         return jsonify({'success': False, 'error': 'Missing required fields'}), 400
 
 
-@app.route('/', methods=['GET'])
-def index():
-    """Retrieve the home page
-    """
-    return render_template('index.html')
+@app.route('/get_access_token', methods=['GET'])
+@jwt_required(optional=True)
+def get_access_token():
+    try:
+        current_user_id = get_jwt_identity()
+        if current_user_id:
+            access_token = create_access_token(identity=current_user_id)
+            return jsonify(access_token=access_token), 200
+        else:
+            return jsonify(error='Unauthorized'), 401
+    except Exception as e:
+        return jsonify(error=str(e)), 500
 
 
-@app.route('/dashboard')
-def dashboard():
-    """
-    Render the dashboard page.
-
-    Returns:
-        render_template: Rendered HTML template.
-    """
-    return render_template('dashboard.html')
-
-
-@app.route('/home')
-@jwt_required()
-def home():
-    """
-    Render the home page.
-
-    Returns:
-        render_template: Rendered HTML template.
-    """
-    current_user_id = get_jwt_identity()
-
-    if current_user_id:
-        return render_template('dashboard.html')
-    else:
-        # If user is not authenticated, redirect to the login page
-        return redirect(url_for('login'))
-
-
-@app.route('/logout', methods=['POST'])
-@jwt_required()
-def logout():
-    """
-    User logout.
-
-    Returns:
-        jsonify: JSON response with logout information.
-    """
-    current_user.logged_out_at = datetime.utcnow()
-    db.session.commit()
-    return redirect(url_for('login'))
-    #return jsonify({'message': 'Logout successful'}), 200
-
-
-@app.route('/about')
-def about():
-    return render_template('about.html')
-
-
-@app.route('/contact', methods=['GET', 'POST'])
-def contact():
-    return render_template('contact.html')
+def verify_password(input_password, hashed_password):
+    """Verify the input password against the hashed password."""
+    return check_password_hash(hashed_password, input_password)

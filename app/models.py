@@ -9,6 +9,7 @@ from wtforms import Form, TextAreaField, validators
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Column, DateTime, func
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
@@ -24,6 +25,8 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
+    created_at = db.Column(DateTime, default=datetime.utcnow, nullable=True)
+    updated_at = db.Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=True)
     # default_task_view = Column(String(20), default='all')  # Example: 'all', 'completed', 'incomplete'
     # enable_notifications = Column(Boolean, default=True)
     # theme_preference = Column(String(20), default='dark')  # Example: 'light', 'dark'

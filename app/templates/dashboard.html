@@ -26,23 +26,17 @@
     </header>
     <section>
         <h2>Your Tasks</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>Due Date</th>
-                    <th>Priority</th>
-                    <th>Status</th>
-                    <th>Created At</th>
-                    <th>Updated At</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="task-list">
-                <!-- The fetched tasks will be inserted here -->
-            </tbody>
-        </table>
+	<ul>
+		{% for task in tasks %}
+			<li>
+                		<span>Title:</span> {{ task.title }}<br>
+                		<span>Description:</span> {{ task.description }}<br>
+                		<span>Due Date:</span> {{ task.due_date }}<br>
+                		<span>Priority:</span> {{ task.priority }}<br>
+                		<span>Status:</span> {{ task.status }}<br>
+            		</li>
+        	{% endfor %}
+    	</ul>
     </section>
 
     <section>

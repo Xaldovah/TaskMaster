@@ -13,6 +13,7 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from flask_login import LoginManager
 from app.celery import make_celery
+from datetime import timedelta
 
 # Create Flask application instance
 app = Flask(__name__, template_folder='templates')
@@ -26,6 +27,7 @@ app.config['WTF_CSRF_ENABLED'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://xaldovah:Denny23617@localhost/task_master'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = secret_key
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=1)
 app.config['CELERY_BROKER_URL'] = 'pyamqp://guest:guest@localhost:5672//'
 app.config['result_backend'] = 'rpc://'
 app.config['TEMPLATES_AUTO_RELOAD'] = True

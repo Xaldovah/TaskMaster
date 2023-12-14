@@ -19,7 +19,9 @@ def get_tasks():
     Retrieve tasks for the current user.
     return: JSON response with the list of tasks.
     """
-    tasks = Task.query.all()
+    current_user_id = get_jwt_identity()
+    
+    tasks = Task.query.filter_by(user_id=current_user_id).all()
     task_list = []
     for task in tasks:
         task_list.append({
@@ -33,8 +35,8 @@ def get_tasks():
             'user_id': task.user_id,
             'created_at': task.created_at.strftime('%Y-%m-%d %H:%M:%S')
         })
-    return redirect(url_for('/dashboard'))
-    # return jsonify({'tasks': task_list})
+    return render_template('dashboard.html', tasks=task_list)
+    #return jsonify({'tasks': task_list})
 
 
 @app.route('/tasks', methods=['POST'])
@@ -52,19 +54,31 @@ def create_task():
         if not all(field in data for field in required_fields):
             return jsonify({"error": "Missing required fields"}), 400
 
-        new_task = Task(
-            title=data['title'],
-            description=data.get('description'),
-            due_date=data.get('due_date'),
-            priority=data.get('priority'),
-            status=data.get('status', 'incomplete'),
-            category_id=data.get('category_id'),
-            user_id=data['user_id']
-        )
+        # Create a new Task object and populate its attributes
+        new_task = Task()
+        new_task.title = data['title']
+        new_task.description = data.get('description', '')
+        new_task.due_date = data.get('due_date', None)
+        new_task.priority = data.get('priority', 'Medium')
+        new_task.status = data.get('status', 'Incomplete')
+        new_task.user_id = data['user_id']
+
         db.session.add(new_task)
         db.session.commit()
 
-        # Log the created task information
+        task_dict = {
+            "id": new_task.id,
+            "title": new_task.title,
+            "description": new_task.description,
+            "due_date": new_task.due_date,
+            "priority": new_task.priority,
+            "status": new_task.status,
+            "user_id": new_task.user_id,
+            "created_at": new_task.created_at,
+            "updated_at": new_task.updated_at
+        }
+
+        # Log and emit events (assuming you have the necessary setup for socketio)
         current_app.logger.info(f'New task created: {new_task.title}')
         days_until_due = (new_task.due_date - datetime.utcnow()).days
         notification_message = f'Task "{new_task.title}" is due in {days_until_due} days'
@@ -72,8 +86,7 @@ def create_task():
         send_notification.apply_async((new_task.user_id, notification_message), eta=notification_date)
         socketio.emit('new_task', {'message': f'New task created: {new_task.title}'})
 
-        return redirect(url_for('dashboard'))
-        #return jsonify({"message": "Task created successfully", "task": dict(new_task}), 201
+        return jsonify({"message": "Task created successfully", "task": task_dict}), 201
     except SQLAlchemyError as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500

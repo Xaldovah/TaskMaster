@@ -20,7 +20,7 @@
             <div class="inner-box" id="card">
                 <div class="card-front">
                     <h2>LOGIN</h2>
-                    <form class="login-form" onsubmit="event.preventDefault(); retrieveData();">
+                    <form class="login-form" onsubmit="event.preventDefault(); loginUser();">
                         <input type="email" class="input-box" id="login-email" name="email" placeholder="Enter Email"
                             required>
                         <input type="password" class="input-box" id="login-password" name="password"
@@ -33,7 +33,7 @@
                 </div>
                 <div class="card-back">
                     <h2>REGISTER</h2>
-                    <form class="register-form" onsubmit="event.preventDefault(); saveData();">
+                    <form class="register-form" onsubmit="event.preventDefault(); registerUser();">
                         <input type="text" class="input-box" id="username" name="username"
                             placeholder="Enter Username" required>
                         <input type="email" class="input-box" id="email" name="email" placeholder="Enter Email"
@@ -60,46 +60,46 @@
             card.style.transform = "rotateY(0deg)";
         }
     </script>
-
+    <script src="/static/js/main.js"></script>
     <script>
-        function saveData() {
-            let username = document.getElementById('username').value
-            let email = document.getElementById('email').value
-            let password = document.getElementById('password').value
+        //function saveData() {
+            //let username = document.getElementById('username').value
+            //let email = document.getElementById('email').value
+            //let password = document.getElementById('password').value
 
-            let user_records = JSON.parse(localStorage.getItem('users')) || [];
-            if (user_records.some((v) => v.email == email)) {
-                alert('Email already exists');
-            } else {
-                user_records.push({
-                    "username": username,
-                    "email": email,
-                    "password": password
-                })
-                localStorage.setItem('users', JSON.stringify(user_records))
-                alert('Data saved successfully');
-                window.location.href = '/login';
-            }
-        }
+            //let user_records = JSON.parse(localStorage.getItem('users')) || [];
+            //if (user_records.some((v) => v.email == email)) {
+               // alert('Email already exists');
+           // } else {
+             //   user_records.push({
+               //     "username": username,
+                 //   "email": email,
+                   // "password": password
+               // })
+               // localStorage.setItem('users', JSON.stringify(user_records))
+               // alert('Data saved successfully');
+              //  window.location.href = '/login';
+           // }
+       // }
 
-        function retrieveData() {
-            let email = document.getElementById('login-email').value;
-            let password = document.getElementById('login-password').value;
+       // function retrieveData() {
+           // let email = document.getElementById('login-email').value;
+          //  let password = document.getElementById('login-password').value;
 
-            let user_records = JSON.parse(localStorage.getItem('users')) || [];
+           // let user_records = JSON.parse(localStorage.getItem('users')) || [];
 
-            let user = user_records.find((v) => v.email === email && v.password === password);
+           // let user = user_records.find((v) => v.email === email && v.password === password);
 
-            if (user) {
-                alert('Login success');
-                localStorage.setItem('current_user', JSON.stringify(user));
-                localStorage.setItem('username', user.username);
-                localStorage.setItem('email', user.email);
-                window.location.href = '/dashboard';
-            } else {
-                alert('Login failed');
-            }
-        }
+          //  if (user) {
+            //    alert('Login success');
+          //      localStorage.setItem('current_user', JSON.stringify(user));
+            //    localStorage.setItem('username', user.username);
+              //  localStorage.setItem('email', user.email);
+          //      window.location.href = '/dashboard';
+         //   } else {
+           //     alert('Login failed');
+          //  }
+      //  }
     </script>
 </body>
 </html>
