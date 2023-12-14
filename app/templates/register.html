@@ -51,6 +51,19 @@
         	card.style.transform = "rotateY(0deg)";
     	}
     </script>
+    <script>
+	    function saveData(){
+		    let name, email, password;
+		    name=document.getElementById("name").value;
+		    email=document.getElementById("email").value;
+		    password=document.getElementById("password").value;
+
+		    localStorage.setItem("name", name);
+		    localStorage.setItem("email", email);
+		    localStorage.setItem("password", password);
+		    console.log(name+email+password);
+	    }
+    </script>
     <script src="/static/js/main.js"></script>
 </body>
 </html>
