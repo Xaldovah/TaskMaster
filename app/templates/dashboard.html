@@ -9,16 +9,21 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <title>Dashboard</title>
 </head>
 <body>
-
     <header>
-        <h1>Welcome to Your Dashboard, {{ current_user.username }}!</h1>
-        <p>Last Login: {{ current_user.last_login }}</p>
-	<button id="logout-button">Logout</button>
+        <h1>Welcome to Your Dashboard!</h1>
+        <h3>
+            Email:
+            <script>
+                document.write(localStorage.getItem("email"));
+            </script>
+        </h3>
+        <button onclick="logout()" style="float: right;" id="logout-button">Logout</button>
     </header>
-
     <section>
         <h2>Your Tasks</h2>
         <table>
@@ -72,6 +77,12 @@
     <footer>
         <p>© 2023 TaskMaster</p>
     </footer>
+    <script>
+        function logout() {
+            localStorage.removeItem("email");
+            window.location.href = "login.html";
+        }
+    </script>
     <script src="/static/js/main.js"></script>
     <script src="/static/js/script.js"></script>
 </body>
