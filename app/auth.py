@@ -23,58 +23,75 @@ def register_form():
 
 @app.route('/register', methods=['POST'])
 def register():
-  # Extract user data from the form or request body (depending on your implementation)
-  if request.method == 'POST':
-    name = request.form.get('name')
-    email = request.form.get('email')
-    password = request.form.get('password')
-  else:
-    return jsonify({'success': False, 'error': 'Invalid request method'}), 405
+    try:
+        data = request.get_json()
 
-  # Validate user data (optional, adjust based on your requirements)
-  # ...
+        # Validate input fields
+        if 'username' not in data or 'email' not in data or 'password' not in data:
+            return jsonify({'success': False, 'error': 'Missing required fields'}), 400
 
-  # Hash the password with bcrypt
-  hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
+        username = data['username']
+        email = data['email']
+        password = data['password']
 
-  # Create user object and save to database
-  user = User(name=name, email=email, password=hashed_password.decode("utf-8"))
-  db.session.add(user)
-  db.session.commit()
+        # Validate username, email, and password (customize as needed)
+        if len(username) < 3 or len(username) > 50:
+            return jsonify({'success': False, 'error': 'Invalid username length'}), 400
 
-  # Flash success message (optional) and redirect to a confirmation page or login page
-  flash('User registered successfully! Please login to your account.', 'success')
-  return redirect(url_for('login'))
+        if not email or '@' not in email or '.' not in email:
+            return jsonify({'success': False, 'error': 'Invalid email format'}), 400
+
+        if len(password) < 6:
+            return jsonify({'success': False, 'error': 'Password must be at least 6 characters long'}), 400
+
+        # Hash the password before storing it using Flask-Bcrypt
+        hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
+
+        # Create user object and save to database
+        user = User(username=username, email=email, password=hashed_password)
+        db.session.add(user)
+        db.session.commit()
+
+        # Return success message
+        return jsonify({'success': True, 'message': 'User registered successfully!'})
+    except KeyError:
+        return jsonify({'success': False, 'error': 'Missing required fields'}), 400
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['POST'])
 def login():
-  # GET request for login page
-  if request.method == 'GET':
-    return render_template('register.html')
+    try:
+        data = request.get_json()
+        email = data['email']
+        password = data['password']
 
-  # Handle POST request for login
-  elif request.method == 'POST':
-    # Extract user credentials from form
-    email = request.form.get('email')
-    password = request.form.get('password')
+        # Fetch user from database by email
+        user = User.query.filter_by(email=email).first()
 
-    # Validate user credentials
-    user = User.query.filter_by(email=email).first()
-    if user and bcrypt.check_password_hash(user.password, password):
-      # Login successful
-      access_token = create_access_token(identity=user.id)
-      session['user_id'] = user.id
-      flash('Login successful!', 'success')
-      return redirect(url_for('dashboard'))
-    else:
-      # Login failed
-      flash('Invalid credentials.', 'danger')
-      return render_template('register.html', form_errors=True)
+        if not user or not bcrypt.check_password_hash(user.password, password):
+            return jsonify({'success': False, 'error': 'Invalid credentials'}), 401
 
-  # Handle invalid request method
-  else:
-    return jsonify({'error': 'Invalid request method'}), 405
+        # Generate access token
+        access_token = create_access_token(identity=user.id)
+
+        # Set user information in the session
+        session['user_id'] = user.id
+        session['username'] = user.username
+        session['email'] = user.email
+
+        # Return success message and include the access token
+        return jsonify({
+            'success': True,
+            'message': 'Login successful!',
+            'access_token': access_token,
+            'user_info': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email
+            }
+        })
+    except KeyError:
+        return jsonify({'success': False, 'error': 'Missing required fields'}), 400
 
 
 @app.route('/', methods=['GET'])
