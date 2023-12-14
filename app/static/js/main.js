@@ -18,6 +18,7 @@ function saveData() {
                         "password": password
                 })
                 localStorage.setItem("users", JSON.stringify(user_records));
+	}
 }
 
 function retrieveData() {
