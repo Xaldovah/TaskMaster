@@ -22,6 +22,26 @@ def index():
     """
     return render_template('index.html')
 
+@app.route('/dashboard')
+def dashboard():
+    """
+    Render the dashboard page.
+
+    Returns:
+        render_template: Rendered HTML template.
+    """
+    return render_template('dashboard.html')
+
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    return render_template('contact.html')
+
 
 @app.route('/register', methods=['GET'])
 def register_form():
