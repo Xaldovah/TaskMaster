@@ -78,7 +78,7 @@
                 })
                 localStorage.setItem('users', JSON.stringify(user_records))
                 alert('Data saved successfully');
-                window.location.href = 'login.html';
+                window.location.href = '/login';
             }
         }
 
@@ -95,7 +95,7 @@
                 localStorage.setItem('current_user', JSON.stringify(user));
                 localStorage.setItem('username', user.username);
                 localStorage.setItem('email', user.email);
-                window.location.href = 'dashboard.html';
+                window.location.href = '/dashboard';
             } else {
                 alert('Login failed');
             }
