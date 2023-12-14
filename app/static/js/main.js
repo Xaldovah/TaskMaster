@@ -65,7 +65,3 @@ function logout() {
       alert('Internal server error. Please try again later.');
     });
 }
-
-// Add click event listener to logout button
-// const logoutButton = document.getElementById('logout-button');
-// logoutButton.addEventListener('click', logout);
