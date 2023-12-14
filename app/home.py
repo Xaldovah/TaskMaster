@@ -1,5 +1,6 @@
 from flask import jsonify, request, render_template, redirect, url_for, flash, session
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required
+from app import app, bcrypt, db
 
 
 @app.route('/', methods=['GET'])
