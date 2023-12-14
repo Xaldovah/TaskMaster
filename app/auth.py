@@ -92,8 +92,7 @@ def dashboard():
     Returns:
         render_template: Rendered HTML template.
     """
-    current_user = jwt.current_user
-    return render_template('dashboard.html', user=current_user)
+    return render_template('dashboard.html')
 
 
 @app.route('/home')
