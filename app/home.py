@@ -3,13 +3,6 @@ from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity
 from app import app, bcrypt, db
 
 
-@app.route('/', methods=['GET'])
-def index():
-    """Retrieve the home page
-    """
-    return render_template('index.html')
-
-
 @app.route('/dashboard')
 def dashboard():
     """

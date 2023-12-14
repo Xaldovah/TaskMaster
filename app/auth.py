@@ -16,6 +16,12 @@ from datetime import datetime
 
 mail = Mail(app)
 
+@app.route('/', methods=['GET'])
+def index():
+    """Retrieve the home page
+    """
+    return render_template('index.html')
+
 
 @app.route('/register', methods=['GET'])
 def register_form():
