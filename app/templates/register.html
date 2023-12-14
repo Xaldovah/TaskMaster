@@ -16,30 +16,41 @@
             <div class="inner-box" id="card">
                 <div class="card-front">
                     <h2>LOGIN</h2>
-                    <form class="login-form">
+                    <form class="login-form" onclick="openRegister()">
                         <input type="email" class="input-box" id="login-email" name="email" placeholder="Enter Email" required>
                         <input type="password" class="input-box" id="login-password" name="password" placeholder="Password" required>
-                        <button type="submit" onsubmit="retrieveData(event)" class="submit-btn">Submit</button>
+                        <button type="submit" onsubmit="retrieveData()" class="submit-btn">Submit</button>
                         <input type="checkbox"><span>Remember Me</span>
                     </form>
-                    <button type="button" class="btn" onclick="openRegister()">New User?</button>
+                    <button type="button" class="btn">Are you new?</button>
                     <a href="#">Forgot Password</a>
                 </div>
                 <div class="card-back">
                     <h2>REGISTER</h2>
-                    <form class="register-form">
+                    <form class="register-form" onclick="openLogin()">
                         <input type="text" class="input-box" id="name" name="name" placeholder="Enter Name" required>
                         <input type="email" class="input-box" id="email" name="email" placeholder="Enter Email" required>
                         <input type="password" class="input-box" id="password" name="password" placeholder="Password" required>
                         <button type="submit" onsubmit="saveData()" class="submit-btn">Submit</button>
                         <input type="checkbox"><span>Remember Me</span>
                     </form>
-                    <button type="button" class="btn" onclick="openLogin()">I have an account</button>
+                    <button type="button" class="btn">I have an account</button>
                     <a href="#">Forgot Password</a>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+    	var card = document.getElementById("card");
+
+    	function openRegister() {
+        	card.style.transform = "rotateY(-180deg)";
+    	}
+
+    	function openLogin() {
+        	card.style.transform = "rotateY(0deg)";
+    	}
+    </script>
     <script src="/static/js/main.js"></script>
 </body>
 </html>
