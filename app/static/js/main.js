@@ -1,7 +1,12 @@
-function saveData() {
+async function saveData() {
     let username = document.getElementById('username').value;
     let email = document.getElementById('email').value;
     let password = document.getElementById('password').value;
+
+    const encoder = new TextEncoder();
+    const passwordBuffer = encoder.encode(password);
+    const hashedPasswordBuffer = await crypto.subtle.digest('SHA-256', passwordBuffer);
+    const hashedPassword = Array.from(new Uint8Array(hashedPasswordBuffer)).map(byte => byte.toString(16).padStart(2, '0')).join('');
 
     let user_records = JSON.parse(localStorage.getItem('users')) || [];
     if (user_records.some((v) => v.email == email)) {
@@ -10,7 +15,7 @@ function saveData() {
         user_records.push({
             "username": username,
             "email": email,
-            "password": password
+            "password": hashedpassword
         });
         localStorage.setItem('users', JSON.stringify(user_records));
         alert('Data saved successfully');
@@ -18,7 +23,7 @@ function saveData() {
     }
 }
 
-function retrieveData() {
+async function retrieveData() {
     let email = document.getElementById('login-email').value;
     let password = document.getElementById('login-password').value;
 
