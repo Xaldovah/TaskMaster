@@ -18,56 +18,30 @@ function saveData() {
     }
 }
 
-//function retrieveData() {
-//    let email = document.getElementById('login-email').value;
-//    let password = document.getElementById('login-password').value;
-
-//    let user_records = JSON.parse(localStorage.getItem('users')) || [];
-
-//    let user = user_records.find((v) => v.email === email && v.password === password);
-
-//    if (user) {
-//        alert('Login success');
-//        localStorage.setItem('current_user', JSON.stringify(user));
-//        localStorage.setItem('username', user.username);
-//        localStorage.setItem('email', user.email);
-//        window.location.href = '/dashboard';
-//    } else {
-//        alert('Login failed');
-//    }
-//}
-//
-
-async function retrieveData() {
+function retrieveData() {
     let email = document.getElementById('login-email').value;
     let password = document.getElementById('login-password').value;
 
-    // Send user login data to the server
-    try {
-        let response = await fetch('/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                email: email,
-                password: password,
-            }),
-        });
+    let user_records = JSON.parse(localStorage.getItem('users')) || [];
 
-        let data = await response.json();
+    let user = user_records.find((v) => v.email === email && v.password === password);
 
-        if (data.success) {
-            // Save access token to localStorage
-            localStorage.setItem('access_token', data.access_token);
+    if (user) {
+	let accessToken = generateAccessToken();
 
-            alert('Login success');
-            window.location.href = '/dashboard';
-        } else {
-            alert('Login failed: ' + data.error);
-        }
-    } catch (error) {
-        console.error('Error during login:', error);
-        alert('An error occurred during login. Please try again.');
+	localStorage.setItem('access_token', accessToken);
+        localStorage.setItem('current_user', JSON.stringify(user));
+        localStorage.setItem('username', user.username);
+        localStorage.setItem('email', user.email);
+
+	alert('Login success');
+        window.location.href = '/dashboard';
+    } else {
+        alert('Login failed');
     }
+}
+
+// Function to generate a simple access token
+function generateAccessToken() {
+    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
