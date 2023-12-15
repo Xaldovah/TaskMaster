@@ -15,7 +15,7 @@ async function saveData() {
         user_records.push({
             "username": username,
             "email": email,
-            "password": hashedpassword
+            "password": hashedPassword
         });
         localStorage.setItem('users', JSON.stringify(user_records));
         alert('Data saved successfully');
@@ -34,7 +34,7 @@ async function retrieveData() {
     const hashedPasswordBuffer = await crypto.subtle.digest('SHA-256', passwordBuffer);
     const hashedPassword = Array.from(new Uint8Array(hashedPasswordBuffer)).map(byte => byte.toString(16).padStart(2, '0')).join('');
 
-    let user = user_records.find((v) => v.email === email && v.password === hashedpassword);
+    let user = user_records.find((v) => v.email === email && v.password === hashedPassword);
 
     if (user) {
 	let accessToken = generateAccessToken();
