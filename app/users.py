@@ -5,9 +5,9 @@ user management.
 
 from flask import jsonify, request, redirect, url_for, current_app, render_template
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app import app, bcrypt, db
+from app import app, bcrypt, db, ma
 from app.auth import *
-from app.models import User
+from app.models import *
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 
@@ -22,26 +22,27 @@ def get_users():
     """
     try:
          users = User.query.all()
-         user_list = []
-         
-         for user in users:
-             user_data = {
-                     'user_id': user.id,
-                     'username': user.username,
-                     'email': user.email,
-                     'password': user.password,
-                     'created_at': user.created_at.strftime('%Y-%m-%d %H:%M:%S') if user.created_at else None
-             }
-             user_list.append(user_data)
-         # return jsonify({'users': user_list})
-         return render_template('users.html', users=user_list)
+         results = users_schema.dump(users)
+         return jsonify(results)
     except SQLAlchemyError as e:
          return jsonify({'error': f'Database error: {str(e)}'}), 500
 
 
-@app.route('/users/<int:user_id>', methods=['PUT'])
+@app.route('/users/<id>', methods = ['GET'])
 @jwt_required()
-def update_user(user_id):
+def get_single_user(id):
+    current_user_id = get_jwt_identity()
+
+    if user_id != current_user_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    user = User.query.get(id)
+    return user_schema.jsonify(user)
+
+
+@app.route('/users/<id>', methods=['PUT'])
+@jwt_required()
+def update_user(id):
     """
     Update user preferences.
 
@@ -50,50 +51,34 @@ def update_user(user_id):
     """
     current_user_id = get_jwt_identity()
 
-    if user_id != current_user_id:
+    if id != current_user_id:
         return jsonify({'error': 'Unauthorized'}), 401
 
-    user = User.query.get(user_id)
+    user = User.query.get(id)
 
     if user is None:
         return jsonify({'error': 'User not found'}), 404
 
     data = request.get_json()
 
-    try:
-        # Update preferences if provided in the request
-        if 'default_task_view' in data:
-            user.default_task_view = data['default_task_view']
-        if 'enable_notifications' in data:
-            user.enable_notifications = data['enable_notifications']
-        if 'theme_preference' in data:
-            user.theme_preference = data['theme_preference']
+    user.username = username
+    user.email = email
+    user.password = password
 
-        db.session.commit()
-
-        return jsonify({
-            'user_id': user.id,
-            'username': user.username,
-            'default_task_view': user.default_task_view,
-            'enable_notifications': user.enable_notifications,
-            'theme_preference': user.theme_preference
-        })
-
-    except SQLAlchemyError as e:
-        db.session.rollback()
-        return jsonify({'error': f'Database error: {str(e)}'}), 500
+    db.session.commit()
+    return user_schema.jsonify(user)
 
 
-@app.route('/users/<int:user_id>', methods=['DELETE'])
+@app.route('/users/<id>', methods=['DELETE'])
 @jwt_required()
-def delete_user(user_id):
+def delete_user(id):
     """
     Delete a user.
 
     :param user_id: ID of the user to be deleted.
     :return: JSON response indicating the success of the operation.
     """
-    user = User.query.get(user_id)
+    user = User.query.get(id)
 
     if user is None:
         return jsonify({'error': 'User not found'}), 404
@@ -101,4 +86,4 @@ def delete_user(user_id):
     db.session.delete(user)
     db.session.commit()
 
-    return jsonify({'message': 'User deleted successfully'}), 200
+    return user_schema.jsonify(user), 200

@@ -2,7 +2,7 @@
 Module Description: This module contains SQLAlchemy models for the application.
 """
 
-from app import app, csrf, db
+from app import app, csrf, db, ma
 from flask_login import UserMixin
 from flask_wtf import FlaskForm
 from wtforms import Form, TextAreaField, validators
@@ -61,6 +61,15 @@ class User(db.Model, UserMixin):
         return f"User('{self.username}', '{self.email}')"
 
 
+class UserSchema(ma.Schema):
+    class Meta:
+        fields = ('id', 'username', 'email', 'password', 'created_at', 'updated_at')
+
+
+user_schema = UserSchema()
+users_schema = UserSchema(many=True)
+
+
 class Task(db.Model):
     """
     Task model representing tasks created by users.
@@ -87,6 +96,15 @@ class Task(db.Model):
         :return: String representation.
         """
         return '<Task {}>'.format(self.title)
+
+
+class TaskSchema(ma.Schema):
+    class Meta:
+        fields = ('id', 'title', 'description', 'due_date', 'priority', 'status', 'completed', 'category_id', 'user_id', 'created_at', 'updated_at')
+
+
+task_schema = TaskSchema()
+tasks_schema = TaskSchema(many=True)
 
 
 class RegisterForm(FlaskForm):

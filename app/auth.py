@@ -4,12 +4,12 @@ app.auth
 This module provides authentication routes for user registration, login, and logout.
 """
 
-from flask import jsonify, request, render_template, redirect, url_for, flash, session
+from flask import jsonify, request, make_response, render_template, redirect, url_for, flash, session
 from flask_login import logout_user, login_required
 from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required
 from flask_login import current_user
 from flask_mail import Message, Mail
-from app import app, bcrypt, db
+from app import app, bcrypt, db, ma
 from flask_bcrypt import generate_password_hash, check_password_hash
 from app.models import *
 from datetime import datetime
@@ -90,8 +90,7 @@ def register():
         db.session.add(user)
         db.session.commit()
 
-        # Return success message
-        return jsonify({'success': True, 'message': 'User registered successfully!'})
+        return user_schema.jsonify(user)
     except KeyError:
         return jsonify({'success': False, 'error': 'Missing required fields'}), 400
 
@@ -117,19 +116,19 @@ def login():
         session['username'] = user.username
         session['email'] = user.email
 
-        # Return success message and include the access token
-        return jsonify({
+        response_data = {
             'success': True,
             'message': 'Login successful!',
-            'access_token': access_token,
-            'user_info': {
-                'id': user.id,
-                'username': user.username,
-                'email': user.email
-            }
-        })
+            'user_info': user_schema.dump(user),
+            'access_token': access_token
+        }
+
+        response = make_response(jsonify(response_data), 200)
+        response.headers['Authorization'] = f'Bearer {access_token}'
+        return response
     except KeyError:
         return jsonify({'success': False, 'error': 'Missing required fields'}), 400
+
 
 def verify_password(input_password, hashed_password):
     """Verify the input password against the hashed password."""
@@ -147,4 +146,8 @@ def logout():
     """
     current_user.logged_out_at = datetime.utcnow()
     db.session.commit()
+    
+    # Clear the session data
+    session.clear()
+
     return jsonify({'message': 'Logout successful'}), 200

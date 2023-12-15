@@ -8,6 +8,9 @@ flask_jwt_extended
 flask_login
 flask_restful
 flask_mail
+flask-marshmallow
+marshmallow-sqlalchemy
+flask_sqlalchemy
 mysqlclient
 sqlalchemy
 python-dotenv
