@@ -24,7 +24,12 @@ function retrieveData() {
 
     let user_records = JSON.parse(localStorage.getItem('users')) || [];
 
-    let user = user_records.find((v) => v.email === email && v.password === password);
+    const encoder = new TextEncoder();
+    const passwordBuffer = encoder.encode(password);
+    const hashedPasswordBuffer = await crypto.subtle.digest('SHA-256', passwordBuffer);
+    const hashedPassword = Array.from(new Uint8Array(hashedPasswordBuffer)).map(byte => byte.toString(16).padStart(2, '0')).join('');
+
+    let user = user_records.find((v) => v.email === email && v.password === hashedpassword);
 
     if (user) {
 	let accessToken = generateAccessToken();
