@@ -2,12 +2,12 @@
 function fetchTasks() {
     // Retrieve the access token from the server
     $.ajax({
-        url: '/tasks',
+        url: '/login',
         type: 'GET',
         dataType: 'json',
         success: function(data) {
             // Use the retrieved access token for subsequent requests
-            var accessToken = data.access_token;
+	    let accessToken = localStorage.getItem('access_token');
             displayTasks(accessToken);
         },
         error: function(error) {
@@ -61,12 +61,12 @@ $('#create-task-form').submit(function(event) {
 
     // Retrieve the access token from the server
     $.ajax({
-        url: '/get_access_token',
+        url: '/tasks',
         type: 'GET',
         dataType: 'json',
         success: function(data) {
             // Use the retrieved access token for the create task request
-            var accessToken = data.access_token;
+            let accessToken = localStorage.getItem('access_token');
 
             $.ajax({
                 url: '/tasks',
