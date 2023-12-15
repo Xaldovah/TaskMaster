@@ -1,12 +1,8 @@
-$(document).ready(function() {
-    fetchTasks();
-});
-
 // Function to fetch tasks from the server
 function fetchTasks() {
     // Retrieve the access token from the server
     $.ajax({
-        url: '/get_access_token',
+        url: '/tasks',
         type: 'GET',
         dataType: 'json',
         success: function(data) {
