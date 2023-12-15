@@ -16,6 +16,7 @@ from datetime import datetime
 
 mail = Mail(app)
 
+
 @app.route('/', methods=['GET'])
 def index():
     """Retrieve the home page
@@ -90,43 +91,6 @@ def register():
         return jsonify({'success': False, 'error': 'Missing required fields'}), 400
 
 
-@app.route('/logout', methods=['POST'])
-@jwt_required()
-def logout():
-    """
-    User logout.
-
-    Returns:
-        jsonify: JSON response with logout information.
-    """
-    current_user.logged_out_at = datetime.utcnow()
-    db.session.commit()
-    return jsonify({'message': 'Logout successful'}), 200
-
-
-@app.route('/hash_password', methods=['POST'])
-def hash_password():
-    try:
-        data = request.get_json()
-
-        # Ensure the request includes the 'password' field
-        if 'password' not in data:
-            return jsonify({'success': False, 'error': 'Missing password field'}), 400
-
-        # Extract the password from the request data
-        password = data['password']
-
-        # Hash the password using bcrypt
-        hashed_password = generate_password_hash(password)
-
-        # Return the hashed password
-        return jsonify({'success': True, 'hashedPassword': hashed_password})
-
-    except Exception as e:
-        print(f"Error during password hashing: {str(e)}")
-        return jsonify({'success': False, 'error': 'Internal server error'}), 500
-
-
 @app.route('/login', methods=['POST'])
 def login():
     try:
@@ -162,21 +126,20 @@ def login():
     except KeyError:
         return jsonify({'success': False, 'error': 'Missing required fields'}), 400
 
-
-@app.route('/get_access_token', methods=['GET'])
-@jwt_required(optional=True)
-def get_access_token():
-    try:
-        current_user_id = get_jwt_identity()
-        if current_user_id:
-            access_token = create_access_token(identity=current_user_id)
-            return jsonify(access_token=access_token), 200
-        else:
-            return jsonify(error='Unauthorized'), 401
-    except Exception as e:
-        return jsonify(error=str(e)), 500
-
-
 def verify_password(input_password, hashed_password):
     """Verify the input password against the hashed password."""
     return check_password_hash(hashed_password, input_password)
+
+
+@app.route('/logout', methods=['POST'])
+@jwt_required()
+def logout():
+    """
+    User logout.
+
+    Returns:
+        jsonify: JSON response with logout information.
+    """
+    current_user.logged_out_at = datetime.utcnow()
+    db.session.commit()
+    return jsonify({'message': 'Logout successful'}), 200
