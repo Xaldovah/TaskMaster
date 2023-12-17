@@ -25,7 +25,7 @@ secret_key = '4d95d7d31e4e8d50e7e53d1fa8db928a8bc9abfe94bfc6e8c892c1b78e159b14a0
 # Configure Flask application
 app.config['SECRET_KEY'] = '4d95d7d31e4e8d50e7e53d1fa8db928a8bc9abfe94bfc6e8c892c1b78e159b14a03887a49e9e4737ac9aa1ee9e4c6b62'
 app.config['WTF_CSRF_ENABLED'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///test.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://xaldovah:yU7hbsuRA0FF6RsYQwG2K6HvXaPx1b0v@dpg-clv9jgla73kc73bnin3g-a/task_master_od6j'
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:''@localhost/task_master'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = secret_key
