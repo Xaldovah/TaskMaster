@@ -91,8 +91,8 @@ def register():
         db.session.commit()
 
         return user_schema.jsonify(user)
-    except KeyError:
-        return jsonify({'success': False, 'error': 'Missing required fields'}), 400
+    except Exception:
+        return jsonify({'success': False, 'error': 'Registration failed'}), 400
 
 
 @app.route('/login', methods=['POST'])
@@ -126,8 +126,8 @@ def login():
         response = make_response(jsonify(response_data), 200)
         response.headers['Authorization'] = f'Bearer {access_token}'
         return response
-    except KeyError:
-        return jsonify({'success': False, 'error': 'Missing required fields'}), 400
+    except Exception:
+        return jsonify({'success': False, 'error': 'Login failed'}), 400
 
 
 def verify_password(input_password, hashed_password):
