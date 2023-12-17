@@ -54,6 +54,15 @@ def login_form():
   return render_template('register.html')
 
 
+@app.route('/register', methods=['OPTIONS'])
+@app.route('/login', methods=['OPTIONS'])
+def handle_options():
+    response = make_response()
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+    response.headers.add('Access-Control-Allow-Methods', 'POST')
+    return response
+
+
 @app.route('/register', methods=['POST'])
 def register():
     try:
