@@ -44,23 +44,34 @@
         </div>
     </div>
     <script>
-        new Vue({
-            el: '#auth',
-            data: {
-                username: '',
-                email: '',
-                password: '',
-                message: '',
-                isFlipped: false,
-            },
-            methods: {
-                openRegister() {
-                    this.isFlipped = true;
-                },
-                openLogin() {
-                    this.isFlipped = false;
-                },
-            },
-        });
+	    new Vue({
+		    el: '#auth',
+		    data: {
+			    username: '',
+			    email: '',
+			    password: '',
+			    message: '',
+			    isFlipped: false,
+		    },
+		    methods: {
+			    openRegister() {
+				    this.isFlipped = true;
+			    },
+			    openLogin() {
+				    this.isFlipped = false;
+			    },
+		    },
+		    watch: {
+			    isFlipped: function (newVal) {
+				    // Manually set the transform property to fix rotation issue
+				    var card = document.getElementById("card");
+				    if (newVal) {
+					    card.style.transform = "rotateY(-180deg)";
+				    } else {
+					    card.style.transform = "rotateY(0deg)";
+				    }
+			    },
+		    },
+	    });
     </script>
 {% endblock %}
