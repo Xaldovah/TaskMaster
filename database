@@ -1,0 +1,4 @@
+mysql -h $(python3 -c "from app import app; print(app.config['SQLALCHEMY_DATABASE_URI'].split('@')[1].split('/')[0].split(':')[0])") \
+     -u $(python3 -c "from app import app; print(app.config['SQLALCHEMY_DATABASE_URI'].split('://')[1].split(':')[0])") \
+     -p$(python3 -c "from app import app; print(app.config['SQLALCHEMY_DATABASE_URI'].split('://')[1].split(':')[1].split('@')[0])") \
+     $(python3 -c "from app import app; print(app.config['SQLALCHEMY_DATABASE_URI'].split('@')[1].split('/')[1])")
