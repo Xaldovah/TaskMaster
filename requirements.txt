@@ -11,6 +11,7 @@ flask_mail
 flask-marshmallow
 marshmallow-sqlalchemy
 flask_sqlalchemy
+psycopg2-binary
 mysqlclient
 sqlalchemy
 python-dotenv
