@@ -6,10 +6,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bcryptjs/dist/bcrypt.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
@@ -18,7 +14,7 @@
 {% block content %}
     <div id="auth">
         <div class="container">
-            <div class="card">
+            <div class="card" :style="{ transform: 'rotateY(' + rotation + 'deg)' }">
                 <div class="inner-box" id="card">
                     <div class="card-front">
                         <h2>LOGIN</h2>
@@ -48,14 +44,23 @@
         </div>
     </div>
     <script>
-        var card = document.getElementById("card");
-
-        function openRegister() {
-            card.style.transform = "rotateY(-180deg)";
-        }
-
-        function openLogin() {
-            card.style.transform = "rotateY(0deg)";
-        }
+        new Vue({
+            el: '#auth',
+            data: {
+                username: '',
+                email: '',
+                password: '',
+                message: '',
+                rotation: 0,
+            },
+            methods: {
+                openRegister() {
+                    this.rotation = -180;
+                },
+                openLogin() {
+                    this.rotation = 0;
+                },
+            },
+        });
     </script>
 {% endblock %}
