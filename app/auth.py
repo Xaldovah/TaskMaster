@@ -44,12 +44,13 @@ def contact():
     return render_template('contact.html')
 
 
+@app.route('/register', methods=['GET'])
 def register_form():
   return render_template('register.html')
 
 
 def login_form():
-  return render_template('register.html')
+  return render_template('GET')
 
 
 @app.route('/register', methods=['OPTIONS'])
