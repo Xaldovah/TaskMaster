@@ -9,7 +9,7 @@ from flask_jwt_extended import create_access_token, jwt_required
 from flask_bcrypt import check_password_hash
 from app import app, bcrypt, db, ma
 from flask_mail import Message, Mail
-from app.models import User
+from app.models import *
 from datetime import datetime
 
 mail = Mail(app)
