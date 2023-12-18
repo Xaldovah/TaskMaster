@@ -31,7 +31,7 @@ def dashboard():
     Returns:
         render_template: Rendered HTML template.
     """
-    return render_template('dashboard.html')
+    return render_template('todo.html')
 
 
 @app.route('/about')

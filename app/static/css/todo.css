@@ -1,0 +1,190 @@
+/* Add your dashboard-specific styles here */
+/* Use the styles from style.css in index.html as a reference */
+/* Ensure that your styles follow the structure and classes used in index.html */
+
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    transition: background-color 0.3s ease;
+}
+
+#sidebar {
+    background: #292a2c;
+    color: #fff;
+    width: 260px;
+    height: 100%;
+    position: fixed;
+    overflow-y: auto;
+    transition: width 0.3s ease;
+    z-index: 2;
+}
+
+#content {
+    margin-left: 260px;
+    transition: margin-left 0.3s ease;
+}
+
+#content nav {
+    background: #343a40;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+    height: 60px;
+    position: fixed;
+    width: 100%;
+    z-index: 1;
+}
+
+#content nav .nav-link {
+    color: #fff;
+    margin-left: 15px;
+}
+
+#content nav form .form-input {
+    display: flex;
+}
+
+#content nav form .form-input input {
+    border: none;
+    padding: 10px;
+    border-radius: 5px 0 0 5px;
+    font-size: 1rem;
+    outline: none;
+}
+
+#content nav form .form-input button {
+    background: #007bff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 0 5px 5px 0;
+    color: #fff;
+    cursor: pointer;
+    outline: none;
+}
+
+#content nav form .form-input button .bx {
+    font-size: 1.5rem;
+}
+
+#content nav .notification {
+    margin-right: 15px;
+    position: relative;
+}
+
+#content nav .notification .num {
+    background: #ff3f3f;
+    color: #fff;
+    padding: 2px 5px;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+}
+
+#content nav .profile img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+#content nav .switch-mode {
+    background: #ddd;
+    width: 40px;
+    height: 20px;
+    display: block;
+    border-radius: 25px;
+    cursor: pointer;
+    position: relative;
+}
+
+#content nav .switch-mode::after {
+    content: '';
+    background: #fff;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: transform 0.3s ease;
+}
+
+#content nav .switch-mode::before {
+    content: '';
+    background: #007bff;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    transition: transform 0.3s ease;
+}
+
+#content nav .switch-mode:checked::after {
+    transform: translateX(20px);
+}
+
+#content nav .switch-mode:checked::before {
+    transform: translateX(-20px);
+}
+
+#content main {
+    padding: 25px;
+}
+
+#content .head-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#content .head-title .left h1 {
+    font-size: 1.5rem;
+}
+
+#content .head-title .left .breadcrumb {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+}
+
+#content .head-title .left .breadcrumb li {
+    list-style: none;
+    margin: 0 5px;
+    color: #007bff;
+}
+
+#content .head-title .left .breadcrumb li i {
+    font-size: 0.8rem;
+}
+
+#content .head-title .left .breadcrumb li a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+#content .head-title .left .breadcrumb li a.active {
+    font-weight: bold;
+}
+
+#content .head-title .right .btn-download {
+    background: #007bff;
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+#content .head-title .right .btn-download i {
+    margin-right: 5px;
+}
