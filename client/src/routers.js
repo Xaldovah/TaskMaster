@@ -1,26 +1,15 @@
-import {createRouter, createWebHistory} from 'vue-router'
-import Home from './components/Home'
-import Create from './components/Create'
-
+import { createRouter, createWebHistory } from 'vue-router';
+import Auth from '../components/Auth.vue';
 
 const routes = [
-	{
-		path:'/',
-		name: 'home',
-		component:Home
-	},
-
-	{
-		path:'/create',
-		name:'create',
-		component:Create
-	}
-]
-
+  { path: '/', redirect: 'https://arkwebs.tech/login' },
+  { path: 'https://arkwebs.tech/login', component: Auth },
+  { path: 'https://arkwebs.tech/register', component: Auth },
+];
 
 const router = createRouter({
-	history:createWebHistory(),
-	routes,
-})
+  history: createWebHistory(),
+  routes,
+});
 
 export default router;

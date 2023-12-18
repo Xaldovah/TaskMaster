@@ -79,9 +79,9 @@ export default {
   data() {
     return {
       isRegister: false,
-      email: '', // Add the email and password data properties
+      email: '',
       password: '',
-      message: '', // Add the message data property
+      message: '',
     };
   },
   methods: {
@@ -140,7 +140,6 @@ export default {
 </script>
 
 <style scoped>
-/* Add your CSS styles here instead of linking to external files */
 .container {
   display: flex;
   align-items: center;
@@ -156,5 +155,4 @@ export default {
   transform-style: preserve-3d;
   transition: transform 0.5s ease-in-out;
 }
-/* ... Add remaining styles ... */
 </style>
