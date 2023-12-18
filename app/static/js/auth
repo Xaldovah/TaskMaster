@@ -8,7 +8,7 @@ new Vue({
     },
     methods: {
         register() {
-            fetch('/register', {
+            fetch('https://arkwebs.tech/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -32,7 +32,7 @@ new Vue({
                 });
         },
         login() {
-            fetch('/login', {
+            fetch('https://arkwebs.tech/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
