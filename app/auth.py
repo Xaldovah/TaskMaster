@@ -100,8 +100,8 @@ def register():
         db.session.commit()
 
         return user_schema.jsonify(user)
-    except Exception:
-        return jsonify({'success': False, 'error': 'Registration failed'}), 400
+    except KeyError:
+        return jsonify({'success': False, 'error': 'Missing required fields'}), 400
 
 
 @app.route('/login', methods=['POST'])
