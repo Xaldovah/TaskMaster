@@ -4,14 +4,12 @@ app.auth
 This module provides authentication routes for user registration, login, and logout.
 """
 
-from flask import jsonify, request, make_response, render_template, redirect, url_for, flash, session
-from flask_login import logout_user, login_required
-from flask_jwt_extended import JWTManager, create_access_token, get_jwt_identity, jwt_required
-from flask_login import current_user
-from flask_mail import Message, Mail
+from flask import jsonify, request, make_response, render_template, session
+from flask_jwt_extended import create_access_token, jwt_required
+from flask_bcrypt import check_password_hash
 from app import app, bcrypt, db, ma
-from flask_bcrypt import generate_password_hash, check_password_hash
-from app.models import *
+from flask_mail import Message, Mail
+from app.models import User
 from datetime import datetime
 
 mail = Mail(app)
@@ -19,38 +17,38 @@ mail = Mail(app)
 
 @app.route('/', methods=['GET'])
 def index():
-    """Retrieve the home page
-    """
+    """Retrieve the home page."""
     return render_template('index.html')
+
 
 @app.route('/dashboard')
 def dashboard():
-    """
-    Render the dashboard page.
-
-    Returns:
-        render_template: Rendered HTML template.
-    """
+    """Render the dashboard page."""
     return render_template('todo.html')
 
 
 @app.route('/about')
 def about():
+    """Render the about page."""
     return render_template('about.html')
 
 
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
+    """Render the contact page."""
     return render_template('contact.html')
 
 
 @app.route('/register', methods=['GET'])
 def register_form():
-  return render_template('register.html')
+    """Render the registration form."""
+    return render_template('register.html')
 
 
-def login_form():
-  return render_template('GET')
+@app.route('/login', methods=['GET'])
+def register_form():
+    """Render the login form."""
+    return render_template('register.html')
 
 
 @app.route('/register', methods=['OPTIONS'])
@@ -64,11 +62,21 @@ def handle_options():
 
 @app.route('/register', methods=['POST'])
 def register():
+    """
+    Register a new user.
+
+    This endpoint handles user registration by validating input data, checking for existing users,
+    hashing the password, and storing the user information in the database.
+
+    Returns:
+        jsonify: JSON response with user information or an error message.
+    """
     try:
         data = request.get_json()
 
         # Validate input fields
-        if 'username' not in data or 'email' not in data or 'password' not in data:
+        required_fields = ['username', 'email', 'password']
+        if not all(field in data for field in required_fields):
             return jsonify({'success': False, 'error': 'Missing required fields'}), 400
 
         username = data['username']
@@ -76,7 +84,7 @@ def register():
         password = data['password']
 
         # Validate username, email, and password (customize as needed)
-        if len(username) < 3 or len(username) > 50:
+        if not (3 <= len(username) <= 50):
             return jsonify({'success': False, 'error': 'Invalid username length'}), 400
 
         if not email or '@' not in email or '.' not in email:
@@ -105,18 +113,27 @@ def register():
 
 @app.route('/login', methods=['POST'])
 def login():
+    """
+    User login.
+
+    This endpoint handles user login by verifying credentials, generating an access token,
+    and setting user information in the session.
+
+    Returns:
+        jsonify: JSON response with login information or an error message.
+    """
     try:
         data = request.get_json()
         email = data['email']
         password = data['password']
 
-        # Fetch user from database by email
+        # Fetch user from the database by email
         user = User.query.filter_by(email=email).first()
 
         if not user or not verify_password(password, user.password):
             return jsonify({'success': False, 'error': 'Invalid credentials'}), 401
 
-        # Generate access token
+        # Generate an access token
         access_token = create_access_token(identity=user.id)
 
         # Set user information in the session
@@ -146,15 +163,10 @@ def verify_password(input_password, hashed_password):
 @app.route('/logout', methods=['POST'])
 @jwt_required()
 def logout():
-    """
-    User logout.
-
-    Returns:
-        jsonify: JSON response with logout information.
-    """
+    """User logout."""
     current_user.logged_out_at = datetime.utcnow()
     db.session.commit()
-    
+
     # Clear the session data
     session.clear()
 

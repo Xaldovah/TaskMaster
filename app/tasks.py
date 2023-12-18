@@ -2,7 +2,7 @@
 Module Description: This module contains API endpoints related to tasks.
 """
 
-from flask import jsonify, request, redirect, url_for, current_app
+from flask import jsonify, request, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import app, celery, db
 from app.models import *
@@ -18,16 +18,18 @@ from flask import render_template
 def get_tasks():
     """
     Retrieve tasks for the current user.
-    return: JSON response with the list of tasks.
+
+    Returns:
+        jsonify: JSON response with the list of tasks.
     """
     current_user_id = get_jwt_identity()
     
     try:
-         tasks = Task.query.filter_by(user_id=current_user_id).all()
-         results = tasks_schema.dump(tasks)
-         return jsonify(results)
+        tasks = Task.query.filter_by(user_id=current_user_id).all()
+        results = tasks_schema.dump(tasks)
+        return jsonify(results)
     except SQLAlchemyError as e:
-         return jsonify({'error': f'Database error: {str(e)}'}), 500
+        return jsonify({'error': f'Database error: {str(e)}'}), 500
 
 
 @app.route('/tasks', methods=['POST'])
@@ -36,7 +38,8 @@ def create_task():
     """
     Create a new task for the current user.
 
-    :return: JSON response with information about the created task.
+    Returns:
+        jsonify: JSON response with information about the created task.
     """
     try:
         data = request.get_json()
@@ -45,7 +48,6 @@ def create_task():
         if not all(field in data for field in required_fields):
             return jsonify({"error": "Missing required fields"}), 400
 
-        # Create a new Task object and populate its attributes
         new_task = Task()
         new_task.title = data['title']
         new_task.description = data.get('description', '')
@@ -57,8 +59,6 @@ def create_task():
         db.session.add(new_task)
         db.session.commit()
 
-
-        # Log and emit events (assuming you have the necessary setup for socketio)
         current_app.logger.info(f'New task created: {new_task.title}')
         days_until_due = (new_task.due_date - datetime.utcnow()).days
         notification_message = f'Task "{new_task.title}" is due in {days_until_due} days'
@@ -80,7 +80,7 @@ def update_task(id):
     """
     Update an existing task.
 
-    :param task_id: ID of the task to be updated.
+    :param id: ID of the task to be updated.
     :return: JSON response with the updated task details.
     """
     try:
@@ -113,7 +113,7 @@ def delete_task(id):
     """
     Delete a task.
 
-    :param task_id: ID of the task to be deleted.
+    :param id: ID of the task to be deleted.
     :return: JSON response indicating the success of the operation.
     """
     try:
@@ -136,15 +136,15 @@ def send_notification(user, message):
     :param message: Notification message.
     """
     with app.app_context():
-        new_notis = Notification(
+        new_notification = Notification(
             user=user,
             message=message
         )
 
-        db.session.add(new_notis)
+        db.session.add(new_notification)
         db.session.commit()
 
-        current_app.logger.info(f'New notification created: {new_notis.message}')
+        current_app.logger.info(f'New notification created: {new_notification.message}')
 
 
 @app.route('/tasks/<id>/disable-notifications', methods=['POST'])
@@ -153,7 +153,7 @@ def disable_notifications(id):
     """
     Disable notifications for a specific task.
 
-    :param task_id: ID of the task to disable notifications.
+    :param id: ID of the task to disable notifications.
     :return: JSON response indicating the success of the operation.
     """
     task = Task.query.get(id)
