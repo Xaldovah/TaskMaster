@@ -102,7 +102,7 @@ flask run
 #### Technologies Used:
 1. HTML
 2. CSS
-3. JavaScript
+3. JavaScript (vue.js and vanilla)
 
 ##### Development Setup
 - Navigate to the frontend directory.
