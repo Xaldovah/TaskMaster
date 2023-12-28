@@ -13,6 +13,7 @@ function createTask() {
 
     // Create a task object
     const newTask = {
+	user: localStorage.getItem('email'),
         title: title,
         description: description,
         due_date: dueDate,
@@ -41,8 +42,12 @@ function fetchAndRenderTasks() {
     // Retrieve tasks from localStorage
     const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
 
+    // Filter tasks based on the current user
+    const currentUser = localStorage.getItem('email');
+    const userTasks = tasks.filter(task => task.user === currentUser);
+
     // Render tasks on the page
-    tasks.forEach(task => {
+    userTasks.forEach(task => {
         const taskItem = document.createElement('li');
         taskItem.innerHTML = `
             <span>Title:</span> ${task.title}<br>
