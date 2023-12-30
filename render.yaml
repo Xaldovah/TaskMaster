@@ -1,9 +1,0 @@
-services:
-  - name: taskmaster
-    type: web
-    buildCommand: |
-      npm install --prefix client && \
-      npm run build --prefix client && \
-      cp -r client/dist app/static && \
-      docker build -t taskmaster .
-    startCommand: docker run -p 5000:5000 taskmaster

@@ -2,8 +2,7 @@
 Module Description: This module contains functions related to notifications.
 """
 
-from app import app, db
-from app.models import Notification
+from web.models import Notification
 
 def create_notification(user, message):
     """

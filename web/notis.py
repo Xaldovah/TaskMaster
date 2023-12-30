@@ -2,14 +2,15 @@
 Module Description: This module contains API endpoints related to notifications.
 """
 
-from flask import jsonify, request, current_app
+from flask import Blueprint, jsonify, request, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app import app, db
-from app.models import Notification
-from app.users import User
+from web.models import Notification
+from web.users import User
+
+notis = Blueprint('notis', __name__)
 
 
-@app.route('/notifications', methods=['GET'])
+@notis.route('/notifications', methods=['GET'])
 @jwt_required()
 def get_notifications():
     """
@@ -32,7 +33,7 @@ def get_notifications():
     return jsonify({'notifications': notification_list})
 
 
-@app.route('/notifications', methods=['POST'])
+@notis.route('/notifications', methods=['POST'])
 @jwt_required()
 def create_notification():
     """

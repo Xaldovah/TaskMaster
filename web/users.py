@@ -1,15 +1,15 @@
 """
 Module Description: This module contains API endpoints related to user management.
 """
-
-from flask import jsonify, request
+from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app import app, db
-from app.models import User
+from web.models import User
 from sqlalchemy.exc import SQLAlchemyError
 
+users = Blueprint('users', __name__)
 
-@app.route('/users', methods=['GET'])
+
+@users.route('/users', methods=['GET'])
 @jwt_required()
 def get_users():
     """
@@ -26,7 +26,7 @@ def get_users():
         return jsonify({'error': f'Database error: {str(e)}'}), 500
 
 
-@app.route('/users/<id>', methods=['GET'])
+@users.route('/users/<id>', methods=['GET'])
 @jwt_required()
 def get_single_user(id):
     """
@@ -47,7 +47,7 @@ def get_single_user(id):
     return user_schema.jsonify(user)
 
 
-@app.route('/users/<id>', methods=['PUT'])
+@users.route('/users/<id>', methods=['PUT'])
 @jwt_required()
 def update_user(id):
     """
@@ -80,7 +80,7 @@ def update_user(id):
     return user_schema.jsonify(user)
 
 
-@app.route('/users/<id>', methods=['DELETE'])
+@users.route('/users/<id>', methods=['DELETE'])
 @jwt_required()
 def delete_user(id):
     """

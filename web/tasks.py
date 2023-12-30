@@ -2,18 +2,18 @@
 Module Description: This module contains API endpoints related to tasks.
 """
 
-from flask import jsonify, request, current_app
+from flask import Blueprint, jsonify, request, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app import app, celery, db
-from app.models import *
-from . import socketio
+from web.models import *
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.exc import NoResultFound
 from datetime import datetime, timedelta
 from flask import render_template
 
+tasks = Blueprint('tasks', __name__)
 
-@app.route('/tasks', methods=['GET'])
+
+@tasks.route('/tasks', methods=['GET'])
 @jwt_required()
 def get_tasks():
     """
@@ -32,7 +32,7 @@ def get_tasks():
         return jsonify({'error': f'Database error: {str(e)}'}), 500
 
 
-@app.route('/tasks', methods=['POST'])
+@tasks.route('/tasks', methods=['POST'])
 @jwt_required()
 def create_task():
     """
@@ -74,7 +74,7 @@ def create_task():
         db.session.close()
 
 
-@app.route('/tasks/<id>', methods=['PUT'])
+@tasks.route('/tasks/<id>', methods=['PUT'])
 @jwt_required()
 def update_task(id):
     """
@@ -107,7 +107,7 @@ def update_task(id):
         return jsonify({'error': 'Task not found'}), 404
 
 
-@app.route('/tasks/<id>', methods=['DELETE'])
+@tasks.route('/tasks/<id>', methods=['DELETE'])
 @jwt_required()
 def delete_task(id):
     """
@@ -127,27 +127,7 @@ def delete_task(id):
     return task_schema.jsonify(task), 200
 
 
-@celery.task
-def send_notification(user, message):
-    """
-    Send a notification to a user asynchronously.
-
-    :param user: ID of the user to receive the notification.
-    :param message: Notification message.
-    """
-    with app.app_context():
-        new_notification = Notification(
-            user=user,
-            message=message
-        )
-
-        db.session.add(new_notification)
-        db.session.commit()
-
-        current_app.logger.info(f'New notification created: {new_notification.message}')
-
-
-@app.route('/tasks/<id>/disable-notifications', methods=['POST'])
+@tasks.route('/tasks/<id>/disable-notifications', methods=['POST'])
 @jwt_required()
 def disable_notifications(id):
     """
