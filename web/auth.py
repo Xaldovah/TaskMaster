@@ -24,7 +24,6 @@ def index():
 
 
 @auth.route('/dashboard')
-@login_required
 def dashboard():
     """Render the dashboard page."""
     return render_template('dashboard.html')
@@ -99,8 +98,8 @@ def register():
             db.session.add(user)
             db.session.commit()
 
-            return user_schema.jsonify(user)
-            #return redirect(url_for('auth.dashboard'))
+            #return user_schema.jsonify(user)
+            return redirect(url_for('auth.login'))
         except Exception as e:
             print(e)
             return jsonify({'success': False, 'error': 'Registration failed'}), 400
