@@ -4,16 +4,17 @@ app.auth
 This module provides authentication routes for user registration, login, and logout.
 """
 
-from flask import Blueprint, jsonify, request, make_response, render_template, session
+from flask import Blueprint, jsonify, request, make_response, render_template, session, redirect, url_for
 from flask_jwt_extended import create_access_token, jwt_required
 from flask_login import login_required, login_user, current_user, logout_user
-from flask_bcrypt import check_password_hash
+from flask_bcrypt import Bcrypt, check_password_hash
 from flask_mail import Message, Mail
-from .models import User
+from .models import *
 from . import db, ma
 from datetime import datetime
 
 mail = Mail()
+bcrypt = Bcrypt()
 auth = Blueprint('auth', __name__)
 
 
@@ -64,16 +65,19 @@ def register():
     """
     if request.method == "POST":
         try:
-            username = request.form.get('username')
-            email = request.form.get('email')
-            password = request.form.get('password')
+            if request.is_json:
+                data = request.json
+                username = data.get('username')
+                email = data.get('email')
+                password = data.get('password')
+            else:
+                username = request.form.get('username')
+                email = request.form.get('email')
+                password = request.form.get('password')
 
-            # Validate input fields
-            required_fields = ['username', 'email', 'password']
-            if not all(field in data for field in required_fields):
+            if not all((username, email, password)):
                 return jsonify({'success': False, 'error': 'Missing required fields'}), 400
 
-            # Validate username, email, and password (customize as needed)
             if not (3 <= len(username) <= 50):
                 return jsonify({'success': False, 'error': 'Invalid username length'}), 400
 
@@ -82,7 +86,7 @@ def register():
 
             if len(password) < 6:
                 return jsonify({'success': False, 'error': 'Password must be at least 6 characters long'}), 400
-            
+
             # Check if the email is already associated with a user
             existing_user = User.query.filter_by(email=email).first()
             if existing_user:
@@ -96,10 +100,11 @@ def register():
             db.session.add(user)
             db.session.commit()
 
-            #return user_schema.jsonify(user)
-            return redirect(url_for('login'))
-        except KeyError:
-            return jsonify({'success': False, 'error': 'Missing required fields'}), 400
+            # return user_schema.jsonify(user)
+            return redirect(url_for('auth.login'))
+        except Exception as e:
+            print(e)
+            return jsonify({'success': False, 'error': 'Registration failed'}), 400
 
     return render_template('register.html')
 
@@ -115,45 +120,54 @@ def login():
     Returns:
         jsonify: JSON response with login information or an error message.
     """
-    if request.method == "POST":
-        try:
+    if request.method == "GET":
+        return render_template('register.html')
+
+    try:
+        if request.is_json:
+            data = request.json
+            email = data.get('email')
+            password = data.get('password')
+        else:
             email = request.form.get('email')
             password = request.form.get('password')
 
-            # Fetch user from the database by email
-            user = User.query.filter_by(email=email).first()
+        if not all((email, password)):
+            return jsonify({'success': False, 'error': 'Missing required fields'}), 400
 
-            if not user or not verify_password(password, user.password):
-                return jsonify({'success': False, 'error': 'Invalid credentials'}), 401
+        # Fetch user from the database by email
+        user = User.query.filter_by(email=email).first()
 
-            # Log the user in using Flask-Login
-            login_user(user)
+        if not user or not verify_password(password, user.password):
+            return jsonify({'success': False, 'error': 'Invalid credentials'}), 401
 
-            # Generate an access token
-            access_token = create_access_token(identity=user.id)
+        # Log the user in using Flask-Login
+        login_user(user)
 
-            # Set user information in the session (optional)
-            session['user_id'] = user.id
-            session['username'] = user.username
-            session['email'] = user.email
+        # Generate an access token
+        access_token = create_access_token(identity=user.id)
 
-            response_data = {
-                'success': True,
-                'message': 'Login successful!',
-                'user_info': user_schema.dump(user),
-                'access_token': access_token
-            }
+        # Set user information in the session (optional)
+        session['user_id'] = user.id
+        session['username'] = user.username
+        session['email'] = user.email
 
-            response = make_response(jsonify(response_data), 200)
-            response.headers['Authorization'] = f'Bearer {access_token}'
+        response_data = {
+            'success': True,
+            'message': 'Login successful!',
+            'user_info': user_schema.dump(user),
+            'access_token': access_token
+        }
 
-            # Redirect to the dashboard after successful login
-            return redirect(url_for('dashboard'))
+        response = make_response(jsonify(response_data), 200)
+        response.headers['Authorization'] = f'Bearer {access_token}'
 
-        except Exception:
-            return jsonify({'success': False, 'error': 'Login failed'}), 400
+        # Redirect to the dashboard after successful login
+        return response
 
-    return redirect(url_for('register'))
+    except Exception as e:
+        print(e)
+        return jsonify({'success': False, 'error': 'Login failed'}), 400
 
 def verify_password(input_password, hashed_password):
     """Verify the input password against the hashed password."""
