@@ -99,8 +99,8 @@ def register():
             db.session.add(user)
             db.session.commit()
 
-            #return user_schema.jsonify(user)
-            return redirect(url_for('auth.login'))
+            return user_schema.jsonify(user)
+            #return redirect(url_for('auth.login'))
         except Exception as e:
             print(e)
             return jsonify({'success': False, 'error': 'Registration failed'}), 400
