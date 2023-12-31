@@ -4,14 +4,14 @@ and configuration of a Flask application.
 """
 
 from flask import Flask
+from flask_login import LoginManager
+from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from flask_wtf.csrf import CSRFProtect
 from flask_socketio import SocketIO
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
-from flask_jwt_extended import JWTManager
-from flask_login import LoginManager
 from flask_marshmallow import Marshmallow
 from datetime import timedelta
 from dotenv import load_dotenv
@@ -19,8 +19,11 @@ from os import path
 
 db = SQLAlchemy()
 ma = Marshmallow()
-DB_NAME = "database.db"
+login_manager = LoginManager()
+jwt = JWTManager()
+socketio = SocketIO()
 
+DB_NAME = "database.db"
 
 def create_app():
     # Create Flask application instance
@@ -47,25 +50,26 @@ def create_app():
     CORS(app, supports_credentials=True, origins=["http://arkwebs.tech", "http://localhost:5000"])
 
     # Create SocketIO instance
-    socketio = SocketIO(app)
+    socketio.init_app(app)
 
     # Create a csrf protection
     CSRFProtect(app)
 
     # Create and configure Flask-Migrate instance
     db.init_app(app)
+    Migrate(app, db)
 
     # Create and configure Flask-Marshmallow
-    Marshmallow(app)
+    ma.init_app(app)
 
     # Create and configure Flask-Bcrypt instance
     Bcrypt(app)
 
     # Create and configure Flask-JWT-Extended instance
-    JWTManager(app)
+    jwt.init_app(app)
 
     # Create and configure Flask-Login instance
-    login_manager = LoginManager(app)
+    login_manager.init_app(app)
     login_manager.login_view = 'login'
 
     # Import and register blueprints
@@ -92,3 +96,7 @@ def create_database(app):
         with app.app_context():
             db.create_all()
         print('Database created!')
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
