@@ -7,7 +7,7 @@ from flask import Blueprint, jsonify, request, make_response, render_template, s
 from flask_jwt_extended import create_access_token, jwt_required
 from flask_login import login_required, login_user, current_user, logout_user
 from flask_bcrypt import Bcrypt, check_password_hash
-from flask_mail import Message Mail
+from flask_mail import Message, Mail
 from .models import *
 from . import db, ma
 from datetime import datetime
