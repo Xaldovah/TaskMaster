@@ -24,7 +24,7 @@ def index():
 
 
 @auth.route('/dashboard')
-@jwt_required()
+@login_required()
 def dashboard():
     """Render the dashboard page."""
     return render_template('dashboard.html')
