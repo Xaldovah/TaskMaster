@@ -63,7 +63,7 @@ def register():
     Returns:
         jsonify: JSON response with user information or an error message.
     """
-    if request.method == "POST":
+    if request.method == 'POST':
         try:
             if request.is_json:
                 data = request.json
@@ -101,7 +101,7 @@ def register():
             db.session.commit()
 
             # return user_schema.jsonify(user)
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('auth.dashboard'))
         except Exception as e:
             print(e)
             return jsonify({'success': False, 'error': 'Registration failed'}), 400
@@ -120,7 +120,7 @@ def login():
     Returns:
         jsonify: JSON response with login information or an error message.
     """
-    if request.method == "GET":
+    if request.method == 'GET':
         return render_template('register.html')
 
     try:
@@ -188,4 +188,4 @@ def logout():
     session.clear()
 
     #return jsonify({'message': 'Logout successful'}), 200
-    return redirect(url_for('login'))
+    return redirect(url_for('auth.login'))
