@@ -20,8 +20,7 @@ auth = Blueprint('auth', __name__)
 @auth.route('/', methods=['GET'])
 def index():
     """Retrieve the home page."""
-    return <h1>HELLO</h1>
-    #return render_template('index.html')
+    return render_template('index.html')
 
 
 @auth.route('/dashboard')
