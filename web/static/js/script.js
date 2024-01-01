@@ -1,97 +1,65 @@
-// Logout function
 function logout() {
-    // Clear user data from memory
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('email');
-    // Redirect to the logout endpoint
-    window.location.href = '/logout';
+    localStorage.removeItem("email");
+    window.location.href = "/login";
 }
 
-// Function to create a new task
 function createTask() {
-    // Get task details from the form
+    // Fetch values from the form
     const title = document.getElementById('title').value;
     const description = document.getElementById('description').value;
     const dueDate = document.getElementById('due_date').value;
     const priority = document.getElementById('priority').value;
     const status = document.getElementById('status').value;
 
-    // Prepare data to send to the backend
-    const taskData = {
+    // Create a task object
+    const newTask = {
+	user: localStorage.getItem('email'),
         title: title,
         description: description,
         due_date: dueDate,
         priority: priority,
-        status: status,
+        status: status
     };
 
-    // Send a POST request to create a new task
-    fetch('/tasks', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + getAccessToken(),
-        },
-        body: JSON.stringify(taskData),
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Handle the response from the backend
-        console.log('New task created:', data);
-        // Update the UI
-    })
-    .catch(error => {
-        console.error('Error creating task:', error);
-    });
+    // Retrieve existing tasks from localStorage
+    const existingTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+    // Add the new task to the array
+    existingTasks.push(newTask);
+
+    // Save the updated tasks array to localStorage
+    localStorage.setItem('tasks', JSON.stringify(existingTasks));
+
+    // Refresh the task list
+    fetchAndRenderTasks();
 }
 
-// Function to get tasks for the current user
-function getTasks() {
-    // Send a GET request to retrieve tasks
-    fetch('/tasks', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + getAccessToken(),
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Handle the response from the backend
-        console.log('Tasks retrieved:', data);
-        displayTasks(data); // Display tasks on the page
-    })
-    .catch(error => {
-        console.error('Error retrieving tasks:', error);
-    });
-}
-
-// Function to get the access token from the response data
-function getAccessToken() {
-    // Retrieve the access token from the response data
-    const responseJson = JSON.parse(localStorage.getItem('response_data'));
-    return responseJson.access_token;
-}
-
-// Storing the response data in localStorage during login
-function handleLoginResponse(responseData) {
-    // Store the response data in localStorage
-    localStorage.setItem('response_data', JSON.stringify(responseData));
-}
-
-// function to display tasks on the page
-function displayTasks(tasks) {
+// Function to fetch tasks from localStorage and render them on the page
+function fetchAndRenderTasks() {
     const tasksList = document.getElementById('tasksList');
     tasksList.innerHTML = ''; // Clear existing tasks
 
-    tasks.forEach(task => {
-        const listItem = document.createElement('li');
-        listItem.textContent = task.title;
-        tasksList.appendChild(listItem);
+    // Retrieve tasks from localStorage
+    const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+    // Filter tasks based on the current user
+    const currentUser = localStorage.getItem('email');
+    const userTasks = tasks.filter(task => task.user === currentUser);
+
+    // Render tasks on the page
+    userTasks.forEach(task => {
+        const taskItem = document.createElement('li');
+        taskItem.innerHTML = `
+            <span>Title:</span> ${task.title}<br>
+            <span>Description:</span> ${task.description}<br>
+            <span>Due Date:</span> ${task.due_date}<br>
+            <span>Priority:</span> ${task.priority}<br>
+            <span>Status:</span> ${task.status}<br>
+            <hr>
+        `;
+        tasksList.appendChild(taskItem);
     });
 }
 
-// Load tasks when the page is loaded
-window.onload = function() {
-    getTasks();
-};
+// Call the function when the page loads
+window.addEventListener('load', fetchAndRenderTasks);
