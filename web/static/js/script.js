@@ -63,3 +63,83 @@ function fetchAndRenderTasks() {
 
 // Call the function when the page loads
 window.addEventListener('load', fetchAndRenderTasks);
+
+// Function to update a task
+function updateTask(id) {
+    // Implement the logic to update the task
+    var updatedTitle = prompt("Enter updated title:");
+    if (updatedTitle !== null) {
+        // Get the task from localStorage
+        var tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+        // Find the task with the given id
+        var taskToUpdate = tasks.find(task => task.id === id);
+
+        if (taskToUpdate) {
+            // Update the task details
+            taskToUpdate.title = updatedTitle;
+            // Update other properties as needed
+
+            // Save the updated tasks back to localStorage
+            localStorage.setItem("tasks", JSON.stringify(tasks));
+
+            // Reload the tasks on the page
+            loadTasks();
+        }
+    }
+}
+
+// Function to delete a task
+function deleteTask(id) {
+    // Implement the logic to delete the task
+    var confirmation = confirm("Are you sure you want to delete this task?");
+    if (confirmation) {
+        // Get the tasks from localStorage
+        var tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+        // Filter out the task with the given id
+        var filteredTasks = tasks.filter(task => task.id !== id);
+
+        // Save the updated tasks back to localStorage
+        localStorage.setItem("tasks", JSON.stringify(filteredTasks));
+
+        // Reload the tasks on the page
+        loadTasks();
+    }
+}
+
+// Function to load tasks from localStorage and display them on the page
+function loadTasks() {
+    var tasksList = document.getElementById("tasksList");
+    tasksList.innerHTML = ""; // Clear existing tasks
+
+    // Get tasks from localStorage
+    var tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+    // Display each task on the page
+    tasks.forEach(function (task) {
+        var li = document.createElement("li");
+        li.textContent = task.title;
+
+        // Add buttons for updating and deleting tasks
+        var updateButton = document.createElement("button");
+        updateButton.textContent = "Update";
+        updateButton.onclick = function () {
+            updateTask(task.id);
+        };
+
+        var deleteButton = document.createElement("button");
+        deleteButton.textContent = "Delete";
+        deleteButton.onclick = function () {
+            deleteTask(task.id);
+        };
+
+        li.appendChild(updateButton);
+        li.appendChild(deleteButton);
+
+        tasksList.appendChild(li);
+    });
+}
+
+// Call loadTasks when the page is loaded
+window.onload = loadTasks;
