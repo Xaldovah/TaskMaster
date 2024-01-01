@@ -27,7 +27,7 @@ def index():
 @login_required
 def dashboard():
     """Render the dashboard page."""
-    return render_template('dashboard.html')
+    return render_template('todo.html')
 
 
 @auth.route('/about')

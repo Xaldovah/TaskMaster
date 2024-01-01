@@ -1,60 +1,67 @@
-const allSideMenu = document.querySelectorAll('#sidebar .side-menu.top li a');
+document.addEventListener("DOMContentLoaded", function() {
+    // Sample data
+    let tasks = [
+        { id: 1, text: "Dashboard Design", status: "approved" },
+        { id: 2, text: "Create a userflow", status: "progress" },
+        // Add more tasks as needed
+    ];
 
-allSideMenu.forEach(item => {
-    const li = item.parentElement;
+    const tasksWrapper = document.getElementById("tasks-wrapper");
+    const upcomingTasksWrapper = document.getElementById("upcoming-tasks-wrapper");
 
-    item.addEventListener('click', function () {
-        allSideMenu.forEach(i => {
-            i.parentElement.classList.remove('active');
-        })
-        li.classList.add('active');
-    })
-});
+    function renderTasks(container, tasks) {
+        container.innerHTML = "";
+        tasks.forEach(task => {
+            const taskElement = createTaskElement(task);
+            container.appendChild(taskElement);
+        });
+    }
 
-// TOGGLE SIDEBAR
-const menuBar = document.querySelector('#content nav .bx.bx-menu');
-const sidebar = document.getElementById('sidebar');
+    function createTaskElement(task) {
+        const taskElement = document.createElement("div");
+        taskElement.className = "task";
+        taskElement.innerHTML = `
+            <input type="checkbox" name="task" id="item-${task.id}" class="task-item" checked />
+            <label for="item-${task.id}">
+                <span class="label-text">${task.text}</span>
+            </label>
+            <span class="tag ${task.status}">${capitalizeFirstLetter(task.status)}</span>
+        `;
+        return taskElement;
+    }
 
-menuBar.addEventListener('click', function () {
-    sidebar.classList.toggle('hide');
-});
+    function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
 
-const searchButton = document.querySelector('#content nav form .form-input button');
-const searchButtonIcon = document.querySelector('#content nav form .form-input button .bx');
-const searchForm = document.querySelector('#content nav form');
+    function addTask(text, status) {
+        const newTask = {
+            id: tasks.length + 1,
+            text: text,
+            status: status
+        };
+        tasks.push(newTask);
+        renderTasks(tasksWrapper, tasks.filter(task => task.status !== "waiting"));
+        renderTasks(upcomingTasksWrapper, tasks.filter(task => task.status === "waiting"));
+    }
 
-searchButton.addEventListener('click', function (e) {
-    if (window.innerWidth < 576) {
-        e.preventDefault();
-        searchForm.classList.toggle('show');
-        if (searchForm.classList.contains('show')) {
-            searchButtonIcon.classList.replace('bx-search', 'bx-x');
-        } else {
-            searchButtonIcon.classList.replace('bx-x', 'bx-search');
+    function updateTask(id, text, status) {
+        const index = tasks.findIndex(task => task.id === id);
+        if (index !== -1) {
+            tasks[index].text = text;
+            tasks[index].status = status;
+            renderTasks(tasksWrapper, tasks.filter(task => task.status !== "waiting"));
+            renderTasks(upcomingTasksWrapper, tasks.filter(task => task.status === "waiting"));
         }
     }
-});
 
-if (window.innerWidth < 768) {
-    sidebar.classList.add('hide');
-} else if (window.innerWidth > 576) {
-    searchButtonIcon.classList.replace('bx-x', 'bx-search');
-    searchForm.classList.remove('show');
-}
-
-window.addEventListener('resize', function () {
-    if (this.innerWidth > 576) {
-        searchButtonIcon.classList.replace('bx-x', 'bx-search');
-        searchForm.classList.remove('show');
+    function deleteTask(id) {
+        tasks = tasks.filter(task => task.id !== id);
+        renderTasks(tasksWrapper, tasks.filter(task => task.status !== "waiting"));
+        renderTasks(upcomingTasksWrapper, tasks.filter(task => task.status === "waiting"));
     }
-});
 
-const switchMode = document.getElementById('switch-mode');
-
-switchMode.addEventListener('change', function () {
-    if (this.checked) {
-        document.body.classList.add('dark');
-    } else {
-        document.body.classList.remove('dark');
-    }
+    // Initial rendering
+    renderTasks(tasksWrapper, tasks.filter(task => task.status !== "waiting"));
+    renderTasks(upcomingTasksWrapper, tasks.filter(task => task.status === "waiting"));
 });

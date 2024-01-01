@@ -1,86 +1,269 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/todo.css">
-    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css">
-    <link rel="stylesheet" href="style.css">
-    <title>Dashboard</title>
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Dashboard</title>
+        <link rel="stylesheet" href="todo.css" />
+    </head>
+    <body>
+        <div class="task-manager">
+            <!-- left bar to start -->
+            <div class="left-bar">
+                <div class="upper-part">
+                    <div class="actions">
+                        <div class="circle"></div>
+                        <div class="circle-2"></div>
+                    </div>
+                </div>
 
-<!-- SIDEBAR -->
-<section id="sidebar">
-    <a href="#" class="brand">
-        <i class='bx bxs-smile'></i>
-        <span class="text">AdminHub</span>
-    </a>
-    <ul class="side-menu top">
-        <li class="active">
-            <a href="#">
-                <i class='bx bxs-dashboard' ></i>
-                <span class="text">Dashboard</span>
-            </a>
-        </li>
-        <!-- Add other sidebar menu items as needed -->
-    </ul>
-    <!-- Add other sidebar content as needed -->
-</section>
-<!-- SIDEBAR -->
+                <!-- left content to start -->
+                <div class="left-content">
+                    <ul class="actions-list">
+                        <li class="item">
+                            <img src="svg/inbox.svg" alt="" class="feather feather-inbox" />
+                            <span>Inbox</span>
+                        </li>
 
-<!-- CONTENT -->
-<section id="content">
-    <!-- NAVBAR -->
-    <nav>
-        <i class='bx bx-menu'></i>
-        <a href="#" class="nav-link">Categories</a>
-        <form action="#">
-            <div class="form-input">
-                <input type="search" placeholder="Search...">
-                <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
+                        <li class="item">
+                            <img src="svg/today.svg" alt="" class="feather feather-star" />
+                            <span>Today</span>
+                        </li>
+
+                        <li class="item">
+                            <img src="svg/calendar.svg" alt="" class="feather feather-calendar" />
+                            <span>Upcoming</span>
+                        </li>
+
+                        <li class="item">
+                            <img src="svg/important.svg" alt="" class="feather feather-hash" />
+                            <span>Important</span>
+                        </li>
+
+                        <li class="item">
+                            <img src="svg/meetings.svg" alt="" class="feather feather-users" />
+                            <span>Meetings</span>
+                        </li>
+
+                        <li class="item">
+                            <img src="svg/trash.svg" alt="" class="feather feather-trash" />
+                            <span>Trash</span>
+                        </li>
+                    </ul>
+
+                    <ul class="category-list">
+                        <li class="item">
+                            <img src="svg/users.svg" alt="" class="feather feather-users" />
+                            <span>Family</span>
+                        </li>
+
+                        <li class="item">
+                            <img src="svg/sun.svg" alt="" class="feather feather-sun" />
+                            <span>Vacation</span>
+                        </li>
+
+                        <li class="item">
+                            <img src="svg/trending.svg" alt="" class="feather feather-trending-up" />
+                            <span>Festival</span>
+                        </li>
+
+                        <li class="item">
+                            <img src="svg/zap.svg" alt="" class="feather feather-zap" />
+                            <span>Concerts</span>
+                        </li>
+                    </ul>
+                </div>
+                <!-- left content ends -->
             </div>
-        </form>
-        <input type="checkbox" id="switch-mode" hidden>
-        <label for="switch-mode" class="switch-mode"></label>
-        <a href="#" class="notification">
-            <i class='bx bxs-bell'></i>
-            <span class="num">8</span>
-        </a>
-        <a href="#" class="profile">
-            <img src="img/people.png">
-        </a>
-    </nav>
-    <!-- NAVBAR -->
+            <!-- left bar ends-->
 
-    <!-- MAIN -->
-    <main>
-        <div class="head-title">
-            <div class="left">
-                <h1>Dashboard</h1>
-                <ul class="breadcrumb">
-                    <li>
-                        <a href="#">Dashboard</a>
-                    </li>
-                    <li><i class='bx bx-chevron-right' ></i></li>
-                    <li>
-                        <a class="active" href="#">Home</a>
-                    </li>
-                </ul>
+            <!-- page content starts -->
+            <div class="page-content">
+                <div class="header">Today's Tasks</div>
+                <!-- content categories starts -->
+                <div class="content-categories">
+                    <div class="label-wrapper">
+                        <input type="radio" name="nav" id="opt-1" class="nav-item" />
+                        <label class="category" for="opt-1">All</label>
+                    </div>
+
+                    <div class="label-wrapper">
+                        <input type="radio" name="nav" id="opt-2" class="nav-item" />
+                        <label class="category" for="opt-1">Important</label>
+                    </div>
+
+                    <div class="label-wrapper">
+                        <input type="radio" name="nav" id="opt-3" class="nav-item" />
+                        <label class="category" for="opt-1">Notes</label>
+                    </div>
+
+                    <div class="label-wrapper">
+                        <input type="radio" name="nav" id="opt-4" class="nav-item" />
+                        <label class="category" for="opt-1">Link</label>
+                    </div>
+                </div>
+                <!-- content catogries ends -->
+
+                <!-- tasks wrapper starts-->
+                <div class="tasks-wrapper">
+                    <div class="task">
+                        <input type="checkbox" name="task" id="item-1" class="task-item" checked />
+                        <label for="item-1">
+                            <span class="label-text">Dashboard Design</span>
+                        </label>
+                        <span class="tag approved">Approved</span>
+                    </div>
+
+                    <div class="task">
+                        <input type="checkbox" name="task" id="item-2" class="task-item" checked />
+                        <label for="item-2">
+                            <span class="label-text">Create a userflow</span>
+                        </label>
+                        <span class="tag progress">In Progress</span>
+                    </div>
+
+                    <div class="task">
+                        <input type="checkbox" name="task" id="item-3" class="task-item" checked />
+                        <label for="item-3">
+                            <span class="label-text">Application Implementaion</span>
+                        </label>
+                        <span class="tag review">In Review</span>
+                    </div>
+
+                    <div class="task">
+                        <input type="checkbox" name="task" id="item-4" class="task-item" checked />
+                        <label for="item-4">
+                            <span class="label-text">Create a Dashboard Design</span>
+                        </label>
+                        <span class="tag progress">In Progress</span>
+                    </div>
+
+                    <div class="task">
+                        <input type="checkbox" name="task" id="item-5" class="task-item" checked />
+                        <label for="item-5">
+                            <span class="label-text">Create a Web Appplication Design</span>
+                        </label>
+                        <span class="tag approved">Approved</span>
+                    </div>
+
+                    <div class="task">
+                        <input type="checkbox" name="task" id="item-6" class="task-item" checked />
+                        <label for="item-6">
+                            <span class="label-text">Interactive Design</span>
+                        </label>
+                        <span class="tag review">In Review</span>
+                    </div>
+                    <div class="header upcoming">Upcoming Tasks</div>
+                    <div class="task">
+                        <input type="checkbox" name="task" id="item-7" class="task-item" checked />
+                        <label for="item-7">
+                            <span class="label-text">Dashboard Design</span>
+                        </label>
+                        <span class="tag waiting">Waiting</span>
+                    </div>
+
+                    <div class="task">
+                        <input type="checkbox" name="task" id="item-8" class="task-item" checked />
+                        <label for="item-8">
+                            <span class="label-text">Appplication Implementation</span>
+                        </label>
+                        <span class="tag waiting">Waiting</span>
+                    </div>
+
+                    <div class="task">
+                        <input type="checkbox" name="task" id="item-10" class="task-item" checked />
+                        <label for="item-10">
+                            <span class="label-text">Create a Dashboard Design</span>
+                        </label>
+                        <span class="tag waiting">Waiting</span>
+                    </div>
+                </div>
+                <!-- tasks wrapper ends -->
             </div>
-            <a href="#" class="btn-download">
-                <i class='bx bxs-cloud-download' ></i>
-                <span class="text">Download PDF</span>
-            </a>
+            <!-- page content ends -->
+
+            <!-- right bar starts -->
+            <div class="right-bar">
+                <div class="top-part">
+                    <img src="svg/users.svg" alt="" class="feather feather-users" />
+                    <div class="count">6</div>
+                </div>
+
+                <div class="header">Schedule</div>
+                <div class="right-content">
+                    <div class="task-box yellow">
+                        <div class="description-task">
+                            <div class="time">08:00 - 09:00 AM</div>
+                            <div class="task-name">Product Review</div>
+                        </div>
+                        <div class="more-button"></div>
+                        <div class="members">
+                            <img src="images/img1.jpg" alt="member" />
+                            <img src="images/img2.jpg" alt="member-2" />
+                            <img src="images/img3.jpg" alt="member-3" />
+                            <img src="images/img4.jpg" alt="member-4" />
+                        </div>
+                    </div>
+
+                    <div class="task-box blue">
+                        <div class="description-task">
+                            <div class="time">10:00 - 11:00 AM</div>
+                            <div class="task-name">Design Meeting</div>
+                        </div>
+                        <div class="more-button"></div>
+                        <div class="members">
+                            <img src="images/img5.jpg" alt="member" />
+                            <img src="images/img6.jpg" alt="member-2" />
+                            <img src="images/img7.jpg" alt="member-3" />
+                        </div>
+                    </div>
+
+                    <div class="task-box red">
+                        <div class="description-task">
+                            <div class="time">12:00 - 13:00 PM</div>
+                            <div class="task-name">Team Meeting</div>
+                        </div>
+                        <div class="more-button"></div>
+                        <div class="members">
+                            <img src="images/img1.jpg" alt="member" />
+                            <img src="images/img2.jpg" alt="member-2" />
+                            <img src="images/img3.jpg" alt="member-3" />
+                            <img src="images/img4.jpg" alt="member-4" />
+                        </div>
+                    </div>
+
+                    <div class="task-box green">
+                        <div class="description-task">
+                            <div class="time">14:00 - 15:00 PM</div>
+                            <div class="task-name">Team Meeting</div>
+                        </div>
+                        <div class="more-button"></div>
+                        <div class="members">
+                            <img src="images/img5.jpg" alt="member" />
+                            <img src="images/img6.jpg" alt="member-2" />
+                            <img src="images/img7.jpg" alt="member-3" />
+                            <img src="images/img8.jpg" alt="member-4" />
+                            <img src="images/img9.jpg" alt="member-5" />
+                        </div>
+                    </div>
+
+                    <div class="task-box yellow">
+                        <div class="description-task">
+                            <div class="time">07:00 - 08:00 PM</div>
+                            <div class="task-name">Release Event</div>
+                        </div>
+                        <div class="more-button"></div>
+                        <div class="members">
+                            <img src="images/img1.jpg" alt="member" />
+                            <img src="images/img2.jpg" alt="member-2" />
+                            <img src="images/img3.jpg" alt="member-3" />
+                            <img src="images/img4.jpg" alt="member-4" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- right bar ends -->
         </div>
-
-        <!-- Add your dashboard-specific content here -->
-
-    </main>
-    <!-- MAIN -->
-</section>
-<!-- CONTENT -->
-
-<script src="/script/js/todo.js"></script>
-</body>
+    </body>
 </html>
