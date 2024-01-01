@@ -62,32 +62,39 @@ function fetchAndRenderTasks() {
 }
 
 // Call the function when the page loads
-window.addEventListener('load', fetchAndRenderTasks);
+window.addEventListener('load', loadTasks);
 
 // Function to update a task
 function updateTask(id) {
-    // Implement the logic to update the task
-    var updatedTitle = prompt("Enter updated title:");
-    if (updatedTitle !== null) {
-        // Get the task from localStorage
-        var tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    // Get the task from localStorage
+    var tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
-        // Find the task with the given id
-        var taskToUpdate = tasks.find(task => task.id === id);
+    // Find the task with the given id
+    var taskToUpdate = tasks.find(task => task.id === id);
 
-        if (taskToUpdate) {
-            // Update the task details
-            taskToUpdate.title = updatedTitle;
-            // Update other properties as needed
+    if (taskToUpdate) {
+        // Prompt the user for updated values
+        var updatedTitle = prompt("Enter updated title:", taskToUpdate.title);
+        var updatedDescription = prompt("Enter updated description:", taskToUpdate.description);
+        var updatedDueDate = prompt("Enter updated due date:", taskToUpdate.due_date);
+        var updatedPriority = prompt("Enter updated priority:", taskToUpdate.priority);
+        var updatedStatus = prompt("Enter updated status:", taskToUpdate.status);
 
-            // Save the updated tasks back to localStorage
-            localStorage.setItem("tasks", JSON.stringify(tasks));
+        // Update the task details
+        taskToUpdate.title = updatedTitle || taskToUpdate.title;
+        taskToUpdate.description = updatedDescription || taskToUpdate.description;
+        taskToUpdate.due_date = updatedDueDate || taskToUpdate.due_date;
+        taskToUpdate.priority = updatedPriority || taskToUpdate.priority;
+        taskToUpdate.status = updatedStatus || taskToUpdate.status;
 
-            // Reload the tasks on the page
-            loadTasks();
-        }
+        // Save the updated tasks back to localStorage
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+
+        // Reload the tasks on the page
+        loadTasks();
     }
 }
+
 
 // Function to delete a task
 function deleteTask(id) {
@@ -140,6 +147,3 @@ function loadTasks() {
         tasksList.appendChild(li);
     });
 }
-
-// Call loadTasks when the page is loaded
-window.onload = loadTasks;
