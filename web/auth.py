@@ -99,7 +99,6 @@ def register():
             db.session.add(user)
             db.session.commit()
 
-            #return user_schema.jsonify(user)
             response_data = {
             'success': True,
             'message': 'Registration successful!',
