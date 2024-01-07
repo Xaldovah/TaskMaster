@@ -81,8 +81,6 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Registration successful!');
-                    // Redirect to dashboard or render dashboard.html
                     window.location.href = '/dashboard';
                 } else {
                     alert(`Registration failed: ${data.error}`);
