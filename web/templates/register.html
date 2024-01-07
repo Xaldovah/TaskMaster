@@ -60,42 +60,13 @@
             card.style.transform = "rotateY(0deg)";
         }
 
-        function register() {
-            const username = document.getElementById('username').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            const data = {
-                username: username,
-                email: email,
-                password: password
-            };
-
-            fetch('/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.href = '/dashboard';
-                } else {
-                    alert(`Registration failed: ${data.error}`);
-                }
-            })
-            .catch(error => console.error('Error:', error));
-        }
-
         function login() {
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
 
             const data = {
-                email: email,
-                password: password
+                email,
+                password,
             };
 
             fetch('/login', {
@@ -108,11 +79,41 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Login successful!');
-                    // Redirect to dashboard or render dashboard.html
+		    alert('Login successful!');
                     window.location.href = '/dashboard';
                 } else {
                     alert(`Login failed: ${data.error}`);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function register() {
+	    const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const data = {
+		username,
+                email,
+                password
+            };
+
+            fetch('/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Registration successful!');
+                    // Redirect to login
+                    window.location.href = '/register';
+                } else {
+                    alert(`Registration failed: ${data.error}`);
                 }
             })
             .catch(error => console.error('Error:', error));
