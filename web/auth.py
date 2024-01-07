@@ -100,7 +100,14 @@ def register():
             db.session.commit()
 
             #return user_schema.jsonify(user)
-            return redirect(url_for('auth.login'))
+            response_data = {
+            'success': True,
+            'message': 'Registration successful!',
+            'user_info': user_schema.dump(user),
+            }
+
+            response = make_response(jsonify(response_data), 200)
+            return response
         except Exception as e:
             print(e)
             return jsonify({'success': False, 'error': 'Registration failed'}), 400
