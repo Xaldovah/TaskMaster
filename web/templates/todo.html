@@ -1,279 +1,611 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-	    <meta charset="UTF-8">
-	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	    <link rel="icon" href="https://media.istockphoto.com/id/519792694/vector/builder-in-hard-hat-and-glasses-foreman-icon.jpg?s=612x612&w=0&k=20&c=PHqO162V0-jtpZ5t51_LbXH7AGUPpg_Ge6HirE6vUrc=">
-	    <link rel="stylesheet" href="/static/css/todo.css">
-	    <link rel="preconnect" href="https://fonts.gstatic.com">
-	    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-	    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap" rel="stylesheet">
-	    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-	    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-	    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-	    <title>Dashboard</title>
-    </head>
-    <body>
-        <div class="task-manager">
-            <!-- left bar to start -->
-            <div class="left-bar">
-                <div class="upper-part">
-                    <div class="actions">
-                        <div class="circle"></div>
-                        <div class="circle-2"></div>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="icon" href="https://media.istockphoto.com/id/519792694/vector/builder-in-hard-hat-and-glasses-foreman-icon.jpg?s=612x612&w=0&k=20&c=PHqO162V0-jtpZ5t51_LbXH7AGUPpg_Ge6HirE6vUrc=">
+    <link rel="stylesheet" href="/static/css/todo.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+
+<body>
+    <!-- container start -->
+    <div class="container">
+        <!-- left start -->
+        <div class="left">
+            <!-- header start -->
+            <header>
+                <!-- logo start -->
+                <div class="logo">
+		    <h2>TaskMaster</h2>
+                    <div class="close">
+                        <span class="material-symbols-outlined">
+                            close
+                        </span>
                     </div>
                 </div>
-
-                <!-- left content to start -->
-                <div class="left-content">
-                    <ul class="actions-list">
-                        <li class="item">
-                            <img src="svg/inbox.svg" alt="" class="feather feather-inbox" />
-                            <span>Inbox</span>
+                <!-- nav start -->
+                <nav>
+                    <ul>
+                        <li>
+                            <a href="#">
+                                <span class="material-symbols-outlined full">
+                                    dashboard
+                                </span>
+                                <span class="title">Dashboard</span>
+                            </a>
                         </li>
-
-                        <li class="item">
-                            <img src="svg/today.svg" alt="" class="feather feather-star" />
-                            <span>Today</span>
+                        <li>
+                            <a href="#">
+                                <span class="material-symbols-outlined">
+                                    check_box
+                                </span>
+                                <span class="title">Project</span>
+                            </a>
                         </li>
-
-                        <li class="item">
-                            <img src="svg/calendar.svg" alt="" class="feather feather-calendar" />
-                            <span>Upcoming</span>
+                        <li>
+                            <a href="#">
+                                <span class="material-symbols-outlined">
+                                    group
+                                </span>
+                                <span class="title">My Client</span>
+                            </a>
                         </li>
-
-                        <li class="item">
-                            <img src="svg/important.svg" alt="" class="feather feather-hash" />
-                            <span>Important</span>
+                        <li>
+                            <a href="#">
+                                <span class="material-symbols-outlined">
+                                    task
+                                </span>
+                                <span class="title">My Task</span>
+                            </a>
                         </li>
-
-                        <li class="item">
-                            <img src="svg/meetings.svg" alt="" class="feather feather-users" />
-                            <span>Meetings</span>
+                        <li>
+                            <a href="#">
+                                <span class="material-symbols-outlined">
+                                    chat_bubble
+                                </span>
+                                <span class="title">Message</span>
+                            </a>
                         </li>
-
-                        <li class="item">
-                            <img src="svg/trash.svg" alt="" class="feather feather-trash" />
-                            <span>Trash</span>
+                        <li>
+                            <a href="#">
+                                <span class="material-symbols-outlined">
+                                    account_balance_wallet
+                                </span>
+                                <span class="title">Billing</span>
+                            </a>
                         </li>
                     </ul>
-
-                    <ul class="category-list">
-                        <li class="item">
-                            <img src="svg/users.svg" alt="" class="feather feather-users" />
-                            <span>Family</span>
-                        </li>
-
-                        <li class="item">
-                            <img src="svg/sun.svg" alt="" class="feather feather-sun" />
-                            <span>Vacation</span>
-                        </li>
-
-                        <li class="item">
-                            <img src="svg/trending.svg" alt="" class="feather feather-trending-up" />
-                            <span>Festival</span>
-                        </li>
-
-                        <li class="item">
-                            <img src="svg/zap.svg" alt="" class="feather feather-zap" />
-                            <span>Concerts</span>
-                        </li>
-                    </ul>
-                </div>
-                <!-- left content ends -->
-            </div>
-            <!-- left bar ends-->
-
-            <!-- page content starts -->
-            <div class="page-content">
-                <div class="header">Today's Tasks</div>
-                <!-- content categories starts -->
-                <div class="content-categories">
-                    <div class="label-wrapper">
-                        <input type="radio" name="nav" id="opt-1" class="nav-item" />
-                        <label class="category" for="opt-1">All</label>
-                    </div>
-
-                    <div class="label-wrapper">
-                        <input type="radio" name="nav" id="opt-2" class="nav-item" />
-                        <label class="category" for="opt-1">Important</label>
-                    </div>
-
-                    <div class="label-wrapper">
-                        <input type="radio" name="nav" id="opt-3" class="nav-item" />
-                        <label class="category" for="opt-1">Notes</label>
-                    </div>
-
-                    <div class="label-wrapper">
-                        <input type="radio" name="nav" id="opt-4" class="nav-item" />
-                        <label class="category" for="opt-1">Link</label>
-                    </div>
-                </div>
-                <!-- content catogries ends -->
-
-                <!-- tasks wrapper starts-->
-                <div class="tasks-wrapper" id="tasks-wrapper">
-                    <div class="task">
-                        <input type="checkbox" name="task" id="item-1" class="task-item" checked />
-                        <label for="item-1">
-                            <span class="label-text">Dashboard Design</span>
-                        </label>
-                        <span class="tag approved">Approved</span>
-                    </div>
-
-                    <div class="task">
-                        <input type="checkbox" name="task" id="item-2" class="task-item" checked />
-                        <label for="item-2">
-                            <span class="label-text">Create a userflow</span>
-                        </label>
-                        <span class="tag progress">In Progress</span>
-                    </div>
-
-                    <div class="task">
-                        <input type="checkbox" name="task" id="item-3" class="task-item" checked />
-                        <label for="item-3">
-                            <span class="label-text">Application Implementaion</span>
-                        </label>
-                        <span class="tag review">In Review</span>
-                    </div>
-
-                    <div class="task">
-                        <input type="checkbox" name="task" id="item-4" class="task-item" checked />
-                        <label for="item-4">
-                            <span class="label-text">Create a Dashboard Design</span>
-                        </label>
-                        <span class="tag progress">In Progress</span>
-                    </div>
-
-                    <div class="task">
-                        <input type="checkbox" name="task" id="item-5" class="task-item" checked />
-                        <label for="item-5">
-                            <span class="label-text">Create a Web Appplication Design</span>
-                        </label>
-                        <span class="tag approved">Approved</span>
-                    </div>
-
-                    <div class="task">
-                        <input type="checkbox" name="task" id="item-6" class="task-item" checked />
-                        <label for="item-6">
-                            <span class="label-text">Interactive Design</span>
-                        </label>
-                        <span class="tag review">In Review</span>
-                    </div>
-                    <div class="header upcoming">Upcoming Tasks</div>
-                    <div class="task" id="upcoming-tasks-wrapper">
-                        <input type="checkbox" name="task" id="item-7" class="task-item" checked />
-                        <label for="item-7">
-                            <span class="label-text">Dashboard Design</span>
-                        </label>
-                        <span class="tag waiting">Waiting</span>
-                    </div>
-
-                    <div class="task">
-                        <input type="checkbox" name="task" id="item-8" class="task-item" checked />
-                        <label for="item-8">
-                            <span class="label-text">Appplication Implementation</span>
-                        </label>
-                        <span class="tag waiting">Waiting</span>
-                    </div>
-
-                    <div class="task">
-                        <input type="checkbox" name="task" id="item-10" class="task-item" checked />
-                        <label for="item-10">
-                            <span class="label-text">Create a Dashboard Design</span>
-                        </label>
-                        <span class="tag waiting">Waiting</span>
-                    </div>
-                </div>
-                <!-- tasks wrapper ends -->
-            </div>
-            <!-- page content ends -->
-
-            <!-- right bar starts -->
-            <div class="right-bar">
-                <div class="top-part">
-                    <img src="svg/users.svg" alt="" class="feather feather-users" />
-                    <div class="count">6</div>
-                </div>
-
-                <div class="header">Schedule</div>
-                <div class="right-content">
-                    <div class="task-box yellow">
-                        <div class="description-task">
-                            <div class="time">08:00 - 09:00 AM</div>
-                            <div class="task-name">Product Review</div>
-                        </div>
-                        <div class="more-button"></div>
-                        <div class="members">
-                            <img src="https://media.istockphoto.com/id/1410538853/photo/young-man-in-the-public-park.webp?b=1&s=170667a&w=0&k=20&c=pGdjFVdK-_BhTa6PMy5VNcXdbxVNngzg-OPzMfJKrG8=" alt="member" />
-                            <img src="https://media.istockphoto.com/id/1460896518/photo/beautiful-middle-aged-woman.webp?b=1&s=170667a&w=0&k=20&c=UpEZVDcU8J30F3OgX-ysOCpZCvRkg83syWBzO5nnea8=" alt="member-2" />
-                            <img src="https://media.istockphoto.com/id/1144287292/photo/headshot-portrait-of-happy-mixed-race-african-girl-wearing-glasses.webp?b=1&s=170667a&w=0&k=20&c=JosednIBilI8XY47p_R75vNPRPVNm7ky4JB1DhJCoS4=" alt="member-3" />
-                            <img src="https://media.istockphoto.com/id/1016761216/photo/portrait-concept.webp?b=1&s=170667a&w=0&k=20&c=iDwzH_acfhT2DHmsFKu6ndu8Ve7_8Wnfb9g_uERlMsA=" alt="member-4" />
-                        </div>
-                    </div>
-
-                    <div class="task-box blue">
-                        <div class="description-task">
-                            <div class="time">10:00 - 11:00 AM</div>
-                            <div class="task-name">Design Meeting</div>
-                        </div>
-                        <div class="more-button"></div>
-                        <div class="members">
-                            <img src="https://media.istockphoto.com/id/1410538853/photo/young-man-in-the-public-park.webp?b=1&s=170667a&w=0&k=20&c=pGdjFVdK-_BhTa6PMy5VNcXdbxVNngzg-OPzMfJKrG8=" alt="member" />
-                            <img src="https://media.istockphoto.com/id/1460896518/photo/beautiful-middle-aged-woman.webp?b=1&s=170667a&w=0&k=20&c=UpEZVDcU8J30F3OgX-ysOCpZCvRkg83syWBzO5nnea8=" alt="member-2" />
-                            <img src="https://media.istockphoto.com/id/1144287292/photo/headshot-portrait-of-happy-mixed-race-african-girl-wearing-glasses.webp?b=1&s=170667a&w=0&k=20&c=JosednIBilI8XY47p_R75vNPRPVNm7ky4JB1DhJCoS4=" alt="member-3" />
-                        </div>
-                    </div>
-
-                    <div class="task-box red">
-                        <div class="description-task">
-                            <div class="time">12:00 - 13:00 PM</div>
-                            <div class="task-name">Team Meeting</div>
-                        </div>
-                        <div class="more-button"></div>
-                        <div class="members">
-                            <img src="https://media.istockphoto.com/id/1410538853/photo/young-man-in-the-public-park.webp?b=1&s=170667a&w=0&k=20&c=pGdjFVdK-_BhTa6PMy5VNcXdbxVNngzg-OPzMfJKrG8=" alt="member" />
-                            <img src="https://media.istockphoto.com/id/1460896518/photo/beautiful-middle-aged-woman.webp?b=1&s=170667a&w=0&k=20&c=UpEZVDcU8J30F3OgX-ysOCpZCvRkg83syWBzO5nnea8=" alt="member-2" />
-                            <img src="https://media.istockphoto.com/id/1144287292/photo/headshot-portrait-of-happy-mixed-race-african-girl-wearing-glasses.webp?b=1&s=170667a&w=0&k=20&c=JosednIBilI8XY47p_R75vNPRPVNm7ky4JB1DhJCoS4=" alt="member-3" />
-                            <img src="https://media.istockphoto.com/id/1016761216/photo/portrait-concept.webp?b=1&s=170667a&w=0&k=20&c=iDwzH_acfhT2DHmsFKu6ndu8Ve7_8Wnfb9g_uERlMsA=" alt="member-4" />
-                        </div>
-                    </div>
-
-                    <div class="task-box green">
-                        <div class="description-task">
-                            <div class="time">14:00 - 15:00 PM</div>
-                            <div class="task-name">Team Meeting</div>
-                        </div>
-                        <div class="more-button"></div>
-                        <div class="members">
-                            <img src="https://media.istockphoto.com/id/1410538853/photo/young-man-in-the-public-park.webp?b=1&s=170667a&w=0&k=20&c=pGdjFVdK-_BhTa6PMy5VNcXdbxVNngzg-OPzMfJKrG8=" alt="member" />
-                            <img src="https://media.istockphoto.com/id/1460896518/photo/beautiful-middle-aged-woman.webp?b=1&s=170667a&w=0&k=20&c=UpEZVDcU8J30F3OgX-ysOCpZCvRkg83syWBzO5nnea8=" alt="member-2" />
-                            <img src="https://media.istockphoto.com/id/1144287292/photo/headshot-portrait-of-happy-mixed-race-african-girl-wearing-glasses.webp?b=1&s=170667a&w=0&k=20&c=JosednIBilI8XY47p_R75vNPRPVNm7ky4JB1DhJCoS4=" alt="member-3" />
-                            <img src="https://media.istockphoto.com/id/1016761216/photo/portrait-concept.webp?b=1&s=170667a&w=0&k=20&c=iDwzH_acfhT2DHmsFKu6ndu8Ve7_8Wnfb9g_uERlMsA=" alt="member-4" />
-                            <img src="https://media.istockphoto.com/id/1198252585/photo/happy-indian-woman-look-at-webcam-doing-job-interview-videochat.webp?b=1&s=170667a&w=0&k=20&c=D4JfHSgMiaexrCivw0ndHFErJjk3LAhIFkX1MC1rF_U=" alt="member-5" />
-                        </div>
-                    </div>
-
-                    <div class="task-box yellow">
-                        <div class="description-task">
-                            <div class="time">07:00 - 08:00 PM</div>
-                            <div class="task-name">Release Event</div>
-                        </div>
-                        <div class="more-button"></div>
-                        <div class="members">
-                            <img src="https://media.istockphoto.com/id/1410538853/photo/young-man-in-the-public-park.webp?b=1&s=170667a&w=0&k=20&c=pGdjFVdK-_BhTa6PMy5VNcXdbxVNngzg-OPzMfJKrG8=" alt="member" />
-                            <img src="https://media.istockphoto.com/id/1460896518/photo/beautiful-middle-aged-woman.webp?b=1&s=170667a&w=0&k=20&c=UpEZVDcU8J30F3OgX-ysOCpZCvRkg83syWBzO5nnea8=" alt="member-2" />
-                            <img src="https://media.istockphoto.com/id/1144287292/photo/headshot-portrait-of-happy-mixed-race-african-girl-wearing-glasses.webp?b=1&s=170667a&w=0&k=20&c=JosednIBilI8XY47p_R75vNPRPVNm7ky4JB1DhJCoS4=" alt="member-3" />
-                            <img src="https://media.istockphoto.com/id/1016761216/photo/portrait-concept.webp?b=1&s=170667a&w=0&k=20&c=iDwzH_acfhT2DHmsFKu6ndu8Ve7_8Wnfb9g_uERlMsA=" alt="member-4" />
-                        </div>
-                    </div>
+                </nav>
+                <!-- nav end -->
+            </header>
+            <!-- header end -->
+            <!-- upgrade start -->
+            <div class="upgrade">
+                <h4>Upgrade to <bold>PRO</bold> for<br> more features</h4>
+                <div class="upBtn">
+                    <button>Upgrade</button>
                 </div>
             </div>
-            <!-- right bar ends -->
+            <!-- upgrade end -->
         </div>
-	<footer>
-		<p>© 2023 TaskMaster</p>
-	</footer>
-	<script src="/static/js/todo.js"></script>
-    </body>
+        <!-- left end -->
+        <!-- right start -->
+        <div class="right">
+            <!-- top start -->
+            <div class="top">
+                <!-- searchBx start -->
+                <div class="searchBx">
+                    <h2>Dashboard</h2>
+                    <div class="inputBx">
+                        <span class="material-symbols-outlined searchOpen">
+                            search
+                        </span>
+                        <input type="text" placeholder="Search...">
+                        <span class="material-symbols-outlined searchClose">
+                            close
+                        </span>
+                    </div>
+                </div>
+                <!-- searchBx end -->
+                <!-- user start -->
+                <div class="user">
+                    <span class="material-symbols-outlined">
+                        notifications
+                    </span>
+                    <div class="userImg">
+                        <img src="./user.png" alt="user">
+                    </div>
+                    <h2>xaldovah<br><span>Administrator</span></h2>
+                    <div class="arrow">
+                        <span class="material-symbols-outlined">
+                            expand_more
+                        </span>
+                    </div>
+                    <div class="toggle">
+                        <span class="material-symbols-outlined">
+                            menu
+                        </span>
+                        <span class="material-symbols-outlined">
+                            close
+                        </span>
+                    </div>
+                </div>
+                <!-- user end -->
+            </div>
+            <!-- top end -->
+            <!-- main start -->
+            <main>
+                <!-- projectCard start -->
+                <div class="projectCard">
+                    <!-- projectTop start -->
+                    <div class="projectTop">
+                        <h2>Project Name<br><span>Company Name</span></h2>
+                        <div class="projectDots">
+                            <span class="material-symbols-outlined">
+                                more_horiz
+                            </span>
+                        </div>
+                    </div>
+                    <!-- projectTop end -->
+                    <!-- projectProgress start -->
+                    <div class="projectProgress">
+                        <div class="process">
+                            <h2>In Progress</h2>
+                        </div>
+                        <div class="priority">
+                            <h2>High Priority</h2>
+                        </div>
+                    </div>
+                    <!-- projectProgress end -->
+                    <!-- groupImg start -->
+                    <div class="groupImg">
+                        <a href="#">
+                            <img src="./groupImg/img1.jpg" alt="img1">
+                        </a>
+                        <a href="#" style="--left: -10px;">
+                            <img src="./groupImg/img2.jpg" alt="img2">
+                        </a>
+                        <a href="#" style="--left: -20px;">
+                            <img src="./groupImg/img3.jpg" alt="img3">
+                        </a>
+                        <a href="#" style="--left: -30px;">
+                            <img src="./groupImg/img4.jpg" alt="img4">
+                        </a>
+                        <a href="#" style="--left: -40px;">
+                            <img src="./groupImg/img5.jpg" alt="img5">
+                        </a>
+                        <a href="#" style="--left: -50px;">
+                            <span class="number">+3</span>
+                        </a>
+                    </div>
+                    <!-- groupImg end -->
+                    <!-- task start -->
+                    <div class="task">
+                        <h2>Task Done: <bold>35</bold> / 50</h2>
+                        <span class="line"></span>
+                    </div>
+                    <!-- task end -->
+                    <!-- due start -->
+                    <div class="due">
+                        <h2>Due Date: 25 August</h2>
+                    </div>
+                    <!-- due end -->
+                </div>
+                <!-- projectCard end -->
+                <!-- projectCard2 start -->
+                <div class="projectCard projectCard2">
+                    <div class="projectTop">
+                        <h2>Project Name<br><span>Company Name</span></h2>
+                        <div class="projectDots">
+                            <span class="material-symbols-outlined">
+                                more_horiz
+                            </span>
+                        </div>
+                    </div>
+                    <div class="projectProgress">
+                        <div class="process">
+                            <h2>In Progress</h2>
+                        </div>
+                        <div class="priority">
+                            <h2>High Priority</h2>
+                        </div>
+                    </div>
+                    <div class="groupImg">
+                        <a href="#">
+                            <img src="./groupImg/img1.jpg" alt="img1">
+                        </a>
+                        <a href="#" style="--left: -10px;">
+                            <img src="./groupImg/img2.jpg" alt="img2">
+                        </a>
+                        <a href="#" style="--left: -20px;">
+                            <img src="./groupImg/img3.jpg" alt="img3">
+                        </a>
+                        <a href="#" style="--left: -30px;">
+                            <img src="./groupImg/img4.jpg" alt="img4">
+                        </a>
+                        <a href="#" style="--left: -40px;">
+                            <img src="./groupImg/img5.jpg" alt="img5">
+                        </a>
+                        <a href="#" style="--left: -50px;">
+                            <span class="number">+3</span>
+                        </a>
+                    </div>
+                    <div class="task">
+                        <h2>Task Done: <bold>35</bold> / 50</h2>
+                        <span class="line"></span>
+                    </div>
+                    <div class="due">
+                        <h2>Due Date: 20 January</h2>
+                    </div>
+                </div>
+                <!-- projectCard2 end -->
+                <!-- myTasks start -->
+                <div class="myTasks">
+                    <!-- tasksHead start -->
+                    <div class="tasksHead">
+                        <h2>My Tasks</h2>
+                        <div class="tasksDots">
+                            <span class="material-symbols-outlined">
+                                more_horiz
+                            </span>
+                        </div>
+                    </div>
+                    <!-- tasksHead end -->
+                    <!-- tasks start -->
+                    <div class="tasks">
+                        <ul>
+                            <li>
+                                <span class="tasksIconName">
+                                    <span class="tasksIcon done">
+                                        <span class="material-symbols-outlined">
+                                            check
+                                        </span>
+                                    </span>
+                                    <span class="tasksName">
+                                        My Task 1
+                                    </span>
+                                </span>
+                                <span class="tasksStar full">
+                                    <span class="material-symbols-outlined">
+                                        star
+                                    </span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="tasksIconName">
+                                    <span class="tasksIcon notDone"></span>
+                                    <span class="tasksName">
+                                        My Task 2
+                                    </span>
+                                </span>
+                                <span class="tasksStar half">
+                                    <span class="material-symbols-outlined">
+                                        star
+                                    </span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="tasksIconName">
+                                    <span class="tasksIcon notDone"></span>
+                                    <span class="tasksName">
+                                        My Task 3
+                                    </span>
+                                </span>
+                                <span class="tasksStar half">
+                                    <span class="material-symbols-outlined">
+                                        star
+                                    </span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="tasksIconName">
+                                    <span class="tasksIcon done">
+                                        <span class="material-symbols-outlined">
+                                            check
+                                        </span>
+                                    </span>
+                                    <span class="tasksName tasksLine">
+                                        <underline>My Task 4</underline>
+                                    </span>
+                                </span>
+                                <span class="tasksStar half">
+                                    <span class="material-symbols-outlined">
+                                        star
+                                    </span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="tasksIconName">
+                                    <span class="tasksIcon done">
+                                        <span class="material-symbols-outlined">
+                                            check
+                                        </span>
+                                    </span>
+                                    <span class="tasksName tasksLine">
+                                        My Task 5
+                                    </span>
+                                </span>
+                                <span class="tasksStar full">
+                                    <span class="material-symbols-outlined">
+                                        star
+                                    </span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="tasksIconName">
+                                    <span class="tasksIcon notDone"></span>
+                                    <span class="tasksName">
+                                        My Task 6
+                                    </span>
+                                </span>
+                                <span class="tasksStar full">
+                                    <span class="material-symbols-outlined">
+                                        star
+                                    </span>
+                                </span>
+                            </li>
+                            <li>
+                                <span class="tasksIconName">
+                                    <span class="tasksIcon notDone"></span>
+                                    <span class="tasksName">
+                                        My Task 7
+                                    </span>
+                                </span>
+                                <span class="tasksStar half">
+                                    <span class="material-symbols-outlined">
+                                        star
+                                    </span>
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- tasks ens -->
+                </div>
+                <!-- myTasks end -->
+                <!-- timeline start -->
+                <div class="timeline">
+                    <!-- timelineHead start -->
+                    <div class="timelineHead">
+                        <h2>Timeline</h2>
+                        <div class="timelineDots">
+                            <span class="material-symbols-outlined">
+                                more_horiz
+                            </span>
+                        </div>
+                    </div>
+                    <!-- timelineHead end -->
+                    <!-- timelineVideos start -->
+                    <div class="timelineVideos">
+                        <ul>
+                            <li>
+                                <span class="videoText">
+                                    <span class="material-symbols-outlined full">
+                                        slideshow
+                                    </span>
+                                    <span class="text">
+                                        Create wireframe
+                                    </span>
+                                </span>
+                                <span class="timelineTime">
+                                    32:54
+                                </span>
+                            </li>
+                            <li>
+                                <span class="videoText">
+                                    <span class="material-symbols-outlined">
+                                        slideshow
+                                    </span>
+                                    <span class="text">
+                                        Logo Design
+                                    </span>
+                                </span>
+                                <span class="timelineTime">
+                                    30:00
+                                </span>
+                            </li>
+                            <li>
+                                <span class="videoText">
+                                    <span class="material-symbols-outlined">
+                                        slideshow
+                                    </span>
+                                    <span class="text">
+                                        Dashboard Design
+                                    </span>
+                                </span>
+                                <span class="timelineTime">
+                                    30:00
+                                </span>
+                            </li>
+                            <li>
+                                <span class="videoText">
+                                    <span class="material-symbols-outlined">
+                                        slideshow
+                                    </span>
+                                    <span class="text">
+                                        Landing Page
+                                    </span>
+                                </span>
+                                <span class="timelineTime">
+                                    30:00
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- timelineVideos end -->
+                </div>
+                <!-- timeline end -->
+                <!-- calendar start -->
+                <div class="calendar">
+                    <!-- calendarHead start -->
+                    <div class="calendarHead">
+                        <h2>January 2024</h2>
+                        <div class="calendarIcon">
+                            <span class="material-symbols-outlined">
+                                chevron_left
+                            </span>
+                            <span class="material-symbols-outlined">
+                                chevron_right
+                            </span>
+                        </div>
+                    </div>
+                    <!-- calendarHead end -->
+                    <!-- calendarData start -->
+                    <div class="calendarData">
+                        <ul class="weeks">
+                            <li>Sun</li>
+                            <li>Mon</li>
+                            <li>Tue</li>
+                            <li>Wed</li>
+                            <li>Thu</li>
+                            <li>Fri</li>
+                            <li>Sat</li>
+                        </ul>
+                        <ul class="days">
+                            <li class="inactive">25</li>
+                            <li class="inactive">26</li>
+                            <li class="inactive">27</li>
+                            <li class="inactive">28</li>
+                            <li class="inactive">29</li>
+                            <li class="inactive">30</li>
+			    <li class="inactive">31</li>
+                            <li>1</li>
+                            <li>2</li>
+                            <li>3</li>
+                            <li>4</li>
+                            <li>5</li>
+                            <li>6</li>
+                            <li>7</li>
+                            <li>8</li>
+                            <li>9</li>
+                            <li>10</li>
+                            <li>11</li>
+                            <li>12</li>
+                            <li>13</li>
+                            <li>14</li>
+                            <li>15</li>
+                            <li>16</li>
+                            <li>17</li>
+                            <li>18</li>
+                            <li>19</li>
+                            <li>20</li>
+                            <li class="active">21</li>
+                            <li>22</li>
+                            <li>23</li>
+                            <li>24</li>
+                            <li>25</li>
+                            <li>26</li>
+                            <li>27</li>
+                            <li>28</li>
+                            <li>29</li>
+                            <li>30</li>
+                            <li>31</li>
+                            <li class="inactive">1</li>
+                            <li class="inactive">2</li>
+                            <li class="inactive">3</li>
+                            <li class="inactive">4</li>
+                            <li class="inactive">5</li>
+                        </ul>
+                    </div>
+                    <!-- calendarData end -->
+                </div>
+                <!-- calendar end -->
+                <!-- messages start -->
+                <div class="messages">
+                    <!-- messagesHead start -->
+                    <div class="messagesHead">
+                        <h2>Messages</h2>
+                    </div>
+                    <!-- messagesHead end -->
+                    <!-- messagesUser start -->
+                    <div class="messagesUser">
+                        <div class="messagesUserImg">
+                            <img src="./groupImg/img1.jpg" alt="img1">
+                        </div>
+                        <h2>Bryan Raymond<br><span>What a nice experience</span></h2>
+                    </div>
+                    <!-- messagesUser end -->
+                    <!-- messagesUser start -->
+                    <div class="messagesUser">
+                        <div class="messagesUserImg">
+                            <img src="./groupImg/img2.jpg" alt="img2">
+                        </div>
+                        <h2>Martha Blake<br><span>It has really helped me</span></h2>
+                    </div>
+                    <!-- messagesUser end -->
+                    <!-- messagesUser start -->
+                    <div class="messagesUser">
+                        <div class="messagesUserImg">
+                            <img src="./groupImg/img3.jpg" alt="img3">
+                        </div>
+                        <h2>Ric Martins<br><span>A new way of scheduling, I never miss a date</span></h2>
+                    </div>
+                    <!-- messagesUser end -->
+                    <!-- messagesUser start -->
+                    <div class="messagesUser">
+                        <div class="messagesUserImg">
+                            <img src="./groupImg/img4.jpg" alt="img4">
+                        </div>
+                        <h2>Rachel Bright<br><span>Simple to use</span></h2>
+                    </div>
+                    <!-- messagesUser end -->
+                    <!-- messagesUser start -->
+                    <div class="messagesUser">
+                        <div class="messagesUserImg">
+                            <img src="./groupImg/img5.jpg" alt="img5">
+                        </div>
+			<h2>Francis Way<br><span>Elegant</span></h2>
+                    </div>
+                    <!-- messagesUser end -->
+                </div>
+                <!-- messages end -->
+            </main>
+            <!-- main end -->
+        </div>
+        <!-- right end -->
+    </div>
+    <!-- container end -->
+
+    <script>
+        let toggle = document.querySelector('.toggle');
+        let left = document.querySelector('.left');
+        let right = document.querySelector('.right');
+        let close = document.querySelector('.close');
+        let body = document.querySelector('body');
+        let searchBx = document.querySelector('.searchBx');
+        let searchOpen = document.querySelector('.searchOpen');
+        let searchClose = document.querySelector('.searchClose');
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+            left.classList.toggle('active');
+            right.classList.toggle('overlay');
+            body.style.overflow = 'hidden';
+        });
+        close.onclick = () => {
+            toggle.classList.remove('active');
+            left.classList.remove('active');
+            right.classList.remove('overlay');
+            body.style.overflow = '';
+        };
+        searchOpen.onclick = () => {
+            searchBx.classList.add('active');
+        };
+        searchClose.onclick = () => {
+            searchBx.classList.remove('active');
+        };
+        window.onclick = (e) => {
+            if (e.target == right) {
+                toggle.classList.remove('active');
+                left.classList.remove('active');
+                right.classList.remove('overlay');
+                body.style.overflow = '';
+            }
+        };
+    </script>
+</body>
+
 </html>
